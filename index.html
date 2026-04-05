@@ -65,6 +65,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .rc:active{transform:scale(.97)}
 .rc .rci{font-size:1.4em;margin-bottom:1px}
 .rc .rct{font-weight:700}.rc.on .rct{color:var(--gld)}
+
+/* ── GAME SCREEN ── */
 #gameScr{padding:5px;justify-content:flex-start}
 .gt{display:flex;justify-content:space-between;gap:3px;padding:3px 1px;width:100%}
 .gs{flex:1;text-align:center;padding:4px 2px;border-radius:5px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.68em}
@@ -79,30 +81,57 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .gtrn{text-align:center;padding:3px;border-radius:6px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.76em;margin:2px 0;width:100%}
 .gtrn.tr{background:var(--r);color:#fff}.gtrn.tb{background:var(--bl);color:#fff}.gtrn.tg{background:var(--grn);color:#fff}
 .gcl{text-align:center;padding:2px;font-size:.73em;color:var(--dim);min-height:16px;width:100%}.gcl b{color:var(--gld)}
+
+/* ── GRID ── */
 .gg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:3px 0;flex:1;width:100%}
-.gx{border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:600;font-size:.6em;padding:2px 1px;text-align:center;line-height:1.15;min-height:42px;cursor:pointer;transition:all .15s;background:var(--card);border:2px solid var(--bdr)}
+/* Card base */
+.gx{border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.6em;padding:3px 2px;text-align:center;line-height:1.2;min-height:44px;cursor:pointer;transition:all .15s;background:var(--card);border:2px solid var(--bdr);color:var(--txt)}
 .gx:active:not(.rv){transform:scale(.92)}
-.gx.rv{cursor:default;opacity:.78;transform:scale(.96)}
-.gx.rv.xr{background:var(--r);color:#fff;border-color:var(--r)}
-.gx.rv.xb{background:var(--bl);color:#fff;border-color:var(--bl)}
-.gx.rv.xn{background:var(--neu);color:#bbb;border-color:var(--neu)}
-.gx.rv.xa{background:#1a1020;color:#ef5350;border-color:var(--kill)}
-.gx.rv.xg{background:var(--grn);color:#fff;border-color:var(--grn)}
-.gx.sr{border-color:rgba(198,40,40,.4);background:rgba(198,40,40,.06)}
-.gx.sb{border-color:rgba(21,101,192,.4);background:rgba(21,101,192,.06)}
-.gx.sa{border-color:rgba(183,28,28,.4);background:rgba(183,28,28,.06)}
-.gx.sn{border-color:rgba(84,110,122,.3);background:rgba(84,110,122,.04)}
-.gx.sg{border-color:rgba(46,125,50,.4);background:rgba(46,125,50,.06)}
-.ebar{display:flex;gap:3px;justify-content:center;margin:3px 0;width:100%}
-.ebtn{padding:3px 8px;font-size:1.1em;border:1px solid var(--bdr);border-radius:7px;background:transparent;cursor:pointer;transition:.15s}
+/* ── Revealed: FULL solid colors, eye-friendly ── */
+.gx.rv{cursor:default;}
+.gx.rv.xr{background:#c0392b;color:#fde8e8;border-color:#e74c3c;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.gx.rv.xb{background:#1a5276;color:#d6eaf8;border-color:#2980b9;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.gx.rv.xn{background:#3d5166;color:#d5dbdb;border-color:#5d6d7e}
+.gx.rv.xa{background:#1c0a0a;color:#e74c3c;border-color:#922b21;letter-spacing:-.5px}
+.gx.rv.xg{background:#1e6b35;color:#d5f5e3;border-color:#27ae60;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+/* ── Spy hint view: clearly tinted ── */
+.gx.sr{border-color:rgba(231,76,60,.85);background:rgba(192,57,43,.28);color:#f5c6c0}
+.gx.sb{border-color:rgba(41,128,185,.85);background:rgba(26,82,118,.28);color:#aed6f1}
+.gx.sa{border-color:rgba(146,43,33,.9);background:rgba(28,10,10,.5);color:#e74c3c}
+.gx.sn{border-color:rgba(93,109,126,.5);background:rgba(61,81,102,.2);color:var(--dim)}
+.gx.sg{border-color:rgba(39,174,96,.85);background:rgba(30,107,53,.28);color:#a9dfbf}
+
+/* ── RESULT MINI-BOARD ── */
+.rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin:6px 0;width:100%;max-width:340px}
+.rx{border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.48em;padding:3px 1px;text-align:center;line-height:1.2;min-height:34px;border:1px solid transparent}
+.rx.rxr{background:#c0392b;color:#fde8e8;border-color:#e74c3c}
+.rx.rxb{background:#1a5276;color:#d6eaf8;border-color:#2980b9}
+.rx.rxn{background:#3d5166;color:#d5dbdb;border-color:#5d6d7e}
+.rx.rxa{background:#1c0a0a;color:#e74c3c;border-color:#922b21}
+.rx.rxg{background:#1e6b35;color:#d5f5e3;border-color:#27ae60}
+/* Un-revealed cards in result get their type revealed fully */
+.rx.rxr-dim{background:rgba(192,57,43,.35);color:#f5b7b1;border-color:rgba(231,76,60,.4);font-style:italic}
+.rx.rxb-dim{background:rgba(26,82,118,.35);color:#aed6f1;border-color:rgba(41,128,185,.4);font-style:italic}
+.rx.rxn-dim{background:rgba(61,81,102,.3);color:#a6acaf;border-color:rgba(93,109,126,.4);font-style:italic}
+.rx.rxa-dim{background:rgba(28,10,10,.5);color:#e74c3c;border-color:rgba(146,43,33,.6);font-style:italic}
+.rx.rxg-dim{background:rgba(30,107,53,.35);color:#a9dfbf;border-color:rgba(39,174,96,.4);font-style:italic}
+
+/* ── ACTION BAR ── */
+.ebar{display:flex;gap:3px;justify-content:center;align-items:center;margin:3px 0;width:100%}
+.ebtn{padding:3px 6px;font-size:1em;border:1px solid var(--bdr);border-radius:7px;background:transparent;cursor:pointer;transition:.15s}
 .ebtn:active{transform:scale(1.3)}
+.emute{padding:2px 6px;font-size:.85em;border:1px solid var(--bdr);border-radius:7px;background:rgba(255,255,255,.04);color:var(--dim);cursor:pointer;transition:.15s;flex-shrink:0}
+.emute.muted{background:rgba(183,28,28,.12);border-color:rgba(183,28,28,.3);color:#ef5350}
 .efloat{position:fixed;font-size:2em;pointer-events:none;z-index:3000;animation:efly 1.5s ease forwards}
 @keyframes efly{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-110px) scale(1.5)}}
-.ga{display:flex;gap:4px;margin-top:3px;padding-bottom:env(safe-area-inset-bottom,3px);width:100%}
-.gab{flex:1;padding:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.76em;border:none;border-radius:6px;cursor:pointer;transition:.2s}
+.ga{display:flex;gap:3px;margin-top:3px;padding-bottom:env(safe-area-inset-bottom,3px);width:100%}
+.gab{flex:1;padding:7px 3px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.72em;border:none;border-radius:6px;cursor:pointer;transition:.2s}
 .gab:active{transform:scale(.97)}
 .ge{background:rgba(255,255,255,.05);color:var(--txt);border:1px solid var(--bdr)}
 .gv{background:var(--gg);color:var(--gld);border:1px solid var(--gb)}
+.gend{background:rgba(183,28,28,.15);color:#ef5350;border:1px solid rgba(183,28,28,.35)}
+
+/* ── MODALS ── */
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:14px}
 .mo.show{display:flex}
 .mx{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;text-align:center;max-width:290px;width:100%;animation:fsl .25s ease}
@@ -115,6 +144,9 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .mbtns{display:flex;gap:5px}
 .mbtns button{flex:1;padding:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.8em;border:none;border-radius:6px;cursor:pointer}
 .mcan{background:rgba(255,255,255,.05);color:var(--dim)}.mok{background:var(--gld);color:var(--bg)}
+.mdanger{background:#c0392b;color:#fff}
+
+/* ── PASS / RESULT screens ── */
 .ps-e{font-size:50px;margin-bottom:8px;animation:wig .9s ease-in-out infinite}
 @keyframes wig{0%,100%{transform:rotate(0)}20%{transform:rotate(-7deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(3deg)}}
 .ps-tag{margin-bottom:10px;padding:6px 14px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.92em}
@@ -125,17 +157,18 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .ri{font-size:54px;margin-bottom:6px;animation:bob 1.4s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .rtit{font-family:'Cairo',sans-serif;font-weight:900;font-size:1.5em;margin-bottom:4px}
-.rsub{color:var(--dim);font-size:.82em;margin-bottom:16px;line-height:1.6;white-space:pre-line;text-align:center}
+.rsub{color:var(--dim);font-size:.82em;margin-bottom:8px;line-height:1.6;white-space:pre-line;text-align:center}
+.rmap-lbl{font-family:'Cairo',sans-serif;font-weight:700;font-size:.78em;color:var(--dim);margin:4px 0 2px}
 .wait{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:.82em;margin:8px 0}
 .spin{width:16px;height:16px;border:2px solid var(--bdr);border-top-color:var(--gld);border-radius:50%;animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.cfg-box{background:rgba(255,179,0,.05);border:1px solid var(--gb);border-radius:10px;padding:14px;margin:10px 0;width:100%;max-width:360px;font-size:.75em;line-height:1.7;color:var(--dim);text-align:right}
-.cfg-box code{color:var(--gld);font-family:monospace;direction:ltr;display:inline}
+#resultScr{justify-content:flex-start;padding-top:24px;overflow-y:auto}
 @media(max-width:360px){.gx{font-size:.53em;min-height:36px}.rcode{font-size:1.9em}}
 </style>
 </head>
 <body>
 
+<!-- ═══ HOME ═══ -->
 <div class="scr on" id="homeScr">
   <div style="font-size:58px;margin-bottom:4px;filter:drop-shadow(0 0 16px rgba(255,179,0,.3))">🕵️</div>
   <div style="font-family:'Cairo',sans-serif;font-weight:900;font-size:2.3em;background:linear-gradient(135deg,var(--gld),#fff,var(--gld));-webkit-background-clip:text;-webkit-text-fill-color:transparent">الجاسوسية</div>
@@ -143,6 +176,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
   <button class="bb" onclick="show('modeScr')">🎮 لعبة جديدة</button>
 </div>
 
+<!-- ═══ MODE ═══ -->
 <div class="scr" id="modeScr">
   <div style="font-size:36px;margin-bottom:6px">🎮</div>
   <div style="font-family:'Cairo',sans-serif;font-weight:700;font-size:1.1em;margin-bottom:12px">اختار طريقة اللعب</div>
@@ -151,6 +185,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
   <button class="bb2" onclick="startOffline()">📱 موبايل واحد — فريق Duet</button>
 </div>
 
+<!-- ═══ CREATE ═══ -->
 <div class="scr" id="createScr">
   <div class="crd">
     <h3>🌐 غرفة أونلاين جديدة</h3>
@@ -159,7 +194,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
     <div class="sl">🎭 النمط</div>
     <div class="mcards">
       <div class="mcard on" data-m="classic" onclick="pickMode('classic')"><div class="mi2">⚔️</div><div class="mt">كلاسيك</div><div class="md">فريقين ضد بعض<br>قائد + عملاء</div></div>
-      <div class="mcard" data-m="duet" onclick="pickMode('duet')"><div class="mi2">🤝</div><div class="mt">Duet</div><div class="md">لاعبين تعاون<br>خريطة مختلفة لكل واحد</div></div>
+      <div class="mcard" data-m="duet" onclick="pickMode('duet')"><div class="mi2">🤝</div><div class="mt">Duet</div><div class="md">لاعبين تعاون<br>خريطة مشتركة</div></div>
     </div>
     <div class="sep"></div>
     <div class="sl">👤 اسمك</div>
@@ -174,6 +209,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
   </div>
 </div>
 
+<!-- ═══ JOIN ═══ -->
 <div class="scr" id="joinScr">
   <div class="crd">
     <h3>🔗 انضم لغرفة</h3><p>أدخل الكود واسمك</p>
@@ -189,6 +225,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
   </div>
 </div>
 
+<!-- ═══ LOBBY ═══ -->
 <div class="scr" id="lobbyScr">
   <div style="font-size:32px;margin-bottom:4px">🏠</div>
   <div style="font-family:'Cairo',sans-serif;font-weight:700;font-size:1em">غرفة الانتظار</div>
@@ -206,14 +243,17 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
   <div class="wait" id="lWait" style="display:none"><div class="spin"></div><span>مستنيين صاحب الغرفة...</span></div>
 </div>
 
+<!-- ═══ PASS ═══ -->
 <div class="scr" id="passScr">
   <div class="ps-e" id="psE">📱</div>
   <div class="ps-tag" id="psTag"></div>
   <div class="ps-t" id="psT"></div>
   <div class="ps-s" id="psS"></div>
   <button class="bb" id="psBtn">👀 جاهز</button>
+  <button class="bb2" onclick="exitToHome()" style="margin-top:10px">🏠 الرئيسية</button>
 </div>
 
+<!-- ═══ GAME ═══ -->
 <div class="scr" id="gameScr">
   <div class="gt" id="gtBar"></div>
   <div class="tmbar"><div class="tmfill" id="tmF" style="width:100%"></div></div>
@@ -228,21 +268,27 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
     <button class="ebtn" onclick="react('🔥')">🔥</button>
     <button class="ebtn" onclick="react('💀')">💀</button>
     <button class="ebtn" onclick="react('🤔')">🤔</button>
+    <button class="emute" id="muteBtn" onclick="toggleMute()" title="كتم الردود">🔔</button>
   </div>
   <div class="ga" id="gaBar">
     <button class="gab ge" onclick="endTurn()">⏭️ إنهاء الدور</button>
     <button class="gab gv" id="clueBtn" onclick="showClueMo()" style="display:none">🗣️ تلميح</button>
+    <button class="gab gend" id="endGameBtn" onclick="endGame()" style="display:none">🔚 إنهاء</button>
   </div>
   <div style="text-align:center;margin-top:2px"><span class="bdg" id="myBdg"></span></div>
 </div>
 
+<!-- ═══ RESULT ═══ -->
 <div class="scr" id="resultScr">
   <div class="ri" id="rI"></div>
   <div class="rtit" id="rT"></div>
   <div class="rsub" id="rS"></div>
-  <button class="bb" onclick="show('homeScr')">🏠 الرئيسية</button>
+  <div class="rmap-lbl">🗺️ الخريطة النهائية</div>
+  <div class="rgrid" id="rGrid"></div>
+  <button class="bb" onclick="leaveGame()" style="margin-top:10px;flex-shrink:0">🏠 الرئيسية</button>
 </div>
 
+<!-- ═══ CLUE MODAL ═══ -->
 <div class="mo" id="clueMo">
   <div class="mx">
     <h3>🗣️ التلميح</h3><p>كلمة واحدة + عدد الكروت</p>
@@ -257,47 +303,45 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
   </div>
 </div>
 
+<!-- ═══ END GAME CONFIRM MODAL ═══ -->
+<div class="mo" id="endGameMo">
+  <div class="mx">
+    <h3>🔚 إنهاء اللعبة؟</h3>
+    <p>هتنهي اللعبة الحالية وترجع للرئيسية</p>
+    <div class="mbtns">
+      <button class="mcan" onclick="document.getElementById('endGameMo').classList.remove('show')">إلغاء</button>
+      <button class="mdanger" onclick="confirmEndGame()">إنهاء</button>
+    </div>
+  </div>
+</div>
+
 <div class="tst" id="tst"></div>
 
 <script>
 // ═══════════════════════════════════════════
 // 🔥 FIREBASE CONFIG
 // ═══════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyAQ1rnqoKlrZxFSs3L3FSsId8h5YzPigm4",
-  authDomain: "aljasusiya.firebaseapp.com",
-  databaseURL: "https://aljasusiya-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "aljasusiya",
-  storageBucket: "aljasusiya.firebasestorage.app",
-  messagingSenderId: "932321743843",
-  appId: "1:932321743843:web:96b1b3511d67433d02c6d6",
-  measurementId: "G-EBKYNRQJRT"
+const firebaseConfig={
+  apiKey:"AIzaSyAQ1rnqoKlrZxFSs3L3FSsId8h5YzPigm4",
+  authDomain:"aljasusiya.firebaseapp.com",
+  databaseURL:"https://aljasusiya-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"aljasusiya",storageBucket:"aljasusiya.firebasestorage.app",
+  messagingSenderId:"932321743843",
+  appId:"1:932321743843:web:96b1b3511d67433d02c6d6",
+  measurementId:"G-EBKYNRQJRT"
 };
-
 let fbReady=false;
-try{firebase.initializeApp(firebaseConfig);fbReady=true}catch(e){console.error('Firebase init error:',e)}
+try{firebase.initializeApp(firebaseConfig);fbReady=true}catch(e){console.error('Firebase:',e)}
 const db=fbReady?firebase.database():null;
 
 // ═══════════════════════════════════════════
-// 🔧 CORE UTILITIES (THIS WAS THE MISSING PART!)
+// 🔧 UTILITIES
 // ═══════════════════════════════════════════
-function show(id){
-  document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});
-  document.getElementById(id).classList.add('on');
-}
-
+function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on')}
 function shuf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=b[i];b[i]=b[j];b[j]=tmp}return b}
-
 function genCode(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var r='';for(var i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
-
 function genId(){return Math.random().toString(36).substr(2,9)}
-
-function toast(m,t){
-  t=t||'tok';
-  var e=document.getElementById('tst');
-  e.textContent=m;e.className='tst show '+t;
-  setTimeout(function(){e.classList.remove('show')},2200);
-}
+function toast(m,t){t=t||'tok';var e=document.getElementById('tst');e.textContent=m;e.className='tst show '+t;setTimeout(function(){e.classList.remove('show')},2200)}
 
 // ═══════════════════════════════════════════
 // 🔊 SOUNDS
@@ -313,71 +357,197 @@ function sClick(){tone(800,.04,'square',.07)}
 function sReact(){tone(1200,.05,'sine',.08)}
 
 // ═══════════════════════════════════════════
-// 📝 WORD CLUSTERS
+// 📝 EXPANDED WORD CLUSTERS
+// Each cluster is a tight theme — words within connect well for clues.
+// Bridge words appear near the end and fit multiple themes.
 // ═══════════════════════════════════════════
 var CLUSTERS=[
-  {id:'pets',words:['قطة','كلب','أرنب','حمامة','سمكة','ببغاء','سلحفاة']},
-  {id:'wild',words:['أسد','نمر','فيل','زرافة','غزال','ذئب','ثعلب','دب','قرد']},
-  {id:'sea',words:['حوت','دلفين','أخطبوط','سمك قرش','حصان بحر','نجم بحر']},
-  {id:'birds',words:['صقر','نسر','بومة','عصفور','طاووس','بطريق','نعامة']},
-  {id:'fruit',words:['تفاح','موز','عنب','برتقال','فراولة','مانجو','بطيخ','رمان','تين']},
-  {id:'veg',words:['طماطم','خيار','بطاطس','جزر','بصل','فلفل','باذنجان']},
-  {id:'drink',words:['قهوة','شاي','عصير','حليب','كاكاو','ليمون','نعناع']},
-  {id:'egypt_food',words:['كشري','فول','طعمية','شاورما','كباب','محشي','ملوخية']},
-  {id:'sweets',words:['كنافة','بسبوسة','آيس كريم','شوكولاتة','كيك','بقلاوة']},
-  {id:'sport',words:['كرة قدم','سباحة','ملاكمة','تنس','كرة سلة','جري','جمباز']},
-  {id:'clothes',words:['قميص','بنطلون','فستان','حذاء','جاكيت','قبعة','نظارة']},
-  {id:'body',words:['عين','قلب','يد','رأس','أذن','أنف','لسان','كتف']},
-  {id:'family',words:['أب','أم','أخ','أخت','جد','جدة','عم','خال','ابن','بنت']},
-  {id:'jobs',words:['طبيب','مهندس','معلم','طباخ','رسام','نجار','صيدلي','طيار']},
-  {id:'nature',words:['جبل','بحر','نهر','شلال','بركان','صحراء','غابة','كهف','جزيرة']},
-  {id:'sky',words:['شمس','قمر','نجمة','سحابة','قوس قزح','كوكب','مجرة']},
-  {id:'weather',words:['مطر','ثلج','رياح','عاصفة','شتاء','صيف','ربيع']},
-  {id:'house',words:['باب','نافذة','سقف','سلم','حديقة','مطبخ','غرفة','شرفة']},
-  {id:'school',words:['كتاب','قلم','دفتر','سبورة','حقيبة','امتحان']},
-  {id:'transport',words:['سيارة','أتوبيس','قطار','طائرة','دراجة','مترو','سفينة']},
-  {id:'music',words:['عود','كمان','بيانو','طبل','ناي','جيتار']},
-  {id:'tools',words:['مطرقة','مفتاح','مسمار','منشار','قفل','سلسلة','حبل']},
-  {id:'egypt',words:['هرم','أبو الهول','نيل','فرعون','معبد','مومياء','مسلة']},
-  {id:'beach',words:['شاطئ','موجة','رمل','صدفة','مرساة','منارة','قارب','غوص']},
-  {id:'tech',words:['موبايل','لابتوب','شاشة','واي فاي','شاحن','سماعة','كاميرا']},
-  {id:'war',words:['سيف','درع','قلعة','جيش','مدفع','سهم','خوذة']},
-  {id:'treasure',words:['كنز','خريطة','بوصلة','صندوق','قراصنة','لغز']},
-  {id:'fantasy',words:['ساحر','تنين','وحش','أميرة','قصر','جني','إكسير']},
-  {id:'kitchen',words:['سكين','ملعقة','شوكة','طبق','كوب','مقلاة','فرن']},
-  {id:'colors',words:['أحمر','أزرق','أخضر','أصفر','أبيض','أسود','ذهبي']}
+  // ── حيوانات ──
+  {id:'pets',words:['قطة','كلب','أرنب','ببغاء','سمكة','سلحفاة','هامستر','يمامة','قنفذ']},
+  {id:'farm',words:['بقرة','حصان','خروف','ديك','بطة','حمار','جمل','ماعز','ثور']},
+  {id:'wild_africa',words:['أسد','نمر','فيل','زرافة','فهد','ضبع','وحيد قرن','غوريلا','فرس نهر']},
+  {id:'wild_forest',words:['ذئب','ثعلب','دب','أيل','وشق','نمس','دلق','قندس','خنزير بري']},
+  {id:'sea_life',words:['حوت','دلفين','قرش','أخطبوط','فقمة','كركند','حبار','نجم البحر','أنقليس']},
+  {id:'birds_sky',words:['صقر','نسر','عقاب','شاهين','بازي','طائر الجنة','غراب','لقلق']},
+  {id:'birds_other',words:['بومة','عصفور','طاووس','بطريق','نعامة','بلبل','حمامة','خطاف']},
+  {id:'insects',words:['نملة','نحلة','فراشة','صرصار','جراد','بعوضة','دودة','خنفساء','دبور']},
+  {id:'reptiles',words:['تمساح','أفعى','سحلية','حرباء','كوبرا','تنين الكومودو','سلحفاة البحر']},
+
+  // ── طعام وشراب ──
+  {id:'fruit',words:['تفاح','موز','عنب','برتقال','فراولة','مانجو','رمان','تين','خوخ','كرز','جوافة','ليمون']},
+  {id:'veg',words:['طماطم','خيار','جزر','بصل','فلفل','باذنجان','كوسة','ثوم','قرنبيط','خس','سبانخ']},
+  {id:'grains',words:['أرز','قمح','ذرة','شعير','دقيق','شوفان','عدس','حمص','فول']},
+  {id:'meat',words:['كباب','كفتة','شاورما','سجق','كبدة','دجاج','لحم','ضلع','فراخ']},
+  {id:'bread_sweets',words:['كنافة','بسبوسة','قطايف','بقلاوة','عسل','مربى','كيك','حلاوة','آيس كريم','شوكولاتة']},
+  {id:'dairy',words:['حليب','جبنة','زبادي','كريمة','زبدة','قشطة','لبن','بوظة']},
+  {id:'hot_drinks',words:['قهوة','شاي','كاكاو','قرفة','زنجبيل','حلبة','نعناع','يانسون','كركديه']},
+  {id:'cold_drinks',words:['عصير','ليموناضة','كولا','ماء','عرق سوس','تمر هندي','كوكتيل','سموثي']},
+  {id:'arab_food',words:['كشري','فول','طعمية','محشي','ملوخية','فتة','مجدرة','مسخن','ورق عنب','مقلوبة']},
+  {id:'spices',words:['فلفل','كمون','كركم','زعفران','هيل','كزبرة','زعتر','بهارات','قرفة','ريحان']},
+  {id:'kitchen_tools',words:['سكين','ملعقة','شوكة','طبق','كوب','مقلاة','فرن','قدر','خلاط','صينية']},
+
+  // ── رياضة ──
+  {id:'ball_sports',words:['كرة قدم','كرة سلة','تنس','كرة طائرة','سكواش','بيسبول','رجبي','بولينج']},
+  {id:'water_sports',words:['سباحة','غوص','تجديف','ركوب الأمواج','رفع أثقال','كايت','قفز الحواجز']},
+  {id:'combat',words:['ملاكمة','كاراتيه','جودو','مصارعة','تايكواندو','رماية','سيف','مبارزة']},
+  {id:'athletics',words:['جري','قفز','رمي','تسلق','جمباز','يوغا','فروسية','دراجة']},
+
+  // ── ملابس وإكسسوار ──
+  {id:'clothes_top',words:['قميص','فستان','جاكيت','معطف','كنزة','بلوزة','بشت','عباءة','قفطان']},
+  {id:'clothes_bottom',words:['بنطلون','تنورة','شورت','جلباب','بيجاما','سراويل','جينز']},
+  {id:'accessories',words:['حذاء','قبعة','نظارة','ساعة','خاتم','عقد','وشاح','حزام','قفاز','سوار']},
+
+  // ── البيت ──
+  {id:'house_rooms',words:['مطبخ','صالة','حمام','غرفة نوم','شرفة','حديقة','سطح','مخزن','مدخل']},
+  {id:'house_parts',words:['باب','نافذة','سقف','سلم','حائط','أرضية','بوابة','سياج','شباك']},
+  {id:'furniture',words:['كنبة','سرير','طاولة','كرسي','خزانة','رف','مرآة','مصباح','ستارة','سجادة']},
+
+  // ── أشخاص ووظائف ──
+  {id:'family',words:['أب','أم','أخ','أخت','جد','جدة','عم','خال','ابن','بنت','زوج','حفيد','جار']},
+  {id:'jobs_care',words:['طبيب','ممرض','صيدلي','مسعف','معلم','مدرب','أخصائي','طبيب أسنان']},
+  {id:'jobs_creative',words:['رسام','ممثل','موسيقي','مصور','كاتب','شاعر','مصمم','مخرج','نحات']},
+  {id:'jobs_labor',words:['نجار','حداد','خياط','حلاق','طباخ','بناء','فلاح','سائق','صياد']},
+  {id:'jobs_pro',words:['مهندس','محامي','محاسب','مدير','طيار','ربان','ضابط','دبلوماسي','قاضي']},
+
+  // ── طبيعة وجغرافيا ──
+  {id:'landforms',words:['جبل','صحراء','غابة','سهل','واحة','بركان','كهف','جزيرة','هضبة','وادي']},
+  {id:'water_bodies',words:['بحر','نهر','بحيرة','خليج','شلال','قناة','مستنقع','دلتا','ترعة']},
+  {id:'sky_space',words:['شمس','قمر','نجمة','كوكب','مجرة','مذنب','نيزك','ثقب أسود','سديم','مريخ']},
+  {id:'weather',words:['مطر','ثلج','رياح','عاصفة','برق','رعد','ضباب','إعصار','موجة حر']},
+  {id:'plants',words:['شجرة','زهرة','عشب','وردة','نخلة','صبار','فطر','بذرة','جذر','ورقة']},
+
+  // ── مواصلات ──
+  {id:'road',words:['سيارة','أتوبيس','قطار','دراجة','مترو','شاحنة','موتوسيكل','تاكسي','عربة']},
+  {id:'air',words:['طائرة','مروحية','بالون','صاروخ','مكوك','طائرة حربية','زيبلن']},
+  {id:'sea_transport',words:['سفينة','قارب','يخت','غواصة','عبارة','مرساة','ميناء','قاطرة']},
+
+  // ── فنون وترفيه ──
+  {id:'instruments',words:['عود','كمان','بيانو','طبل','ناي','جيتار','بوق','مزمار','أكورديون','تشيللو']},
+  {id:'entertainment',words:['سينما','مسرح','حفلة','عرض','مهرجان','سيرك','فيلم','مسلسل','أغنية']},
+  {id:'games_board',words:['شطرنج','لودو','ورق','دومينو','بازل','بلياردو','داما','زهر','مونوبولي']},
+  {id:'games_screen',words:['ألعاب فيديو','جوي ستيك','بلايستيشن','شاشة','خوذة الواقع','بث مباشر']},
+
+  // ── علم ومدرسة ──
+  {id:'school',words:['كتاب','قلم','دفتر','سبورة','حقيبة','امتحان','مكتبة','درس','مدرسة','حضانة']},
+  {id:'science',words:['مختبر','ميكروسكوب','تجربة','أنبوبة','مغناطيس','بكتيريا','جين','ليزر']},
+  {id:'subjects',words:['رياضيات','كيمياء','فيزياء','تاريخ','جغرافيا','فلسفة','لغة عربية','أحياء']},
+
+  // ── تقنية ──
+  {id:'devices',words:['موبايل','لابتوب','شاشة','تلفزيون','طابعة','راوتر','كاميرا','سماعة']},
+  {id:'digital',words:['واي فاي','بلوتوث','شاحن','ذاكرة','تطبيق','برنامج','كلاود','سيرفر']},
+  {id:'internet',words:['إيميل','رسالة','فيديو','موقع','هاشتاق','ذكاء اصطناعي','بودكاست']},
+
+  // ── تاريخ وحضارة ──
+  {id:'egypt_heritage',words:['هرم','أبو الهول','نيل','فرعون','معبد','مومياء','مسلة','بردية','كارتوش']},
+  {id:'arab_culture',words:['قصيدة','خيمة','ناقة','بدوي','دلة','عود','دشداشة','سوق','قهوة عربية']},
+  {id:'religion',words:['مسجد','كنيسة','قرآن','صلاة','حج','صيام','ملاك','كعبة','ميناء']},
+  {id:'mythology',words:['ساحر','تنين','وحش','أميرة','جني','إكسير','تعويذة','مملكة','تنبؤ']},
+
+  // ── مغامرة وإثارة ──
+  {id:'war_ancient',words:['سيف','درع','رمح','قوس','خوذة','قلعة','حصار','فرسان','كمين','ترس']},
+  {id:'war_modern',words:['دبابة','رادار','قناص','مدفعية','جاسوس','طائرة مسيّرة','بارجة']},
+  {id:'treasure',words:['كنز','خريطة','بوصلة','صندوق','قراصنة','لغز','مفتاح','كهف','ذهب']},
+  {id:'mystery',words:['محقق','جريمة','بصمة','أدلة','شاهد','تحقيق','سر','رمز','قفل','مخبر']},
+
+  // ── شاطئ وسفر ──
+  {id:'beach',words:['رمل','موجة','صدفة','مظلة شمس','زورق','غوص','مرجان','نخلة','شاطئ']},
+  {id:'travel',words:['جواز','فيزا','مطار','فندق','حقيبة سفر','خريطة','مرشد','سياحة','تذكرة']},
+
+  // ── ألوان ومشاعر ──
+  {id:'colors',words:['أحمر','أزرق','أخضر','أصفر','أبيض','أسود','ذهبي','بنفسجي','برتقالي','فضي','زيتي']},
+  {id:'emotions',words:['فرح','حزن','غضب','خوف','حب','فخر','خجل','أمل','دهشة','غيرة','شوق']},
+  {id:'abstract',words:['حرية','سلام','عدل','حظ','قدر','وقت','ذاكرة','حلم','نجاح','سر','قوة']},
+
+  // ── كلمات جسر (تنتمي لعدة مجالات) ──
+  {id:'tools',words:['مطرقة','مفتاح','مسمار','منشار','قفل','سلسلة','حبل','مقص','إبرة','بكرة']},
+  {id:'body',words:['عين','قلب','يد','رأس','أذن','أنف','لسان','كتف','ذراع','ركبة','جبهة']},
+  {id:'light_dark',words:['نار','ضوء','شمعة','مصباح','ظل','ليل','فجر','شفق','قمر','نجمة','لهب']},
+  {id:'shapes_geo',words:['دائرة','مربع','مثلث','نجمة','قلب','هلال','حلقة','متاهة','قبة','قوس']},
+  {id:'celebrations',words:['عيد','حفلة','زفاف','ميلاد','رمضان','مفرقعات','بالون','هدية','كيك','دعوة']},
+  {id:'money',words:['ذهب','فضة','عملة','بنك','خزنة','ثروة','تجارة','سوق','أسهم','عقار']},
+  {id:'danger',words:['نار','ثعبان','صاعقة','عاصفة','بركان','لغم','سم','خطر','إنذار','قنبلة']},
+  {id:'small_things',words:['بذرة','نملة','قطرة','حبة','ذرة','خلية','جرثومة','بويضة','لقطة']},
+  {id:'big_things',words:['جبل','حوت','ناطحة سحاب','صاروخ','مجرة','أهرام','سفينة','بركان','غابة']},
+  {id:'round_things',words:['كرة','قمر','بيضة','دائرة','عجلة','قنبلة','فقاعة','بالون','طبل']},
+  {id:'sharp_things',words:['سكين','سيف','إبرة','مسمار','رمح','شوكة','مقص','أشواك','مخلب']},
+  {id:'water_related',words:['سمكة','مرساة','موجة','مطر','شلال','مجداف','قارب','ميناء','نهر']},
+  {id:'night_sky',words:['نجمة','قمر','مذنب','بومة','خفاش','شهاب','سديم','ظلام','مصباح']},
+  {id:'king_power',words:['ملك','تاج','عرش','قصر','جيش','خاتم','صولجان','لواء','حارس']},
+  {id:'writing',words:['قلم','حبر','ورقة','كتاب','رسالة','كلمة','شعر','خطاب','صحيفة','ختم']}
 ];
 
 // ═══════════════════════════════════════════
-// 🧠 SMART BOARD GENERATOR
+// 🧠 BOARD GENERATORS
 // ═══════════════════════════════════════════
 function generateSmartBoard(){
   var shuffled=shuf(CLUSTERS);
-  var redWords=[],blueWords=[],assassinWord='',neutralWords=[];
-  var ci=0;
-  while(redWords.length<9&&ci<shuffled.length){var cl=shuffled[ci];var avail=shuf(cl.words);var need=9-redWords.length;var take=Math.min(need,avail.length,4);for(var j=0;j<take;j++)redWords.push(avail[j]);ci++}
-  while(blueWords.length<8&&ci<shuffled.length){var cl2=shuffled[ci];var avail2=shuf(cl2.words).filter(function(w){return redWords.indexOf(w)===-1});var need2=8-blueWords.length;var take2=Math.min(need2,avail2.length,4);for(var j2=0;j2<take2;j2++)blueWords.push(avail2[j2]);ci++}
-  while(ci<shuffled.length){var cl3=shuffled[ci];var avail3=cl3.words.filter(function(w){return redWords.indexOf(w)===-1&&blueWords.indexOf(w)===-1});if(avail3.length>0){assassinWord=avail3[0];ci++;break}ci++}
-  while(neutralWords.length<7&&ci<shuffled.length){var cl4=shuffled[ci];var avail4=shuf(cl4.words).filter(function(w){return redWords.indexOf(w)===-1&&blueWords.indexOf(w)===-1&&w!==assassinWord});var need4=7-neutralWords.length;var take4=Math.min(need4,avail4.length,3);for(var j4=0;j4<take4;j4++)neutralWords.push(avail4[j4]);ci++}
-  var allWords=redWords.concat(blueWords,[assassinWord],neutralWords);
-  var types=[];for(var i=0;i<9;i++)types.push('red');for(var i=0;i<8;i++)types.push('blue');types.push('assassin');for(var i=0;i<7;i++)types.push('neutral');
-  var indices=shuf(Array.from({length:25},function(_,i){return i}));
+  var redW=[],blueW=[],assassin='',neutW=[];
+  var ci=0,used=new Set();
+
+  // Red: 9 words from consecutive clusters
+  while(redW.length<9&&ci<shuffled.length){
+    var avail=shuf(shuffled[ci].words).filter(function(w){return!used.has(w)});
+    var take=Math.min(9-redW.length,avail.length,4);
+    for(var j=0;j<take;j++){redW.push(avail[j]);used.add(avail[j])}
+    ci++;
+  }
+  // Blue: 8 words
+  while(blueW.length<8&&ci<shuffled.length){
+    var avail2=shuf(shuffled[ci].words).filter(function(w){return!used.has(w)});
+    var take2=Math.min(8-blueW.length,avail2.length,4);
+    for(var j2=0;j2<take2;j2++){blueW.push(avail2[j2]);used.add(avail2[j2])}
+    ci++;
+  }
+  // Assassin: 1 word
+  while(ci<shuffled.length){
+    var avail3=shuffled[ci].words.filter(function(w){return!used.has(w)});
+    if(avail3.length>0){assassin=avail3[0];used.add(assassin);ci++;break}
+    ci++;
+  }
+  // Neutral: 7 words
+  while(neutW.length<7&&ci<shuffled.length){
+    var avail4=shuf(shuffled[ci].words).filter(function(w){return!used.has(w)});
+    var take4=Math.min(7-neutW.length,avail4.length,3);
+    for(var j4=0;j4<take4;j4++){neutW.push(avail4[j4]);used.add(avail4[j4])}
+    ci++;
+  }
+
+  var allW=redW.concat(blueW,[assassin],neutW);
+  var types=[];
+  for(var i=0;i<9;i++)types.push('red');
+  for(var i2=0;i2<8;i2++)types.push('blue');
+  types.push('assassin');
+  for(var i3=0;i3<7;i3++)types.push('neutral');
+  var idxArr=shuf(Array.from({length:25},function(_,k){return k}));
   var words=new Array(25),finalTypes=new Array(25);
-  indices.forEach(function(idx,i){words[i]=allWords[idx];finalTypes[i]=types[idx]});
-  return {words:words,types:finalTypes};
+  idxArr.forEach(function(idx,i){words[i]=allW[idx];finalTypes[i]=types[idx]});
+  return{words:words,types:finalTypes};
 }
 
+// Duet: single shared key (15 green, 3 assassin, 7 neutral)
 function generateDuetBoard(){
-  var sc=shuf(CLUSTERS);var w=[];var ci=0;
-  while(w.length<25&&ci<sc.length){var c=shuf(sc[ci].words).filter(function(x){return w.indexOf(x)===-1});var t=Math.min(w.length<21?Math.floor(Math.random()*2)+3:25-w.length,c.length);for(var j=0;j<t&&w.length<25;j++)w.push(c[j]);ci++}
+  var sc=shuf(CLUSTERS);var w=[];var used=new Set();var ci=0;
+  while(w.length<25&&ci<sc.length){
+    var avail=shuf(sc[ci].words).filter(function(x){return!used.has(x)});
+    var take=Math.min(w.length<22?Math.floor(Math.random()*2)+3:25-w.length,avail.length);
+    for(var j=0;j<take&&w.length<25;j++){w.push(avail[j]);used.add(avail[j])}
+    ci++;
+  }
+  // Fallback padding (shouldn't be needed with expanded clusters)
+  var extra=['مفتاح','نار','ضوء','سحابة','حلم','قوس','خاتم','درع','تاج'];
+  var ei=0;while(w.length<25&&ei<extra.length){if(!used.has(extra[ei])){w.push(extra[ei]);used.add(extra[ei])}ei++}
   w=shuf(w);
-  var idx=shuf(Array.from({length:25},function(_,i){return i}));
-  var agents=new Set(idx.slice(0,15));var non=idx.slice(15);
-  var a1=new Set(shuf(Array.from(non)).slice(0,3)),a2=new Set(shuf(Array.from(non)).slice(0,3));
-  var ag=shuf(Array.from(agents));var g1=new Set(ag.slice(0,9)),g2=new Set(ag.slice(6,15));
-  var k1=[],k2=[];
-  for(var i=0;i<25;i++){k1.push(g1.has(i)?'green':a1.has(i)?'assassin':'neutral');k2.push(g2.has(i)?'green':a2.has(i)?'assassin':'neutral')}
-  return {words:w,duetKeys:{k1:k1,k2:k2}};
+
+  // Assign types: positions 0-14 → green, 15-17 → assassin, 18-24 → neutral
+  var posIdx=shuf(Array.from({length:25},function(_,k){return k}));
+  var greenSet=new Set(posIdx.slice(0,15));
+  var assassinSet=new Set(posIdx.slice(15,18));
+
+  var key=[];
+  for(var i=0;i<25;i++){
+    key.push(greenSet.has(i)?'green':assassinSet.has(i)?'assassin':'neutral');
+  }
+  return{words:w,duetKey:key};
 }
 
 // ═══════════════════════════════════════════
@@ -386,21 +556,22 @@ function generateDuetBoard(){
 var ME={id:'',name:'',role:'',code:'',isHost:false};
 var ROOM=null,roomRef=null,gameMode='classic',isOffline=false;
 var offlineG=null;
+var mutedReactions=false;
 
 // ═══════════════════════════════════════════
 // NAV
 // ═══════════════════════════════════════════
-function showCreate(){
-  if(!fbReady){toast('⚠️ Firebase مش متوصل','ter');return}
-  show('createScr');document.getElementById('cName').focus();
-}
-function showJoinScr(){
-  if(!fbReady){toast('⚠️ Firebase مش متوصل','ter');return}
-  show('joinScr');document.getElementById('jCode').focus();
-}
-function pickMode(m){gameMode=m;document.querySelectorAll('.mcard').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-m')===m)});
-  document.getElementById('duetOpts').style.display=m==='duet'?'block':'none'}
+function showCreate(){if(!fbReady){toast('⚠️ Firebase مش متوصل','ter');return}show('createScr');document.getElementById('cName').focus()}
+function showJoinScr(){if(!fbReady){toast('⚠️ Firebase مش متوصل','ter');return}show('joinScr');document.getElementById('jCode').focus()}
+function pickMode(m){gameMode=m;document.querySelectorAll('.mcard').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-m')===m)});document.getElementById('duetOpts').style.display=m==='duet'?'block':'none'}
 function copyCode(){navigator.clipboard.writeText(ME.code).then(function(){toast('📋 تم!')}).catch(function(){toast(ME.code,'tin')})}
+
+function exitToHome(){
+  // Safe exit to home (from any screen)
+  if(!isOffline&&roomRef){roomRef.off();roomRef=null}
+  ROOM=null;isOffline=false;
+  show('homeScr');
+}
 
 // ═══════════════════════════════════════════
 // 📱 OFFLINE DUET
@@ -408,7 +579,8 @@ function copyCode(){navigator.clipboard.writeText(ME.code).then(function(){toast
 function startOffline(){
   isOffline=true;
   var board=generateDuetBoard();
-  offlineG={words:board.words,dk:board.duetKeys,rev:new Array(25).fill(false),rType:new Array(25).fill(null),
+  offlineG={words:board.words,dk:board.duetKey,  // single shared key
+    rev:new Array(25).fill(false),rType:new Array(25).fill(null),
     turn:'p1',tLeft:9,total:15,found:0,clue:null,gl:0,over:false};
   showPassOffline();
 }
@@ -429,11 +601,12 @@ function showOfflineSpy(){document.getElementById('eBar').style.display='none';r
 
 function renderOfflineGame(spyView){
   show('gameScr');var G=offlineG;
+  document.getElementById('endGameBtn').style.display='block'; // offline: always show
   document.getElementById('gtBar').innerHTML='<div class="gs ggr"><span class="gn">'+G.found+'</span>اتلقوا</div><div class="gs gbl"><span class="gn">'+(G.total-G.found)+'</span>فاضلين</div><div class="gs gk"><span class="gn">'+G.tLeft+'</span>أدوار</div>';
   var trn=document.getElementById('gTrn');trn.className='gtrn tg';
   var guesser=G.turn==='p1'?'p2':'p1';
   if(spyView){
-    trn.textContent='🗺️ خريطة '+(G.turn==='p1'?'لاعب ١ 🟢':'لاعب ٢ 🟠');
+    trn.textContent='🗺️ خريطة مشتركة — '+(G.turn==='p1'?'لاعب ١ 🟢':'لاعب ٢ 🟠')+' يعطي التلميح';
     document.getElementById('gCl').textContent='شوف الكلمات واعمل تلميح';
     document.getElementById('clueBtn').style.display='block';
   }else{
@@ -442,13 +615,13 @@ function renderOfflineGame(spyView){
     if(G.clue){var gl2=G.gl>20?'∞':G.gl;document.getElementById('gCl').innerHTML='<b>'+G.clue.word+' '+G.clue.num+'</b> — '+gl2+' متبقي'}
   }
   document.getElementById('tmF').style.width='100%';document.getElementById('tmT').textContent='';
-  var key=G.turn==='p1'?G.dk.k1:G.dk.k2;
   var grid=document.getElementById('gG');grid.innerHTML='';
   G.words.forEach(function(w,i){
     var c=document.createElement('div');
-    if(G.rev[i]){c.className='gx rv x'+G.rType[i][0]}
-    else{c.className='gx';
-      if(spyView){var t=key[i];c.className+=' s'+(t==='green'?'g':t==='assassin'?'a':'n')}
+    if(G.rev[i]){c.className='gx rv x'+typeClass(G.rType[i])}
+    else{
+      c.className='gx';
+      if(spyView){var t=G.dk[i];c.className+=' s'+(t==='green'?'g':t==='assassin'?'a':'n')}
       if(!spyView&&G.clue)(function(idx){c.addEventListener('click',function(){sClick();guessOffline(idx)})})(i);
     }
     c.textContent=w;grid.appendChild(c);
@@ -457,13 +630,15 @@ function renderOfflineGame(spyView){
   bdg.textContent=spyView?(G.turn==='p1'?'🟢 قائد ١':'🟠 قائد ٢'):(guesser==='p1'?'🟢 عميل ١':'🟠 عميل ٢');
 }
 
+function typeClass(t){return t==='red'?'r':t==='blue'?'b':t==='neutral'?'n':t==='assassin'?'a':t==='green'?'g':'n'}
+
 function guessOffline(i){
   var G=offlineG;if(G.over||G.rev[i])return;
-  var key=G.turn==='p1'?G.dk.k1:G.dk.k2;
-  var type=key[i];G.rev[i]=true;G.rType[i]=type;
-  if(type==='assassin'){sKill();G.over=true;renderOfflineGame(false);setTimeout(function(){showRes('☠️','القاتل!','خسرتوا — جربوا تاني')},600);return}
+  var type=G.dk[i]; // single shared key
+  G.rev[i]=true;G.rType[i]=type;
+  if(type==='assassin'){sKill();G.over=true;renderOfflineGame(false);setTimeout(function(){showResOffline('☠️','القاتل!','خسرتوا — جربوا تاني')},600);return}
   if(type==='green'){G.found++;G.gl--;
-    if(G.found>=G.total){sWin();G.over=true;renderOfflineGame(false);setTimeout(function(){showRes('🏆','مبروك!','لقيتوا كل العملاء! 🤝')},600);return}
+    if(G.found>=G.total){sWin();G.over=true;renderOfflineGame(false);setTimeout(function(){showResOffline('🏆','مبروك!','لقيتوا كل العملاء! 🤝')},600);return}
     if(G.gl<=0){sOk();switchOffline();return}
     sOk();renderOfflineGame(false);toast('✅ عميل!');return;
   }
@@ -472,9 +647,38 @@ function guessOffline(i){
 
 function switchOffline(){
   var G=offlineG;G.tLeft--;
-  if(G.tLeft<=0){G.over=true;showRes('⏰','خلصت الأدوار!','لقيتوا '+G.found+' من '+G.total);return}
+  if(G.tLeft<=0){G.over=true;showResOffline('⏰','خلصت الأدوار!','لقيتوا '+G.found+' من '+G.total);return}
   G.turn=G.turn==='p1'?'p2':'p1';G.clue=null;G.gl=0;
   showPassOffline();
+}
+
+function showResOffline(icon,title,sub){
+  document.getElementById('rI').textContent=icon;
+  document.getElementById('rT').textContent=title;
+  document.getElementById('rS').textContent=sub;
+  // Build result board
+  renderResultBoard(offlineG.words,offlineG.dk,offlineG.rev);
+  show('resultScr');
+}
+
+// ═══════════════════════════════════════════
+// 🗺️ RESULT BOARD
+// ═══════════════════════════════════════════
+function renderResultBoard(words,types,revealedMap){
+  var grid=document.getElementById('rGrid');grid.innerHTML='';
+  var typeMap={red:'rxr',blue:'rxb',neutral:'rxn',assassin:'rxa',green:'rxg'};
+  var dimMap={red:'rxr-dim',blue:'rxb-dim',neutral:'rxn-dim',assassin:'rxa-dim',green:'rxg-dim'};
+  words.forEach(function(w,i){
+    var c=document.createElement('div');
+    var t=Array.isArray(types)?types[i]:'neutral';
+    var cls=typeMap[t]||'rxn';
+    // Check if it was revealed (revealed map is obj for online, array for offline)
+    var wasRevealed=revealedMap?
+      (Array.isArray(revealedMap)?revealedMap[i]:(revealedMap[i]!=null)):false;
+    c.className='rx '+(wasRevealed?cls:(dimMap[t]||'rxn-dim'));
+    c.textContent=w;
+    grid.appendChild(c);
+  });
 }
 
 // ═══════════════════════════════════════════
@@ -489,12 +693,14 @@ function createRoom(){
   var roomData;
   if(gameMode==='classic'){
     var board=generateSmartBoard();
-    roomData={code:code,host:ME.id,mode:'classic',settings:{turnTime:turnTime},words:board.words,types:board.types,duetKeys:null,
+    roomData={code:code,host:ME.id,mode:'classic',settings:{turnTime:turnTime},
+      words:board.words,types:board.types,duetKey:null,
       players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
   }else{
     var board2=generateDuetBoard();
     var duetTurns=parseInt(document.getElementById('cDT').value);
-    roomData={code:code,host:ME.id,mode:'duet',settings:{turnTime:turnTime,duetTurns:duetTurns},words:board2.words,types:null,duetKeys:board2.duetKeys,
+    roomData={code:code,host:ME.id,mode:'duet',settings:{turnTime:turnTime,duetTurns:duetTurns},
+      words:board2.words,types:null,duetKey:board2.duetKey,
       players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
   }
   roomData.players[ME.id]={name:name,role:'',online:true};
@@ -524,11 +730,15 @@ function joinRoom(){
 }
 
 function listenRoom(){
-  roomRef.child('reactions').on('child_added',function(snap){var r=snap.val();if(r&&r.emoji&&Date.now()-r.ts<3000)floatEmoji(r.emoji);snap.ref.remove()});
-  roomRef.on('value',function(snap){if(!snap.exists())return;ROOM=snap.val();
+  roomRef.child('reactions').on('child_added',function(snap){
+    var r=snap.val();if(r&&r.emoji&&Date.now()-r.ts<3000)floatEmoji(r.emoji);snap.ref.remove()
+  });
+  roomRef.on('value',function(snap){
+    if(!snap.exists())return;ROOM=snap.val();
     if(ROOM.status==='lobby')renderLobby();
     else if(ROOM.status==='playing')renderOnlineGame();
-    else if(ROOM.status==='ended')renderResult()});
+    else if(ROOM.status==='ended')renderOnlineResult();
+  });
 }
 
 // ═══════════════════════════════════════════
@@ -544,16 +754,21 @@ function renderLobby(){
     if(ROOM.mode==='classic'){
       if(p.role==='red-spy'){rt='🔴 قائد';bc='bdg-r'}else if(p.role==='red-op'){rt='🔴 عميل';bc='bdg-r'}
       else if(p.role==='blue-spy'){rt='🔵 قائد';bc='bdg-b'}else if(p.role==='blue-op'){rt='🔵 عميل';bc='bdg-b'}
-    }else{if(p.role==='p1'){rt='🟢 لاعب ١';bc='bdg-g'}else if(p.role==='p2'){rt='🟠 لاعب ٢';bc='bdg-g'}}
+    }else{if(p.role==='duet-spy'){rt='🟢🗺️ قائد';bc='bdg-g'}else if(p.role==='duet-agent'){rt='🟠👆 عميل';bc='bdg-g'}}
     d.innerHTML='<span class="pn">'+p.name+(id===ROOM.host?' 👑':'')+'</span><span class="bdg '+bc+'">'+rt+'</span>';
     list.appendChild(d);if(id===ME.id&&p.role)ME.role=p.role;
   });
   var rc=document.getElementById('rCards');rc.innerHTML='';
-  var roles=ROOM.mode==='classic'?[['red-spy','🔴🗺️','قائد أحمر'],['red-op','🔴👆','عميل أحمر'],['blue-spy','🔵🗺️','قائد أزرق'],['blue-op','🔵👆','عميل أزرق']]:[['p1','🟢','لاعب ١'],['p2','🟠','لاعب ٢']];
-  roles.forEach(function(arr){var r=arr[0],ic=arr[1],t=arr[2];
+  var roles=ROOM.mode==='classic'?
+    [['red-spy','🔴🗺️','قائد أحمر'],['red-op','🔴👆','عميل أحمر'],['blue-spy','🔵🗺️','قائد أزرق'],['blue-op','🔵👆','عميل أزرق']]:
+    [['duet-spy','🟢🗺️','القائد — يرى الخريطة'],['duet-agent','🟠👆','العميل — يخمّن']];
+  roles.forEach(function(arr){
+    var r=arr[0],ic=arr[1],t=arr[2];
     var d=document.createElement('div');d.className='rc'+(ME.role===r?' on':'');
     d.innerHTML='<div class="rci">'+ic+'</div><div class="rct">'+t+'</div>';
-    d.onclick=function(){ME.role=r;roomRef.child('players/'+ME.id+'/role').set(r)};rc.appendChild(d)});
+    d.onclick=function(){ME.role=r;roomRef.child('players/'+ME.id+'/role').set(r)};
+    rc.appendChild(d);
+  });
   document.getElementById('startBtn').style.display=ME.isHost?'block':'none';
   document.getElementById('lWait').style.display=ME.isHost?'none':'flex';
 }
@@ -565,8 +780,8 @@ function startOnline(){
     if(roles.indexOf('red-spy')===-1||roles.indexOf('blue-spy')===-1){document.getElementById('lErr').textContent='❌ لازم قائد لكل فريق';return}
     roomRef.update({status:'playing',game:{turn:'red',clue:null,guessesLeft:0,revealed:{},redLeft:9,blueLeft:8,timerStart:null,turnCount:0}});
   }else{
-    if(roles.indexOf('p1')===-1||roles.indexOf('p2')===-1){document.getElementById('lErr').textContent='❌ لازم لاعبين';return}
-    roomRef.update({status:'playing',game:{turn:'p1',clue:null,guessesLeft:0,revealed:{},turnsLeft:ROOM.settings.duetTurns||9,totalAgents:15,foundAgents:0,timerStart:null}});
+    if(roles.indexOf('duet-spy')===-1||roles.indexOf('duet-agent')===-1){document.getElementById('lErr').textContent='❌ لازم قائد وعميل';return}
+    roomRef.update({status:'playing',game:{clue:null,guessesLeft:0,revealed:{},turnsLeft:ROOM.settings.duetTurns||9,totalAgents:15,foundAgents:0,timerStart:null}});
   }
 }
 
@@ -586,12 +801,15 @@ function renderOnlineGame(){
     myTeam=ME.role.indexOf('red')===0?'red':'blue';isSpy=ME.role.indexOf('-spy')!==-1;
     var myTurn=G.turn===myTeam;canClue=myTurn&&isSpy&&!G.clue;canGuess=myTurn&&!isSpy&&!!G.clue;
   }else{
-    myTeam=ME.role;isSpy=(G.turn===ME.role);canClue=(G.turn===ME.role)&&!G.clue;canGuess=(G.turn!==ME.role)&&!!G.clue;
+    // Duet: role is FIXED from lobby — duet-spy always sees map & gives clues, duet-agent always guesses
+    isSpy=(ME.role==='duet-spy');
+    canClue=isSpy&&!G.clue;
+    canGuess=!isSpy&&!!G.clue;
   }
 
   var trn=document.getElementById('gTrn');
   if(isClassic){trn.className='gtrn '+(G.turn==='red'?'tr':'tb');trn.textContent=canClue?'🗺️ ادّي تلميح!':canGuess?'👆 خمّن!':'دور '+(G.turn==='red'?'الأحمر 🔴':'الأزرق 🔵')}
-  else{trn.className='gtrn tg';trn.textContent=canClue?'🗺️ ادّي تلميح!':canGuess?'👆 خمّن!':'دور '+(G.turn==='p1'?'لاعب ١ 🟢':'لاعب ٢ 🟠')}
+  else{trn.className='gtrn tg';trn.textContent=canClue?'🗺️ ادّي تلميح! — القائد':canGuess?'👆 خمّن! — العميل':G.clue?'⏳ مستنيين العميل...':'⏳ مستنيين التلميح...'}
 
   var ce=document.getElementById('gCl');
   if(G.clue){var gl3=G.guessesLeft>20?'∞':G.guessesLeft;ce.innerHTML='<b>'+G.clue.word+' '+G.clue.num+'</b> — '+gl3+' متبقي'}
@@ -604,21 +822,32 @@ function renderOnlineGame(){
     var c=document.createElement('div');
     var rv=G.revealed?G.revealed[i]:null;
     if(rv){var tc=isClassic?{red:'xr',blue:'xb',neutral:'xn',assassin:'xa'}[rv]:{green:'xg',neutral:'xn',assassin:'xa'}[rv];c.className='gx rv '+(tc||'xn')}
-    else{c.className='gx';
-      if(isSpy){if(isClassic){var t=ROOM.types[i];c.className+=' s'+(t[0]==='r'?'r':t[0]==='b'?'b':t[0]==='a'?'a':'n')}
-        else{var key2=ME.role==='p1'?ROOM.duetKeys.k1:ROOM.duetKeys.k2;var t2=key2[i];c.className+=' s'+(t2==='green'?'g':t2==='assassin'?'a':'n')}}
-      if(canGuess)(function(idx){c.addEventListener('click',function(){sClick();guessOnline(idx)})})(i)}
+    else{
+      c.className='gx';
+      if(isSpy){
+        if(isClassic){var t=ROOM.types[i];c.className+=' s'+(t[0]==='r'?'r':t[0]==='b'?'b':t[0]==='a'?'a':'n')}
+        else{var t2=ROOM.duetKey[i];c.className+=' s'+(t2==='green'?'g':t2==='assassin'?'a':'n')}
+      }
+      if(canGuess)(function(idx){c.addEventListener('click',function(){sClick();guessOnline(idx)})})(i);
+    }
     c.textContent=w;grid.appendChild(c);
   });
 
   document.getElementById('clueBtn').style.display=canClue?'block':'none';
+  // End game button: host only for online
+  document.getElementById('endGameBtn').style.display=ME.isHost?'block':'none';
+
+  // Badge
   var bdg=document.getElementById('myBdg');
   if(isClassic){bdg.className='bdg '+(myTeam==='red'?'bdg-r':'bdg-b');bdg.textContent=isSpy?(myTeam==='red'?'🔴 قائد':'🔵 قائد'):(myTeam==='red'?'🔴 عميل':'🔵 عميل')}
-  else{bdg.className='bdg bdg-g';bdg.textContent=ME.role==='p1'?'🟢 لاعب ١':'🟠 لاعب ٢'}
+  else{bdg.className='bdg bdg-g';bdg.textContent=isSpy?'🟢🗺️ القائد':'🟠👆 العميل'}
 }
 
+// ═══════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════
 function handleTimer(G){
-  var tt=(ROOM.settings&&ROOM.settings.turnTime)?ROOM.settings.turnTime:0;
+  var tt=(ROOM&&ROOM.settings&&ROOM.settings.turnTime)?ROOM.settings.turnTime:0;
   if(!tt||!G.timerStart){document.getElementById('tmF').style.width='100%';document.getElementById('tmT').textContent=tt?'⏱️':'⏱️ ∞';return}
   var left=Math.max(0,tt-Math.floor((Date.now()-G.timerStart)/1000));
   var p=left/tt*100;var f=document.getElementById('tmF');f.style.width=p+'%';
@@ -664,7 +893,7 @@ function guessOnline(i){
   var isClassic=ROOM.mode==='classic';
   var type;
   if(isClassic)type=ROOM.types[i];
-  else{var key3=G.turn==='p1'?ROOM.duetKeys.k1:ROOM.duetKeys.k2;type=key3[i]}
+  else type=ROOM.duetKey[i]; // single shared key
   var up={};up['game/revealed/'+i]=type;
   if(isClassic){
     var rL=G.redLeft,bL=G.blueLeft,gl=G.guessesLeft-1;
@@ -690,7 +919,8 @@ function guessOnline(i){
 function switchDuetOnline(up){
   var G=ROOM.game;var tl=(G.turnsLeft||1)-1;
   if(tl<=0){up['status']='ended';up['result']={icon:'⏰',title:'خلصت الأدوار!',sub:'لقيتوا '+(G.foundAgents||0)+' من 15'};roomRef.update(up);return}
-  up['game/turn']=G.turn==='p1'?'p2':'p1';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnsLeft']=tl;
+  // No turn switch — spy/agent roles are fixed from lobby
+  up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnsLeft']=tl;
   roomRef.update(up);
 }
 
@@ -707,19 +937,77 @@ function endTurn(){
 }
 
 // ═══════════════════════════════════════════
-// REACTIONS
+// 🔚 END GAME
 // ═══════════════════════════════════════════
+function endGame(){
+  document.getElementById('endGameMo').classList.add('show');
+}
+
+function confirmEndGame(){
+  document.getElementById('endGameMo').classList.remove('show');
+  sClick();
+  if(isOffline){
+    if(offlineG)offlineG.over=true;
+    showResOffline('🔚','انتهت اللعبة','خرجت من اللعبة');
+    return;
+  }
+  // Online: only host can end (button already hidden for non-host)
+  if(ME.isHost&&roomRef){
+    var G=ROOM&&ROOM.game;
+    var found=G?(G.foundAgents||G.redLeft!==undefined?'':0):0;
+    roomRef.update({status:'ended',result:{icon:'🔚',title:'انتهت اللعبة',sub:'أنهاها صاحب الغرفة 👑'}});
+  }
+}
+
+// ═══════════════════════════════════════════
+// 🚪 LEAVE GAME (after result)
+// ═══════════════════════════════════════════
+function leaveGame(){
+  sClick();
+  if(!isOffline&&roomRef){roomRef.off();roomRef=null}
+  ROOM=null;offlineG=null;isOffline=false;
+  show('homeScr');
+}
+
+// ═══════════════════════════════════════════
+// 😂 REACTIONS + MUTE
+// ═══════════════════════════════════════════
+function toggleMute(){
+  mutedReactions=!mutedReactions;
+  var btn=document.getElementById('muteBtn');
+  btn.textContent=mutedReactions?'🔇':'🔔';
+  btn.classList.toggle('muted',mutedReactions);
+  toast(mutedReactions?'🔇 الردود مكتومة':'🔔 الردود مفعّلة','tin');
+}
+
 function react(emoji){
   sReact();floatEmoji(emoji);
   if(!isOffline&&roomRef)roomRef.child('reactions').push({emoji:emoji,by:ME.name,ts:Date.now()});
 }
-function floatEmoji(e){var d=document.createElement('div');d.className='efloat';d.textContent=e;d.style.left=Math.random()*60+20+'%';d.style.bottom='80px';document.body.appendChild(d);setTimeout(function(){d.remove()},1500)}
+
+function floatEmoji(e){
+  if(mutedReactions)return;
+  var d=document.createElement('div');d.className='efloat';d.textContent=e;
+  d.style.left=Math.random()*60+20+'%';d.style.bottom='80px';
+  document.body.appendChild(d);setTimeout(function(){d.remove()},1500);
+}
 
 // ═══════════════════════════════════════════
-// RESULT
+// RESULT (online)
 // ═══════════════════════════════════════════
-function showRes(icon,title,sub){document.getElementById('rI').textContent=icon;document.getElementById('rT').textContent=title;document.getElementById('rS').textContent=sub;show('resultScr')}
-function renderResult(){if(!ROOM||!ROOM.result)return;showRes(ROOM.result.icon,ROOM.result.title,ROOM.result.sub)}
+function renderOnlineResult(){
+  if(!ROOM||!ROOM.result)return;
+  var r=ROOM.result;
+  document.getElementById('rI').textContent=r.icon;
+  document.getElementById('rT').textContent=r.title;
+  document.getElementById('rS').textContent=r.sub;
+  // Show full map
+  var words=ROOM.words||[];
+  var types=ROOM.mode==='classic'?(ROOM.types||[]):(ROOM.duetKey||[]);
+  var revealed=(ROOM.game&&ROOM.game.revealed)||{};
+  renderResultBoard(words,types,revealed);
+  show('resultScr');
+}
 </script>
 </body>
 </html>
