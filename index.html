@@ -5,223 +5,318 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#FFB300">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>Codenames Duet</title>
+<title>الجاسوسية</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- Firebase — only loaded for online mode -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 :root{
-  --grn:#2E7D32;--grn-l:#66BB6A;--grn-g:rgba(46,125,50,.12);--grn-b:rgba(46,125,50,.35);
-  --org:#E65100;--org-l:#FF8A65;--org-g:rgba(230,81,0,.12);--org-b:rgba(230,81,0,.35);
-  --gld:#FFB300;--gld-g:rgba(255,179,0,.1);--gld-b:rgba(255,179,0,.3);
-  --kill:#B71C1C;--kill-g:rgba(183,28,28,.1);
-  --neu:#546E7A;
-  --bg:#090d13;--card:#111a24;--bdr:#1b2836;
-  --txt:#e4e8ee;--dim:#6d7a8a;
+  --r:#C62828;--rl:#EF5350;--rg:rgba(198,40,40,.12);--rb:rgba(198,40,40,.35);
+  --bl:#1565C0;--bll:#42A5F5;--blg:rgba(21,101,192,.12);--blb:rgba(21,101,192,.35);
+  --gld:#FFB300;--gg:rgba(255,179,0,.1);--gb:rgba(255,179,0,.3);
+  --grn:#2E7D32;--grnl:#66BB6A;--grng:rgba(46,125,50,.12);--grnb:rgba(46,125,50,.35);
+  --kill:#B71C1C;--neu:#546E7A;
+  --bg:#080b11;--card:#10161f;--bdr:#1a2330;
+  --txt:#e2e6ec;--dim:#6a7888;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-height:100dvh;overflow-x:hidden;user-select:none}
-.scr{display:none;min-height:100dvh;flex-direction:column}.scr.on{display:flex}
-.bb{padding:13px 36px;font-family:'Cairo',sans-serif;font-weight:700;font-size:1.1em;border:none;border-radius:12px;cursor:pointer;color:var(--bg);background:linear-gradient(135deg,var(--gld),#e69100);box-shadow:0 4px 16px rgba(255,179,0,.2);transition:transform .2s}
-.bb:active{transform:scale(.96)}
-.sep{height:1px;background:var(--bdr);margin:14px 0}
-.tst{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);padding:8px 18px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:600;font-size:.82em;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
-.tst.show{opacity:1}.tst.tok{background:rgba(46,125,50,.92);color:#fff}.tst.ter{background:rgba(183,28,28,.92);color:#fff}
+.scr{display:none;min-height:100dvh;flex-direction:column;align-items:center;justify-content:center;padding:14px}
+.scr.on{display:flex}
 
-/* === START === */
-#startScr{align-items:center;justify-content:center;padding:28px;text-align:center;
-  background:radial-gradient(ellipse at 40% 25%,rgba(46,125,50,.06),transparent 55%),radial-gradient(ellipse at 60% 80%,rgba(230,81,0,.05),transparent 50%),var(--bg)}
-.si{font-size:64px;margin-bottom:6px;filter:drop-shadow(0 0 20px rgba(255,179,0,.3));animation:bob 2.4s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.stt{font-family:'Cairo',sans-serif;font-weight:900;font-size:2.2em;background:linear-gradient(135deg,var(--gld),#fff,var(--gld));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sts{color:var(--dim);font-size:.88em;margin:4px 0 6px}
-.std{color:var(--dim);font-size:.78em;margin-bottom:22px;line-height:1.7;max-width:320px}
-.stb{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
-.stb span{padding:3px 12px;border:1px solid var(--bdr);border-radius:14px;font-size:.72em;color:var(--dim)}
+/* Buttons */
+.bb{padding:12px 30px;font-family:'Cairo',sans-serif;font-weight:700;font-size:1em;border:none;border-radius:11px;cursor:pointer;color:var(--bg);background:linear-gradient(135deg,var(--gld),#e69100);box-shadow:0 3px 14px rgba(255,179,0,.2);transition:transform .2s;width:100%;max-width:310px}
+.bb:active{transform:scale(.96)}.bb:disabled{opacity:.5}
+.bb2{padding:11px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.92em;border:2px solid var(--bdr);border-radius:10px;cursor:pointer;color:var(--dim);background:transparent;width:100%;max-width:310px;margin-top:8px;transition:.2s}
+.bb2:active{border-color:var(--gld);color:var(--gld)}
+.sep{height:1px;background:var(--bdr);margin:12px 0;width:100%}
+.crd{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:18px 16px;width:100%;max-width:360px}
+.crd h3{font-family:'Cairo',sans-serif;font-weight:700;font-size:1.05em;margin-bottom:2px;text-align:center}
+.crd>p{color:var(--dim);font-size:.76em;margin-bottom:8px;text-align:center;line-height:1.5}
+.sl{font-family:'Cairo',sans-serif;font-weight:700;font-size:.82em;margin-bottom:5px;display:flex;align-items:center;gap:4px;justify-content:center}
+.inp{width:100%;padding:9px;font-family:'Cairo',sans-serif;font-size:.92em;border:1px solid var(--bdr);border-radius:7px;background:rgba(255,255,255,.04);color:var(--txt);text-align:center;outline:none}
+.inp:focus{border-color:var(--gld)}
+.inp-code{font-size:1.7em;font-weight:900;letter-spacing:10px;text-transform:uppercase}
+.sr{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0}
+.ss{padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;background:var(--bg);color:var(--txt);font-family:'Cairo',sans-serif;font-size:.85em;outline:none}
+.err{color:var(--rl);font-size:.74em;min-height:15px;margin-top:3px;text-align:center}
+.bdg{display:inline-block;padding:3px 11px;border-radius:12px;font-size:.7em;font-weight:600}
+.bdg-r{background:var(--rg);border:1px solid var(--rb);color:var(--rl)}
+.bdg-b{background:var(--blg);border:1px solid var(--blb);color:var(--bll)}
+.bdg-g{background:var(--grng);border:1px solid var(--grnb);color:var(--grnl)}
+.bdg-gld{background:var(--gg);border:1px solid var(--gb);color:var(--gld)}
 
-/* === SETUP === */
-#setupScr{align-items:center;justify-content:center;padding:24px;text-align:center}
-.sc{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:22px 18px;width:100%;max-width:370px}
-.sc h3{font-family:'Cairo',sans-serif;font-weight:700;font-size:1.1em;margin-bottom:3px}
-.sc>p{color:var(--dim);font-size:.8em;margin-bottom:10px}
-.sl{font-family:'Cairo',sans-serif;font-weight:700;font-size:.85em;margin-bottom:6px;display:flex;align-items:center;gap:5px;justify-content:center}
-.sr{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0}
-.sr label{color:var(--dim);font-size:.82em}
-.ss{padding:7px 12px;border:1px solid var(--bdr);border-radius:7px;background:var(--bg);color:var(--txt);font-family:'Cairo',sans-serif;font-size:.9em;outline:none}
+/* Toast */
+.tst{position:fixed;bottom:65px;left:50%;transform:translateX(-50%);padding:7px 15px;border-radius:7px;font-family:'Cairo',sans-serif;font-weight:600;font-size:.76em;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.tst.show{opacity:1}.tst.tok{background:rgba(46,125,50,.92);color:#fff}.tst.ter{background:rgba(183,28,28,.92);color:#fff}.tst.tin{background:rgba(21,101,192,.92);color:#fff}
 
-/* === PASS SCREEN === */
-#passScr{align-items:center;justify-content:center;padding:36px;text-align:center}
-.ps-e{font-size:56px;margin-bottom:10px;animation:wig 1s ease-in-out infinite}
-@keyframes wig{0%,100%{transform:rotate(0)}20%{transform:rotate(-7deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(3deg)}}
-.ps-tag{margin-bottom:14px;padding:7px 18px;border-radius:9px;font-family:'Cairo',sans-serif;font-weight:700;font-size:1em}
-.ps-tag.fp1{background:var(--grn-g);border:1px solid var(--grn-b);color:var(--grn-l)}
-.ps-tag.fp2{background:var(--org-g);border:1px solid var(--org-b);color:var(--org-l)}
-.ps-t{font-family:'Cairo',sans-serif;font-weight:700;font-size:1.3em;margin-bottom:5px}
-.ps-s{color:var(--dim);font-size:.88em;margin-bottom:22px;line-height:1.6}
-.ps-btn{padding:13px 36px;font-family:'Cairo',sans-serif;font-weight:700;font-size:1.05em;border:2px solid var(--gld);background:transparent;color:var(--gld);border-radius:11px;cursor:pointer;transition:.2s}
-.ps-btn:active{background:var(--gld);color:var(--bg)}
+/* Mode cards */
+.mcards{display:flex;gap:6px;width:100%;max-width:330px;margin:8px 0}
+.mcard{flex:1;padding:12px 6px;border:2px solid var(--bdr);border-radius:10px;cursor:pointer;text-align:center;transition:.2s}
+.mcard.on{border-color:var(--gld);background:var(--gg)}
+.mcard:active{transform:scale(.97)}
+.mcard .mi2{font-size:1.5em;margin-bottom:2px}
+.mcard .mt{font-weight:700;font-size:.76em}
+.mcard.on .mt{color:var(--gld)}
+.mcard .md{font-size:.62em;color:var(--dim);line-height:1.3}
 
-/* === SPY === */
-#spyScr{padding:10px;background:var(--bg)}
-.sph{text-align:center;padding:6px 0}
-.sph h2{font-family:'Cairo',sans-serif;font-weight:700;font-size:1.05em;color:var(--gld)}
-.sph p{color:var(--dim);font-size:.76em;margin-top:2px}
-.spg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:6px 0;flex:1}
-.spc{border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.66em;padding:4px 2px;text-align:center;line-height:1.2;min-height:46px;border:2px solid transparent}
-.spc.tg{background:var(--grn);color:#fff}
-.spc.ta{background:#1a1020;color:#ef5350;border-color:var(--kill)}
-.spc.tn{background:var(--neu);color:#ddd}
-.spc.fd{opacity:.3;text-decoration:line-through}
-.spl{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:5px 0;font-size:.72em;color:var(--dim)}
-.spl span{display:flex;align-items:center;gap:3px}
-.ld{width:9px;height:9px;border-radius:3px;display:inline-block}
-.spb{width:100%;padding:11px;font-family:'Cairo',sans-serif;font-weight:700;font-size:1em;border:none;border-radius:10px;cursor:pointer;margin-top:5px;transition:.2s}
-.spb.g1{background:var(--grn);color:#fff}.spb.g2{background:var(--org);color:#fff}
-.spb:active{transform:scale(.97)}
+/* Players list */
+.plist{width:100%;max-width:310px;margin:6px 0}
+.pl{display:flex;justify-content:space-between;align-items:center;padding:6px 9px;border-radius:6px;margin-bottom:3px;font-size:.8em;background:rgba(255,255,255,.03);border:1px solid var(--bdr)}
+.pl .pn{font-weight:600}
+.rcode{font-family:'Cairo',sans-serif;font-weight:900;font-size:2.4em;letter-spacing:7px;color:var(--gld);text-shadow:0 0 16px rgba(255,179,0,.25);margin:6px 0}
+.cpbtn{padding:4px 12px;font-family:'Cairo',sans-serif;font-size:.75em;font-weight:600;border:1px solid var(--gb);border-radius:6px;background:var(--gg);color:var(--gld);cursor:pointer}
 
-/* === GAME === */
-#gameScr{padding:8px;background:var(--bg)}
-.gt{display:flex;justify-content:space-between;gap:4px;padding:4px 2px}
-.gs{flex:1;text-align:center;padding:5px 3px;border-radius:7px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.75em}
-.gs.g1{background:var(--grn-g);border:1px solid var(--grn-b);color:var(--grn-l)}
-.gs.g2{background:var(--org-g);border:1px solid var(--org-b);color:var(--org-l)}
-.gs.gk{background:var(--kill-g);border:1px solid rgba(183,28,28,.3);color:#ef5350}
-.gs .gn{font-size:1.3em;display:block;line-height:1}
+/* Role cards */
+.rcards{display:flex;gap:5px;width:100%;max-width:330px;margin:6px 0;flex-wrap:wrap}
+.rc{flex:1;min-width:68px;padding:9px 3px;border:2px solid var(--bdr);border-radius:9px;cursor:pointer;text-align:center;transition:.2s;font-size:.68em}
+.rc.on{border-color:var(--gld);background:var(--gg)}
+.rc:active{transform:scale(.97)}
+.rc .rci{font-size:1.4em;margin-bottom:1px}
+.rc .rct{font-weight:700}.rc.on .rct{color:var(--gld)}
 
-/* Timer bar */
-.tmbar{height:6px;border-radius:3px;background:var(--bdr);margin:4px 2px;overflow:hidden;position:relative}
-.tmfill{height:100%;border-radius:3px;transition:width .5s linear,background .3s;background:var(--grn)}
-.tmtext{text-align:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.9em;padding:2px 0;transition:color .3s}
+/* Game screen */
+#gameScr{padding:5px;justify-content:flex-start}
+.gt{display:flex;justify-content:space-between;gap:3px;padding:3px 1px;width:100%}
+.gs{flex:1;text-align:center;padding:4px 2px;border-radius:5px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.68em}
+.gs.gr{background:var(--rg);border:1px solid var(--rb);color:var(--rl)}
+.gs.gbl{background:var(--blg);border:1px solid var(--blb);color:var(--bll)}
+.gs.ggr{background:var(--grng);border:1px solid var(--grnb);color:var(--grnl)}
+.gs.gk{background:rgba(183,28,28,.06);border:1px solid rgba(183,28,28,.2);color:#ef5350}
+.gs .gn{font-size:1.2em;display:block;line-height:1}
 
-.gtrn{text-align:center;padding:4px;border-radius:7px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.82em;margin:2px 0}
-.gtrn.tp1{background:var(--grn);color:#fff}.gtrn.tp2{background:var(--org);color:#fff}
-.gcl{text-align:center;padding:3px;font-size:.8em;color:var(--dim);min-height:22px}.gcl b{color:var(--gld)}
-.gg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:4px 0;flex:1}
-.gx{border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:600;font-size:.66em;padding:4px 2px;text-align:center;line-height:1.2;min-height:48px;cursor:pointer;transition:all .2s;background:var(--card);border:2px solid var(--bdr)}
+/* Timer */
+.tmbar{height:4px;border-radius:2px;background:var(--bdr);margin:2px 1px;overflow:hidden;width:100%}
+.tmfill{height:100%;border-radius:2px;transition:width .9s linear,background .3s;background:var(--grn)}
+.tmtxt{text-align:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.72em;padding:1px 0}
+
+.gtrn{text-align:center;padding:3px;border-radius:6px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.76em;margin:2px 0;width:100%}
+.gtrn.tr{background:var(--r);color:#fff}.gtrn.tb{background:var(--bl);color:#fff}.gtrn.tg{background:var(--grn);color:#fff}
+.gcl{text-align:center;padding:2px;font-size:.73em;color:var(--dim);min-height:16px;width:100%}.gcl b{color:var(--gld)}
+
+/* Grid */
+.gg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:3px 0;flex:1;width:100%}
+.gx{border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:600;font-size:.6em;padding:2px 1px;text-align:center;line-height:1.15;min-height:42px;cursor:pointer;transition:all .15s;background:var(--card);border:2px solid var(--bdr)}
 .gx:active:not(.rv){transform:scale(.92)}
-.gx.rv{cursor:default;opacity:.8;transform:scale(.96)}
-.gx.rv.rg{background:var(--grn);color:#fff;border-color:var(--grn)}
-.gx.rv.rn{background:var(--neu);color:#bbb;border-color:var(--neu)}
-.gx.rv.ra{background:#1a1020;color:#ef5350;border-color:var(--kill)}
-.ga{display:flex;gap:5px;margin-top:5px;padding-bottom:env(safe-area-inset-bottom,5px)}
-.gab{flex:1;padding:10px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.85em;border:none;border-radius:8px;cursor:pointer;transition:.2s}
+.gx.rv{cursor:default;opacity:.78;transform:scale(.96)}
+.gx.rv.xr{background:var(--r);color:#fff;border-color:var(--r)}
+.gx.rv.xb{background:var(--bl);color:#fff;border-color:var(--bl)}
+.gx.rv.xn{background:var(--neu);color:#bbb;border-color:var(--neu)}
+.gx.rv.xa{background:#1a1020;color:#ef5350;border-color:var(--kill)}
+.gx.rv.xg{background:var(--grn);color:#fff;border-color:var(--grn)}
+/* Spy colors */
+.gx.sr{border-color:rgba(198,40,40,.4);background:rgba(198,40,40,.06)}
+.gx.sb{border-color:rgba(21,101,192,.4);background:rgba(21,101,192,.06)}
+.gx.sa{border-color:rgba(183,28,28,.4);background:rgba(183,28,28,.06)}
+.gx.sn{border-color:rgba(84,110,122,.3);background:rgba(84,110,122,.04)}
+.gx.sg{border-color:rgba(46,125,50,.4);background:rgba(46,125,50,.06)}
+
+/* Bottom bar */
+.ebar{display:flex;gap:3px;justify-content:center;margin:3px 0;width:100%}
+.ebtn{padding:3px 8px;font-size:1.1em;border:1px solid var(--bdr);border-radius:7px;background:transparent;cursor:pointer;transition:.15s}
+.ebtn:active{transform:scale(1.3)}
+.efloat{position:fixed;font-size:2em;pointer-events:none;z-index:3000;animation:efly 1.5s ease forwards}
+@keyframes efly{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-110px) scale(1.5)}}
+
+.ga{display:flex;gap:4px;margin-top:3px;padding-bottom:env(safe-area-inset-bottom,3px);width:100%}
+.gab{flex:1;padding:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.76em;border:none;border-radius:6px;cursor:pointer;transition:.2s}
 .gab:active{transform:scale(.97)}
 .ge{background:rgba(255,255,255,.05);color:var(--txt);border:1px solid var(--bdr)}
-.gv{background:var(--gld-g);color:var(--gld);border:1px solid var(--gld-b)}
+.gv{background:var(--gg);color:var(--gld);border:1px solid var(--gb)}
 
-/* === CLUE MODAL === */
-.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:16px}
+/* Clue modal */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:14px}
 .mo.show{display:flex}
-.mx{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:20px;text-align:center;max-width:310px;width:100%;animation:fsl .25s ease}
-@keyframes fsl{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.mx h3{font-family:'Cairo',sans-serif;font-weight:700;font-size:1.05em;margin-bottom:4px}
-.mx p{color:var(--dim);font-size:.82em;margin-bottom:12px}
-.mi{width:100%;padding:9px;font-family:'Tajawal',sans-serif;font-size:.95em;border:1px solid var(--bdr);border-radius:7px;background:rgba(255,255,255,.04);color:var(--txt);text-align:center;outline:none;margin-bottom:6px}
-.mi:focus{border-color:var(--gld)}
-.mr{display:flex;gap:6px;margin-bottom:10px}.mr input{flex:2}.mn{flex:1;width:50px}
-.mb{display:flex;gap:6px}
-.mb button{flex:1;padding:9px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.88em;border:none;border-radius:8px;cursor:pointer}
-.mc{background:rgba(255,255,255,.05);color:var(--dim)}.mk{background:var(--gld);color:var(--bg)}
+.mx{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;text-align:center;max-width:290px;width:100%;animation:fsl .25s ease}
+@keyframes fsl{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mx h3{font-family:'Cairo',sans-serif;font-weight:700;font-size:1em;margin-bottom:3px}
+.mx p{color:var(--dim);font-size:.75em;margin-bottom:8px}
+.mi3{width:100%;padding:8px;font-family:'Tajawal',sans-serif;font-size:.88em;border:1px solid var(--bdr);border-radius:6px;background:rgba(255,255,255,.04);color:var(--txt);text-align:center;outline:none;margin-bottom:5px}
+.mi3:focus{border-color:var(--gld)}
+.mrow{display:flex;gap:5px;margin-bottom:8px}.mrow input{flex:2}.mnum{flex:1;width:42px}
+.mbtns{display:flex;gap:5px}
+.mbtns button{flex:1;padding:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.8em;border:none;border-radius:6px;cursor:pointer}
+.mcan{background:rgba(255,255,255,.05);color:var(--dim)}.mok{background:var(--gld);color:var(--bg)}
 
-/* === RESULT === */
-#resultScr{align-items:center;justify-content:center;padding:34px;text-align:center}
-.ri{font-size:64px;margin-bottom:10px;animation:bob 1.4s ease-in-out infinite}
-.rt{font-family:'Cairo',sans-serif;font-weight:900;font-size:1.7em;margin-bottom:6px}
-.rs{color:var(--dim);font-size:.9em;margin-bottom:22px;line-height:1.7;white-space:pre-line}
+/* Pass screen */
+.ps-e{font-size:50px;margin-bottom:8px;animation:wig .9s ease-in-out infinite}
+@keyframes wig{0%,100%{transform:rotate(0)}20%{transform:rotate(-7deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(3deg)}}
+.ps-tag{margin-bottom:10px;padding:6px 14px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.92em}
+.ps-tag.fp1{background:var(--grng);border:1px solid var(--grnb);color:var(--grnl)}
+.ps-tag.fp2{background:rgba(230,81,0,.12);border:1px solid rgba(230,81,0,.35);color:#FF8A65}
+.ps-t{font-family:'Cairo',sans-serif;font-weight:700;font-size:1.2em;margin-bottom:4px}
+.ps-s{color:var(--dim);font-size:.82em;margin-bottom:16px;line-height:1.5}
 
-@media(max-width:360px){.spc,.gx{font-size:.58em;min-height:42px}.stt{font-size:1.8em}}
+/* Result */
+.ri{font-size:54px;margin-bottom:6px;animation:bob 1.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.rtit{font-family:'Cairo',sans-serif;font-weight:900;font-size:1.5em;margin-bottom:4px}
+.rsub{color:var(--dim);font-size:.82em;margin-bottom:16px;line-height:1.6;white-space:pre-line;text-align:center}
+
+.wait{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:.82em;margin:8px 0}
+.spin{width:16px;height:16px;border:2px solid var(--bdr);border-top-color:var(--gld);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Firebase config info box */
+.cfg-box{background:rgba(255,179,0,.05);border:1px solid var(--gb);border-radius:10px;padding:14px;margin:10px 0;width:100%;max-width:360px;font-size:.75em;line-height:1.7;color:var(--dim);text-align:right}
+.cfg-box code{color:var(--gld);font-family:monospace;direction:ltr;display:inline}
+
+@media(max-width:360px){.gx{font-size:.53em;min-height:36px}.rcode{font-size:1.9em}}
 </style>
 </head>
 <body>
 
-<!-- START -->
-<div class="scr on" id="startScr">
-  <div class="si">🤝</div>
-  <div class="stt">CODENAMES DUET</div>
-  <div class="sts">فريق واحد — تعاون مش تنافس!</div>
-  <div class="std">كلمات مترابطة في مجموعات سهلة الربط. كل لاعب عنده خريطة مختلفة — سلّموا الموبايل لبعض وحاولوا تلاقوا كل العملاء قبل ما الوقت يخلص!</div>
-  <div class="stb">
-    <span>👤👤 لاعبين</span><span>🤝 فريق واحد</span><span>⏱️ تايمر</span><span>🔗 كلمات مترابطة</span>
-  </div>
-  <button class="bb" onclick="showSetup()">🎮 ابدأ</button>
+<!-- ══════════ HOME ══════════ -->
+<div class="scr on" id="homeScr">
+  <div style="font-size:58px;margin-bottom:4px;filter:drop-shadow(0 0 16px rgba(255,179,0,.3))">🕵️</div>
+  <div style="font-family:'Cairo',sans-serif;font-weight:900;font-size:2.3em;background:linear-gradient(135deg,var(--gld),#fff,var(--gld));-webkit-background-clip:text;-webkit-text-fill-color:transparent">الجاسوسية</div>
+  <div style="color:var(--dim);font-size:.8em;margin:3px 0 14px">كلمات مترابطة — تلميح واحد — خمّن الكل!</div>
+  <button class="bb" onclick="show('modeScr')">🎮 لعبة جديدة</button>
 </div>
 
-<!-- SETUP -->
-<div class="scr" id="setupScr">
-  <div class="sc">
-    <h3>⚙️ إعدادات اللعبة</h3>
-    <p>اختاروا الصعوبة ومدة الدور</p>
+<!-- ══════════ MODE SELECT ══════════ -->
+<div class="scr" id="modeScr">
+  <div style="font-size:36px;margin-bottom:6px">🎮</div>
+  <div style="font-family:'Cairo',sans-serif;font-weight:700;font-size:1.1em;margin-bottom:12px">اختار طريقة اللعب</div>
+  
+  <button class="bb" onclick="showCreate()">🌐 أونلاين — كل لاعب على موبايله</button>
+  <button class="bb2" onclick="showJoinScr()">🔗 انضم لغرفة أونلاين</button>
+  <button class="bb2" onclick="startOffline()">📱 موبايل واحد — فريق Duet</button>
+  
+  <div class="cfg-box" id="cfgInfo">
+    <strong style="color:var(--gld)">⚙️ إعداد Firebase (للأونلاين):</strong><br>
+    ① روح على <code>console.firebase.google.com</code><br>
+    ② اعمل مشروع جديد (مجاني)<br>
+    ③ فعّل <code>Realtime Database</code> في test mode<br>
+    ④ اضغط أيقونة <code>&lt;/&gt;</code> لعمل Web app<br>
+    ⑤ انسخ الـ config وحطه في <code>index.html</code> سطر <code>~الأسطر 280-288</code><br>
+    ⑥ ارفع الملفات على GitHub Pages<br><br>
+    <strong>🔑 المكان في الكود:</strong><br>
+    ابحث عن <code>YOUR_API_KEY</code> وبدّل كل القيم
+  </div>
+</div>
+
+<!-- ══════════ CREATE ONLINE ══════════ -->
+<div class="scr" id="createScr">
+  <div class="crd">
+    <h3>🌐 غرفة أونلاين جديدة</h3>
+    <p>اختار النمط وابعت الكود لأصحابك</p>
     <div class="sep"></div>
-    <div class="sl">🔄 عدد الأدوار</div>
-    <div class="sr"><select class="ss" id="sT"><option value="7">7 (سهل)</option><option value="9" selected>9 (عادي)</option><option value="11">11 (صعب)</option></select></div>
+    <div class="sl">🎭 النمط</div>
+    <div class="mcards">
+      <div class="mcard on" data-m="classic" onclick="pickMode('classic')">
+        <div class="mi2">⚔️</div><div class="mt">كلاسيك</div>
+        <div class="md">فريقين ضد بعض<br>قائد + عملاء</div>
+      </div>
+      <div class="mcard" data-m="duet" onclick="pickMode('duet')">
+        <div class="mi2">🤝</div><div class="mt">Duet</div>
+        <div class="md">لاعبين تعاون<br>خريطة مختلفة لكل واحد</div>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="sl">👤 اسمك</div>
+    <input class="inp" id="cName" placeholder="اكتب اسمك..." maxlength="20">
     <div class="sep"></div>
     <div class="sl">⏱️ وقت الدور</div>
-    <div class="sr"><select class="ss" id="sTm"><option value="60">دقيقة</option><option value="90" selected>دقيقة ونص</option><option value="120">دقيقتين</option><option value="180">3 دقائق</option><option value="0">بلا حدود</option></select></div>
+    <div class="sr"><select class="ss" id="cTime"><option value="60">دقيقة</option><option value="90" selected>دقيقة ونص</option><option value="120">دقيقتين</option><option value="0">بلا حدود</option></select></div>
+    <div id="duetOpts" style="display:none">
+      <div class="sep"></div>
+      <div class="sl">🔄 أدوار Duet</div>
+      <div class="sr"><select class="ss" id="cDT"><option value="7">7 سهل</option><option value="9" selected>9 عادي</option><option value="11">11 صعب</option></select></div>
+    </div>
+    <div class="err" id="cErr"></div>
     <div class="sep"></div>
-    <button class="bb" style="width:100%" onclick="startGame()">🤝 يلّا!</button>
+    <button class="bb" onclick="createRoom()">✅ أنشئ الغرفة</button>
   </div>
 </div>
 
-<!-- PASS DEVICE -->
+<!-- ══════════ JOIN ══════════ -->
+<div class="scr" id="joinScr">
+  <div class="crd">
+    <h3>🔗 انضم لغرفة</h3><p>أدخل الكود واسمك</p>
+    <div class="sep"></div>
+    <div class="sl">🔢 كود الغرفة</div>
+    <input class="inp inp-code" id="jCode" placeholder="XXXX" maxlength="4" autocomplete="off">
+    <div class="sep"></div>
+    <div class="sl">👤 اسمك</div>
+    <input class="inp" id="jName" placeholder="اكتب اسمك..." maxlength="20">
+    <div class="err" id="jErr"></div>
+    <div class="sep"></div>
+    <button class="bb" onclick="joinRoom()">✅ انضم</button>
+  </div>
+</div>
+
+<!-- ══════════ LOBBY ══════════ -->
+<div class="scr" id="lobbyScr">
+  <div style="font-size:32px;margin-bottom:4px">🏠</div>
+  <div style="font-family:'Cairo',sans-serif;font-weight:700;font-size:1em">غرفة الانتظار</div>
+  <div class="rcode" id="lCode"></div>
+  <button class="cpbtn" onclick="copyCode()">📋 انسخ الكود</button>
+  <div class="bdg bdg-gld" id="lMode" style="margin-top:5px"></div>
+  <div class="sep"></div>
+  <div class="sl">👥 اللاعبين</div>
+  <div class="plist" id="pList"></div>
+  <div class="sep"></div>
+  <div class="sl">🎭 اختار دورك</div>
+  <div class="rcards" id="rCards"></div>
+  <div class="err" id="lErr"></div>
+  <button class="bb" id="startBtn" onclick="startOnline()" style="display:none">🚀 ابدأ!</button>
+  <div class="wait" id="lWait" style="display:none"><div class="spin"></div><span>مستنيين صاحب الغرفة...</span></div>
+</div>
+
+<!-- ══════════ PASS (offline) ══════════ -->
 <div class="scr" id="passScr">
   <div class="ps-e" id="psE">📱</div>
   <div class="ps-tag" id="psTag"></div>
   <div class="ps-t" id="psT"></div>
   <div class="ps-s" id="psS"></div>
-  <button class="ps-btn" id="psBtn" onclick="passConfirm()">👀 جاهز — ورّيني الخريطة</button>
+  <button class="bb" id="psBtn">👀 جاهز</button>
 </div>
 
-<!-- SPY -->
-<div class="scr" id="spyScr">
-  <div class="sph"><h2 id="spH">🗺️ خريطتك السرية</h2><p id="spP"></p></div>
-  <div class="spg" id="spG"></div>
-  <div class="spl">
-    <span><span class="ld" style="background:var(--grn)"></span> عميل (<span id="spC">0</span>)</span>
-    <span><span class="ld" style="background:var(--neu)"></span> محايد</span>
-    <span><span class="ld" style="background:#1a1020;border:1px solid var(--kill)"></span> قاتل</span>
-  </div>
-  <button class="spb" id="spB" onclick="spyDone()">✅ جاهز — ادّي التلميح</button>
-</div>
-
-<!-- GAME -->
+<!-- ══════════ GAME ══════════ -->
 <div class="scr" id="gameScr">
-  <div class="gt">
-    <div class="gs g1"><span class="gn" id="gF">0</span>اتلقوا</div>
-    <div class="gs g2"><span class="gn" id="gL">15</span>فاضلين</div>
-    <div class="gs gk"><span class="gn" id="gT">9</span>أدوار</div>
-  </div>
-  <div class="tmbar"><div class="tmfill" id="tmFill" style="width:100%"></div></div>
-  <div class="tmtext" id="tmText"></div>
+  <div class="gt" id="gtBar"></div>
+  <div class="tmbar"><div class="tmfill" id="tmF" style="width:100%"></div></div>
+  <div class="tmtxt" id="tmT"></div>
   <div class="gtrn" id="gTrn"></div>
   <div class="gcl" id="gCl"></div>
   <div class="gg" id="gG"></div>
-  <div class="ga">
-    <button class="gab ge" onclick="endTurn()">⏭️ إنهاء الدور</button>
-    <button class="gab gv" onclick="reqSpy()">🗺️ خريطتي</button>
+  <div class="ebar" id="eBar">
+    <button class="ebtn" onclick="react('👍')">👍</button>
+    <button class="ebtn" onclick="react('😂')">😂</button>
+    <button class="ebtn" onclick="react('😱')">😱</button>
+    <button class="ebtn" onclick="react('🔥')">🔥</button>
+    <button class="ebtn" onclick="react('💀')">💀</button>
+    <button class="ebtn" onclick="react('🤔')">🤔</button>
   </div>
+  <div class="ga" id="gaBar">
+    <button class="gab ge" onclick="endTurn()">⏭️ إنهاء الدور</button>
+    <button class="gab gv" id="clueBtn" onclick="showClueMo()" style="display:none">🗣️ تلميح</button>
+  </div>
+  <div style="text-align:center;margin-top:2px"><span class="bdg" id="myBdg"></span></div>
 </div>
 
-<!-- RESULT -->
+<!-- ══════════ RESULT ══════════ -->
 <div class="scr" id="resultScr">
   <div class="ri" id="rI"></div>
-  <div class="rt" id="rT"></div>
-  <div class="rs" id="rS"></div>
-  <button class="bb" onclick="showSetup()">🔄 لعبة جديدة</button>
+  <div class="rtit" id="rT"></div>
+  <div class="rsub" id="rS"></div>
+  <button class="bb" onclick="show('homeScr')">🏠 الرئيسية</button>
 </div>
 
 <!-- CLUE MODAL -->
-<div class="mo" id="clMo">
+<div class="mo" id="clueMo">
   <div class="mx">
-    <h3>🗣️ التلميح</h3>
-    <p>كلمة واحدة + عدد العملاء</p>
-    <div class="mr">
-      <input class="mi" id="clW" placeholder="الكلمة..." maxlength="30">
-      <input class="mi mn" id="clN" type="number" min="0" max="9" placeholder="#" value="1">
+    <h3>🗣️ التلميح</h3><p>كلمة واحدة + عدد الكروت</p>
+    <div class="mrow">
+      <input class="mi3" id="clW" placeholder="الكلمة..." maxlength="30">
+      <input class="mi3 mnum" id="clN" type="number" min="0" max="9" placeholder="#" value="1">
     </div>
-    <div class="mb">
-      <button class="mc" onclick="clMo(0)">إلغاء</button>
-      <button class="mk" onclick="subClue()">تأكيد</button>
+    <div class="mbtns">
+      <button class="mcan" onclick="clueMo(0)">إلغاء</button>
+      <button class="mok" onclick="submitClue()">تأكيد</button>
     </div>
   </div>
 </div>
@@ -229,253 +324,518 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 <div class="tst" id="tst"></div>
 
 <script>
-// === CLUSTERED WORDS ===
-const CL=[
-['قطة','كلب','أرنب','حمامة','سمكة','ببغاء','سلحفاة','هامستر'],
-['أسد','نمر','فيل','زرافة','غزال','ذئب','ثعلب','دب','قرد'],
-['حوت','دلفين','أخطبوط','سمك قرش','حصان بحر','نجم بحر','محار','سرطان'],
-['صقر','نسر','بومة','عصفور','طاووس','فلامنجو','نعامة','بطريق'],
-['تفاح','موز','عنب','برتقال','فراولة','مانجو','بطيخ','رمان','خوخ','تين'],
-['طماطم','خيار','بطاطس','جزر','بصل','ثوم','فلفل','باذنجان','خس'],
-['قهوة','شاي','عصير','حليب','كاكاو','ليمون','نعناع','ماء'],
-['كشري','فول','طعمية','شاورما','كباب','بيتزا','برجر','سوشي','محشي','ملوخية'],
-['كنافة','بسبوسة','آيس كريم','شوكولاتة','كيك','بقلاوة','كريم كراميل','جاتوه'],
-['سكين','ملعقة','شوكة','طبق','كوب','قدر','مقلاة','فرن'],
-['كرة قدم','سباحة','ملاكمة','تنس','كرة سلة','جري','جمباز','مصارعة','تسلق'],
-['قميص','بنطلون','فستان','حذاء','جاكيت','قبعة','شال','جوارب','نظارة'],
-['عين','قلب','يد','رأس','أذن','أنف','لسان','كتف'],
-['أب','أم','أخ','أخت','جد','جدة','عم','خال','ابن','بنت'],
-['طبيب','مهندس','معلم','طباخ','رسام','نجار','حداد','صيدلي','طيار','سائق'],
-['جبل','بحر','نهر','شلال','بركان','صحراء','غابة','كهف','وادي','جزيرة'],
-['شمس','قمر','نجمة','سحابة','قوس قزح','كوكب','مجرة','نيزك'],
-['مطر','ثلج','رياح','حر','برد','ضباب','عاصفة','شتاء','صيف','ربيع'],
-['باب','نافذة','سقف','سلم','سور','حديقة','مطبخ','غرفة','شرفة'],
-['كتاب','قلم','دفتر','سبورة','مسطرة','حقيبة','ممحاة','امتحان','فصل'],
-['سيارة','أتوبيس','قطار','طائرة','دراجة','مترو','تاكسي','سفينة'],
-['عود','كمان','بيانو','طبل','ناي','جيتار','أكورديون'],
-['أحمر','أزرق','أخضر','أصفر','أبيض','أسود','بنفسجي','ذهبي','فضي'],
-['مطرقة','مفتاح','مسمار','منشار','قفل','سلسلة','حبل','مفك'],
-['هرم','أبو الهول','نيل','فرعون','معبد','مومياء','واحة','فلوكة','مسلة'],
-['شاطئ','موجة','رمل','صدفة','مرساة','منارة','قارب','شراع','غوص','مرجان'],
-['صاروخ','رائد فضاء','تلسكوب','كوكب','قمر صناعي','مدار','جاذبية'],
-['موبايل','لابتوب','شاشة','واي فاي','شاحن','سماعة','كاميرا'],
-['فيلم','ممثل','مخرج','مسرح','ستارة','تذكرة','فشار'],
-['حارس','مهاجم','حكم','ملعب','كأس','هدف','ركنية'],
-['سيف','درع','قلعة','جيش','علم','مدفع','سهم','قوس','خوذة'],
-['كنز','خريطة','بوصلة','مفتاح','صندوق','قراصنة','جزيرة','لغز'],
-['ساحر','تنين','وحش','أميرة','قصر','عصا سحرية','جني','بساط طائر','إكسير'],
-['دائرة','مربع','مثلث','نجمة','قلب','هلال','سهم','ماسة']
+// ═══════════════════════════════════════════════════════════════
+// 🔥🔥🔥 FIREBASE CONFIG — غيّر القيم دي بتاعت مشروعك 🔥🔥🔥
+// ═══════════════════════════════════════════════════════════════
+//
+// 📌 إزاي تعمل حساب Firebase مجاني:
+//    1. روح على https://console.firebase.google.com
+//    2. سجّل دخول بحساب Google بتاعك
+//    3. اضغط "Add project" → سمّيه "aljasusiya" → Create
+//    4. من القائمة: Build → Realtime Database → Create Database
+//    5. اختار "Start in test mode" → Enable
+//    6. من الصفحة الرئيسية اضغط أيقونة </> (Web)
+//    7. سمّيه "web" → Register app
+//    8. انسخ القيم من firebaseConfig وحطهم هنا تحت ⬇️
+//
+// ═══════════════════════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey: "AIzaSyAQ1rnqoKlrZxFSs3L3FSsId8h5YzPigm4",
+    authDomain: "aljasusiya.firebaseapp.com",
+    databaseURL: "https://aljasusiya-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "aljasusiya",
+    storageBucket: "aljasusiya.firebasestorage.app",
+    messagingSenderId: "932321743843",
+    appId: "1:932321743843:web:96b1b3511d67433d02c6d6",
+    measurementId: "G-EBKYNRQJRT"
+  };
+
+// ═══════════════════════════════════════════════════════════════
+
+let fbReady=false;
+try{firebase.initializeApp(firebaseConfig);if(!firebaseConfig.apiKey.includes('YOUR'))fbReady=true}catch(e){}
+const db=fbReady?firebase.database():null;
+
+// ═══════════════════════════════════════════
+// 🔊 SOUNDS
+// ═══════════════════════════════════════════
+const AC=window.AudioContext||window.webkitAudioContext;let actx;
+function ea(){if(!actx)actx=new AC()}
+function tone(f,d,t='sine',v=.12){ea();const o=actx.createOscillator(),g=actx.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}
+function sOk(){tone(523,.1);setTimeout(()=>tone(659,.1),100);setTimeout(()=>tone(784,.15),200)}
+function sNo(){tone(300,.12,'sawtooth');setTimeout(()=>tone(250,.15,'sawtooth'),130)}
+function sKill(){tone(150,.35,'sawtooth',.18);setTimeout(()=>tone(100,.4,'sawtooth',.2),250)}
+function sWin(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.12),i*100))}
+function sClick(){tone(800,.04,'square',.07)}
+function sReact(){tone(1200,.05,'sine',.08)}
+
+// ═══════════════════════════════════════════
+// 📝 SMART WORD CLUSTERS
+// Each cluster is a group of related words.
+// When assigning teams, we assign WHOLE CLUSTERS to the same team
+// so spymaster can easily link them with one clue.
+// Assassin gets words from a DIFFERENT cluster than both teams.
+// ═══════════════════════════════════════════
+const CLUSTERS=[
+  {id:'pets',words:['قطة','كلب','أرنب','حمامة','سمكة','ببغاء','سلحفاة']},
+  {id:'wild',words:['أسد','نمر','فيل','زرافة','غزال','ذئب','ثعلب','دب','قرد']},
+  {id:'sea',words:['حوت','دلفين','أخطبوط','سمك قرش','حصان بحر','نجم بحر']},
+  {id:'birds',words:['صقر','نسر','بومة','عصفور','طاووس','بطريق','نعامة']},
+  {id:'fruit',words:['تفاح','موز','عنب','برتقال','فراولة','مانجو','بطيخ','رمان','تين']},
+  {id:'veg',words:['طماطم','خيار','بطاطس','جزر','بصل','فلفل','باذنجان']},
+  {id:'drink',words:['قهوة','شاي','عصير','حليب','كاكاو','ليمون','نعناع']},
+  {id:'egypt_food',words:['كشري','فول','طعمية','شاورما','كباب','محشي','ملوخية']},
+  {id:'sweets',words:['كنافة','بسبوسة','آيس كريم','شوكولاتة','كيك','بقلاوة']},
+  {id:'sport',words:['كرة قدم','سباحة','ملاكمة','تنس','كرة سلة','جري','جمباز']},
+  {id:'clothes',words:['قميص','بنطلون','فستان','حذاء','جاكيت','قبعة','نظارة']},
+  {id:'body',words:['عين','قلب','يد','رأس','أذن','أنف','لسان','كتف']},
+  {id:'family',words:['أب','أم','أخ','أخت','جد','جدة','عم','خال','ابن','بنت']},
+  {id:'jobs',words:['طبيب','مهندس','معلم','طباخ','رسام','نجار','صيدلي','طيار']},
+  {id:'nature',words:['جبل','بحر','نهر','شلال','بركان','صحراء','غابة','كهف','جزيرة']},
+  {id:'sky',words:['شمس','قمر','نجمة','سحابة','قوس قزح','كوكب','مجرة']},
+  {id:'weather',words:['مطر','ثلج','رياح','عاصفة','شتاء','صيف','ربيع']},
+  {id:'house',words:['باب','نافذة','سقف','سلم','حديقة','مطبخ','غرفة','شرفة']},
+  {id:'school',words:['كتاب','قلم','دفتر','سبورة','حقيبة','امتحان']},
+  {id:'transport',words:['سيارة','أتوبيس','قطار','طائرة','دراجة','مترو','سفينة']},
+  {id:'music',words:['عود','كمان','بيانو','طبل','ناي','جيتار']},
+  {id:'tools',words:['مطرقة','مفتاح','مسمار','منشار','قفل','سلسلة','حبل']},
+  {id:'egypt',words:['هرم','أبو الهول','نيل','فرعون','معبد','مومياء','مسلة']},
+  {id:'beach',words:['شاطئ','موجة','رمل','صدفة','مرساة','منارة','قارب','غوص']},
+  {id:'tech',words:['موبايل','لابتوب','شاشة','واي فاي','شاحن','سماعة','كاميرا']},
+  {id:'war',words:['سيف','درع','قلعة','جيش','مدفع','سهم','خوذة']},
+  {id:'treasure',words:['كنز','خريطة','بوصلة','صندوق','قراصنة','لغز']},
+  {id:'fantasy',words:['ساحر','تنين','وحش','أميرة','قصر','جني','إكسير']},
+  {id:'kitchen',words:['سكين','ملعقة','شوكة','طبق','كوب','مقلاة','فرن']},
+  {id:'colors',words:['أحمر','أزرق','أخضر','أصفر','أبيض','أسود','ذهبي']}
 ];
 
-let G={},tmID=null;
+// ═══════════════════════════════════════════
+// 🧠 SMART BOARD GENERATOR
+// Assigns whole clusters to same team for easy clue-giving.
+// Ensures assassin cluster ≠ any team cluster.
+// ═══════════════════════════════════════════
 function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
-function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on')}
+
+function generateSmartBoard(){
+  const shuffled=shuf(CLUSTERS);
+  // Pick clusters for red (9 words), blue (8 words), assassin (1 word), neutral (7 words)
+  let redWords=[],blueWords=[],assassinWord='',neutralWords=[];
+  let usedClusters=[];
+  let ci=0;
+
+  // Red team: pick from clusters until we have 9
+  while(redWords.length<9 && ci<shuffled.length){
+    const cl=shuffled[ci];
+    const avail=shuf(cl.words);
+    const need=9-redWords.length;
+    const take=Math.min(need,avail.length,4); // max 4 from one cluster
+    for(let j=0;j<take;j++)redWords.push(avail[j]);
+    usedClusters.push(cl.id);
+    ci++;
+  }
+
+  // Blue team: pick from DIFFERENT clusters until we have 8
+  while(blueWords.length<8 && ci<shuffled.length){
+    const cl=shuffled[ci];
+    const avail=shuf(cl.words).filter(w=>!redWords.includes(w));
+    const need=8-blueWords.length;
+    const take=Math.min(need,avail.length,4);
+    for(let j=0;j<take;j++)blueWords.push(avail[j]);
+    usedClusters.push(cl.id);
+    ci++;
+  }
+
+  // Assassin: pick from a DIFFERENT cluster than red/blue
+  while(ci<shuffled.length){
+    const cl=shuffled[ci];
+    const avail=cl.words.filter(w=>!redWords.includes(w)&&!blueWords.includes(w));
+    if(avail.length>0){assassinWord=avail[0];ci++;break}
+    ci++;
+  }
+
+  // Neutral: fill remaining 7 from other clusters
+  while(neutralWords.length<7 && ci<shuffled.length){
+    const cl=shuffled[ci];
+    const avail=shuf(cl.words).filter(w=>!redWords.includes(w)&&!blueWords.includes(w)&&w!==assassinWord);
+    const need=7-neutralWords.length;
+    const take=Math.min(need,avail.length,3);
+    for(let j=0;j<take;j++)neutralWords.push(avail[j]);
+    ci++;
+  }
+
+  // Combine and shuffle positions
+  const allWords=[...redWords,...blueWords,assassinWord,...neutralWords];
+  const types=[...Array(9).fill('red'),...Array(8).fill('blue'),'assassin',...Array(7).fill('neutral')];
+  
+  // Shuffle together
+  const indices=shuf([...Array(25).keys()]);
+  const words=[],finalTypes=[];
+  indices.forEach((idx,i)=>{words[i]=allWords[idx];finalTypes[i]=types[idx]});
+
+  return {words,types:finalTypes};
+}
+
+function generateDuetBoard(){
+  const sc=shuf(CLUSTERS);let w=[];let ci=0;
+  while(w.length<25&&ci<sc.length){const c=shuf(sc[ci].words).filter(x=>!w.includes(x));const t=Math.min(w.length<21?Math.floor(Math.random()*2)+3:25-w.length,c.length);for(let j=0;j<t&&w.length<25;j++)w.push(c[j]);ci++}
+  while(w.length<25&&ci<sc.length){const c=sc[ci%sc.length].words;const x=c.find(v=>!w.includes(v));if(x)w.push(x);ci++}
+  w=shuf(w);
+  const idx=shuf([...Array(25).keys()]);
+  const agents=new Set(idx.slice(0,15));const non=idx.slice(15);
+  const a1=new Set(shuf([...non]).slice(0,3)),a2=new Set(shuf([...non]).slice(0,3));
+  const ag=shuf([...agents]);const g1=new Set(ag.slice(0,9)),g2=new Set(ag.slice(6,15));
+  const k1=[],k2=[];
+  for(let i=0;i<25;i++){k1.push(g1.has(i)?'green':a1.has(i)?'assassin':'neutral');k2.push(g2.has(i)?'green':a2.has(i)?'assassin':'neutral')}
+  return {words:w,duetKeys:{k1,k2}};
+}
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let ME={id:'',name:'',role:'',code:'',isHost:false};
+let ROOM=null,roomRef=null,gameMode='classic',isOffline=false;
+let offlineG=null; // offline game state
+
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
+function genId(){return Math.random().toString(36).substr(2,9)}
 function toast(m,t='tok'){const e=document.getElementById('tst');e.textContent=m;e.className='tst show '+t;setTimeout(()=>e.classList.remove('show'),2200)}
 
-function pick25(){
-  const sc=shuf(CL);let w=[];let i=0;
-  while(w.length<25&&i<sc.length){const c=shuf(sc[i]).filter(x=>!w.includes(x));const take=Math.min(w.length<21?Math.floor(Math.random()*2)+3:25-w.length,c.length);for(let j=0;j<take&&w.length<25;j++)w.push(c[j]);i++}
-  while(w.length<25){const c=sc[i%sc.length];const x=c.find(v=>!w.includes(v));if(x)w.push(x);i++}
-  return shuf(w);
+// ═══════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════
+function showCreate(){
+  if(!fbReady){toast('⚠️ Firebase مش متوصل — حط الـ config الأول','ter');return}
+  show('createScr');document.getElementById('cName').focus()
+}
+function showJoinScr(){
+  if(!fbReady){toast('⚠️ Firebase مش متوصل','ter');return}
+  show('joinScr');document.getElementById('jCode').focus()
+}
+function pickMode(m){gameMode=m;document.querySelectorAll('.mcard').forEach(c=>c.classList.toggle('on',c.dataset.m===m));
+  document.getElementById('duetOpts').style.display=m==='duet'?'block':'none'}
+function copyCode(){navigator.clipboard.writeText(ME.code).then(()=>toast('📋 تم!')).catch(()=>toast(ME.code,'tin'))}
+
+// ═══════════════════════════════════════════
+// 📱 OFFLINE DUET MODE
+// ═══════════════════════════════════════════
+function startOffline(){
+  isOffline=true;
+  const {words,duetKeys}=generateDuetBoard();
+  offlineG={words,dk:duetKeys,rev:Array(25).fill(false),rType:Array(25).fill(null),
+    turn:'p1',tLeft:9,total:15,found:0,clue:null,gl:0,over:false,turnTime:90,timeLeft:0};
+  showPassOffline();
 }
 
-// === SETUP ===
-function showSetup(){show('setupScr')}
-
-function startGame(){
-  const words=pick25();
-  const idx=shuf([...Array(25).keys()]);
-  const agents=new Set(idx.slice(0,15));
-  const non=idx.slice(15);
-  const a1=new Set(shuf([...non]).slice(0,3));
-  const a2=new Set(shuf([...non]).slice(0,3));
-  const ag=shuf([...agents]);
-  const g1=new Set(ag.slice(0,9)),g2=new Set(ag.slice(6,15));
-  const k1=[],k2=[];
-  for(let i=0;i<25;i++){
-    k1.push(g1.has(i)?'green':a1.has(i)?'assassin':'neutral');
-    k2.push(g2.has(i)?'green':a2.has(i)?'assassin':'neutral');
-  }
-  const maxT=parseInt(document.getElementById('sT').value);
-  const turnTime=parseInt(document.getElementById('sTm').value);
-  G={words,k1,k2,rev:Array(25).fill(false),rType:Array(25).fill(null),
-     turn:'p1',tLeft:maxT,total:15,found:0,clue:null,gl:0,over:false,
-     turnTime,timeLeft:0};
-  showPass();
-}
-
-// === PASS ===
-function showPass(){
-  const isP1=G.turn==='p1',name=isP1?'اللاعب الأول 🟢':'اللاعب التاني 🟠';
+function showPassOffline(){
+  const isP1=offlineG.turn==='p1',name=isP1?'اللاعب الأول 🟢':'اللاعب التاني 🟠';
   document.getElementById('psE').textContent='📱';
   const tag=document.getElementById('psTag');
   tag.className='ps-tag '+(isP1?'fp1':'fp2');tag.textContent=name;
   document.getElementById('psT').textContent='سلّم الموبايل لـ '+name;
-  document.getElementById('psS').textContent='اللاعب التاني ما يبصش!\nلما تكون جاهز اضغط الزرار';
-  document.getElementById('psBtn').textContent='👀 جاهز — ورّيني الخريطة';
-  document.getElementById('psBtn').onclick=()=>showSpy();
+  document.getElementById('psS').textContent='اللاعب التاني ما يبصش!';
+  document.getElementById('psBtn').textContent='👀 ورّيني الخريطة';
+  document.getElementById('psBtn').onclick=()=>showOfflineSpy();
   show('passScr');
 }
 
-function passConfirm(){showSpy()}
-
-function showPassGuess(){
-  const guesser=G.turn==='p1'?'p2':'p1';
-  const isP1=guesser==='p1',name=isP1?'اللاعب الأول 🟢':'اللاعب التاني 🟠';
-  document.getElementById('psE').textContent='🔍';
-  const tag=document.getElementById('psTag');
-  tag.className='ps-tag '+(isP1?'fp1':'fp2');tag.textContent='👆 دور '+name+' يخمّن';
-  document.getElementById('psT').textContent='سلّم الموبايل لـ '+name;
-  document.getElementById('psS').textContent='اللاعب اللي ادّى التلميح ما يبصش!';
-  document.getElementById('psBtn').textContent='👀 جاهز — ابدأ التخمين';
-  document.getElementById('psBtn').onclick=()=>showBoard();
-  show('passScr');
+function showOfflineSpy(){
+  // Render spy view in game screen as spy
+  document.getElementById('eBar').style.display='none';
+  renderOfflineGame(true);
 }
 
-// === SPY ===
-function showSpy(){
-  const key=G.turn==='p1'?G.k1:G.k2;
-  const name=G.turn==='p1'?'اللاعب الأول 🟢':'اللاعب التاني 🟠';
-  document.getElementById('spH').textContent='🗺️ خريطة '+name;
-  document.getElementById('spP').textContent='دوّر على كلمات مترابطة وادّي تلميح';
-  const grid=document.getElementById('spG');grid.innerHTML='';
-  let gc=0;
-  G.words.forEach((w,i)=>{
-    const c=document.createElement('div');
-    if(G.rev[i])c.className='spc t'+G.rType[i][0]+' fd';
-    else{const t=key[i];c.className='spc t'+(t==='green'?'g':t==='assassin'?'a':'n');if(t==='green')gc++}
-    c.textContent=w;grid.appendChild(c);
-  });
-  document.getElementById('spC').textContent=gc;
-  const btn=document.getElementById('spB');
-  btn.className='spb '+(G.turn==='p1'?'g1':'g2');
-  btn.textContent='✅ جاهز — ادّي التلميح';
-  btn.onclick=()=>spyDone();
-  show('spyScr');
-}
-
-function spyDone(){document.getElementById('clW').value='';document.getElementById('clN').value='1';clMo(1)}
-function clMo(v){document.getElementById('clMo').classList[v?'add':'remove']('show')}
-function subClue(){
-  const w=document.getElementById('clW').value.trim(),n=parseInt(document.getElementById('clN').value)||0;
-  if(!w){toast('اكتب التلميح!','ter');return}
-  G.clue={word:w,num:n};G.gl=n===0?99:n+1;
-  clMo(0);
-  showPassGuess();
-}
-
-// === BOARD ===
-function showBoard(){
-  if(G.turnTime>0){G.timeLeft=G.turnTime;startTimer()}
-  else{G.timeLeft=0;document.getElementById('tmFill').style.width='100%';document.getElementById('tmText').textContent='⏱️ بلا حدود'}
-  updUI();show('gameScr');
-}
-
-function startTimer(){
-  stopTimer();
-  updTimerDisplay();
-  tmID=setInterval(()=>{
-    G.timeLeft--;
-    updTimerDisplay();
-    if(G.timeLeft<=0){stopTimer();toast('⏰ خلص الوقت!','ter');setTimeout(()=>switchTurn(),1000)}
-  },1000);
-}
-function stopTimer(){if(tmID){clearInterval(tmID);tmID=null}}
-
-function updTimerDisplay(){
-  const pct=G.turnTime>0?(G.timeLeft/G.turnTime*100):100;
-  const fill=document.getElementById('tmFill');
-  fill.style.width=pct+'%';
-  if(pct>50)fill.style.background='var(--grn)';
-  else if(pct>20)fill.style.background='var(--gld)';
-  else fill.style.background='var(--kill)';
+function renderOfflineGame(spyView=false){
+  show('gameScr');const G=offlineG;
+  document.getElementById('gtBar').innerHTML=`<div class="gs ggr"><span class="gn">${G.found}</span>اتلقوا</div><div class="gs gbl"><span class="gn">${G.total-G.found}</span>فاضلين</div><div class="gs gk"><span class="gn">${G.tLeft}</span>أدوار</div>`;
   
-  const m=Math.floor(G.timeLeft/60),s=G.timeLeft%60;
-  const txt=document.getElementById('tmText');
-  txt.textContent='⏱️ '+(m>0?m+':'+(s<10?'0':'')+s:s+' ثانية');
-  if(pct<=20)txt.style.color='#ef5350';
-  else if(pct<=50)txt.style.color='var(--gld)';
-  else txt.style.color='var(--grn-l)';
-}
-
-function updUI(){
-  document.getElementById('gF').textContent=G.found;
-  document.getElementById('gL').textContent=G.total-G.found;
-  document.getElementById('gT').textContent=G.tLeft;
+  const trn=document.getElementById('gTrn');trn.className='gtrn tg';
   const guesser=G.turn==='p1'?'p2':'p1';
-  const trn=document.getElementById('gTrn');
-  trn.className='gtrn '+(guesser==='p1'?'tp1':'tp2');
-  trn.textContent='🔍 '+(guesser==='p1'?'اللاعب الأول':'اللاعب التاني')+' بيخمّن';
-  const ce=document.getElementById('gCl');
-  if(G.clue){const gl=G.gl>20?'∞':G.gl;ce.innerHTML='التلميح: <b>'+G.clue.word+' '+G.clue.num+'</b> — متبقي '+gl+' تخمين'}else ce.textContent='';
+  
+  if(spyView){
+    trn.textContent='🗺️ خريطة '+(G.turn==='p1'?'لاعب ١ 🟢':'لاعب ٢ 🟠');
+    document.getElementById('gCl').textContent='شوف الكلمات واعمل تلميح';
+    document.getElementById('clueBtn').style.display='block';
+  }else{
+    trn.textContent='🔍 '+(guesser==='p1'?'لاعب ١':'لاعب ٢')+' بيخمّن';
+    document.getElementById('clueBtn').style.display='none';
+    if(G.clue){const gl=G.gl>20?'∞':G.gl;document.getElementById('gCl').innerHTML='<b>'+G.clue.word+' '+G.clue.num+'</b> — '+gl+' متبقي'}
+  }
+
+  // Timer
+  document.getElementById('tmF').style.width='100%';
+  document.getElementById('tmT').textContent='';
+
+  const key=G.turn==='p1'?G.dk.k1:G.dk.k2;
   const grid=document.getElementById('gG');grid.innerHTML='';
   G.words.forEach((w,i)=>{
     const c=document.createElement('div');
-    if(G.rev[i]){c.className='gx rv r'+G.rType[i][0]}
-    else{c.className='gx';c.addEventListener('click',()=>guess(i))}
+    if(G.rev[i]){c.className='gx rv x'+G.rType[i][0]}
+    else{
+      c.className='gx';
+      if(spyView){const t=key[i];c.className+=' s'+(t==='green'?'g':t==='assassin'?'a':'n')}
+      if(!spyView&&G.clue)c.addEventListener('click',()=>{sClick();guessOffline(i)});
+    }
     c.textContent=w;grid.appendChild(c);
   });
+
+  const bdg=document.getElementById('myBdg');bdg.className='bdg bdg-g';
+  bdg.textContent=spyView?(G.turn==='p1'?'🟢 قائد ١':'🟠 قائد ٢'):(guesser==='p1'?'🟢 عميل ١':'🟠 عميل ٢');
 }
 
-function guess(i){
-  if(G.over||G.rev[i])return;
-  const key=G.turn==='p1'?G.k1:G.k2;
-  const type=key[i];
-  G.rev[i]=true;G.rType[i]=type;
-  if(type==='assassin'){G.over=true;stopTimer();updUI();setTimeout(()=>showRes('☠️','القاتل! خسرتوا','وقعتوا في فخ القاتل!\nجربوا تاني'),600);return}
-  if(type==='green'){
-    G.found++;
-    if(G.found>=G.total){G.over=true;stopTimer();updUI();setTimeout(()=>showRes('🏆','مبروك! كسبتوا!','لقيتوا كل الـ '+G.total+' عميل!\nفريق أسطوري 🤝'),600);return}
-    G.gl--;
-    if(G.gl<=0){updUI();toast('✅ صح! خلصت التخمينات');setTimeout(()=>switchTurn(),1200);return}
-    updUI();toast('✅ عميل! كمّل');return;
+function guessOffline(i){
+  const G=offlineG;if(G.over||G.rev[i])return;
+  const key=G.turn==='p1'?G.dk.k1:G.dk.k2;
+  const type=key[i];G.rev[i]=true;G.rType[i]=type;
+  if(type==='assassin'){sKill();G.over=true;renderOfflineGame();setTimeout(()=>showRes('☠️','القاتل!','خسرتوا — جربوا تاني'),600);return}
+  if(type==='green'){G.found++;G.gl--;
+    if(G.found>=G.total){sWin();G.over=true;renderOfflineGame();setTimeout(()=>showRes('🏆','مبروك!','لقيتوا كل العملاء! 🤝'),600);return}
+    if(G.gl<=0){sOk();switchOffline();return}
+    sOk();renderOfflineGame();toast('✅ عميل!');return;
   }
-  updUI();toast('⚪ محايد — انتهى الدور','ter');setTimeout(()=>switchTurn(),1200);
+  sNo();switchOffline();
 }
 
-function endTurn(){if(!G.over)switchTurn()}
-
-function switchTurn(){
-  stopTimer();G.tLeft--;
-  if(G.tLeft<=0){G.over=true;showRes('⏰','خلصت الأدوار!','لقيتوا '+G.found+' من '+G.total+' عميل\nجربوا تاني!');return}
+function switchOffline(){
+  const G=offlineG;G.tLeft--;
+  if(G.tLeft<=0){G.over=true;showRes('⏰','خلصت الأدوار!','لقيتوا '+G.found+' من '+G.total);return}
   G.turn=G.turn==='p1'?'p2':'p1';G.clue=null;G.gl=0;
-  showPass();
+  showPassOffline();
 }
 
-function reqSpy(){
-  if(G.over)return;
-  stopTimer();
-  const guesser=G.turn==='p1'?'p2':'p1';
-  const key=guesser==='p1'?G.k1:G.k2;
-  const name=guesser==='p1'?'اللاعب الأول 🟢':'اللاعب التاني 🟠';
-  document.getElementById('spH').textContent='🗺️ خريطة '+name+' (مرجعة)';
-  document.getElementById('spP').textContent='دي خريطتك — للمرجعة بس';
-  const grid=document.getElementById('spG');grid.innerHTML='';
-  let gc=0;
-  G.words.forEach((w,i)=>{
+// ═══════════════════════════════════════════
+// 🌐 ONLINE — CREATE & JOIN
+// ═══════════════════════════════════════════
+async function createRoom(){
+  const name=document.getElementById('cName').value.trim();
+  if(!name){document.getElementById('cErr').textContent='❌ اكتب اسمك';return}
+  isOffline=false;
+  const code=genCode();ME={id:genId(),name,role:'',code,isHost:true};
+  const turnTime=parseInt(document.getElementById('cTime').value);
+  let roomData;
+  if(gameMode==='classic'){
+    const {words,types}=generateSmartBoard();
+    roomData={code,host:ME.id,mode:'classic',settings:{turnTime},words,types,duetKeys:null,
+      players:{[ME.id]:{name,role:'',online:true}},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
+  }else{
+    const {words,duetKeys}=generateDuetBoard();
+    const duetTurns=parseInt(document.getElementById('cDT').value);
+    roomData={code,host:ME.id,mode:'duet',settings:{turnTime,duetTurns},words,types:null,duetKeys,
+      players:{[ME.id]:{name,role:'',online:true}},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
+  }
+  roomRef=db.ref('rooms/'+code);await roomRef.set(roomData);
+  roomRef.child('players/'+ME.id+'/online').onDisconnect().set(false);
+  listenRoom();show('lobbyScr');document.getElementById('lCode').textContent=code;
+}
+
+async function joinRoom(){
+  const code=document.getElementById('jCode').value.trim().toUpperCase();
+  const name=document.getElementById('jName').value.trim();
+  const err=document.getElementById('jErr');
+  if(code.length<4){err.textContent='❌ الكود 4 حروف';return}
+  if(!name){err.textContent='❌ اكتب اسمك';return}
+  isOffline=false;
+  roomRef=db.ref('rooms/'+code);const snap=await roomRef.get();
+  if(!snap.exists()){err.textContent='❌ الغرفة مش موجودة';return}
+  ME={id:genId(),name,role:'',code,isHost:false};
+  await roomRef.child('players/'+ME.id).set({name,role:'',online:true});
+  roomRef.child('players/'+ME.id+'/online').onDisconnect().set(false);
+  listenRoom();show('lobbyScr');document.getElementById('lCode').textContent=code;
+}
+
+function listenRoom(){
+  roomRef.child('reactions').on('child_added',snap=>{const r=snap.val();if(r&&r.emoji&&Date.now()-r.ts<3000)floatEmoji(r.emoji);snap.ref.remove()});
+  roomRef.on('value',snap=>{if(!snap.exists())return;ROOM=snap.val();
+    if(ROOM.status==='lobby')renderLobby();
+    else if(ROOM.status==='playing')renderOnlineGame();
+    else if(ROOM.status==='ended')renderResult()});
+}
+
+// ═══════════════════════════════════════════
+// LOBBY
+// ═══════════════════════════════════════════
+function renderLobby(){
+  document.getElementById('lMode').textContent=ROOM.mode==='classic'?'⚔️ كلاسيك':'🤝 Duet';
+  const list=document.getElementById('pList');list.innerHTML='';
+  Object.entries(ROOM.players||{}).forEach(([id,p])=>{
+    const d=document.createElement('div');d.className='pl';
+    let rt='—',bc='';
+    if(ROOM.mode==='classic'){
+      if(p.role==='red-spy'){rt='🔴 قائد';bc='bdg-r'}else if(p.role==='red-op'){rt='🔴 عميل';bc='bdg-r'}
+      else if(p.role==='blue-spy'){rt='🔵 قائد';bc='bdg-b'}else if(p.role==='blue-op'){rt='🔵 عميل';bc='bdg-b'}
+    }else{if(p.role==='p1'){rt='🟢 لاعب ١';bc='bdg-g'}else if(p.role==='p2'){rt='🟠 لاعب ٢';bc='bdg-g'}}
+    d.innerHTML=`<span class="pn">${p.name}${id===ROOM.host?' 👑':''}</span><span class="bdg ${bc}">${rt}</span>`;
+    list.appendChild(d);if(id===ME.id&&p.role)ME.role=p.role;
+  });
+  const rc=document.getElementById('rCards');rc.innerHTML='';
+  const roles=ROOM.mode==='classic'?[['red-spy','🔴🗺️','قائد أحمر'],['red-op','🔴👆','عميل أحمر'],['blue-spy','🔵🗺️','قائد أزرق'],['blue-op','🔵👆','عميل أزرق']]:[['p1','🟢','لاعب ١'],['p2','🟠','لاعب ٢']];
+  roles.forEach(([r,i,t])=>{const d=document.createElement('div');d.className='rc'+(ME.role===r?' on':'');d.innerHTML=`<div class="rci">${i}</div><div class="rct">${t}</div>`;d.onclick=()=>{ME.role=r;roomRef.child('players/'+ME.id+'/role').set(r)};rc.appendChild(d)});
+  document.getElementById('startBtn').style.display=ME.isHost?'block':'none';
+  document.getElementById('lWait').style.display=ME.isHost?'none':'flex';
+}
+
+async function startOnline(){
+  const roles=Object.values(ROOM.players||{}).map(p=>p.role).filter(Boolean);
+  if(ROOM.mode==='classic'){
+    if(!roles.includes('red-spy')||!roles.includes('blue-spy')){document.getElementById('lErr').textContent='❌ لازم قائد لكل فريق';return}
+    await roomRef.update({status:'playing',game:{turn:'red',clue:null,guessesLeft:0,revealed:{},redLeft:9,blueLeft:8,timerStart:null,turnCount:0}});
+  }else{
+    if(!roles.includes('p1')||!roles.includes('p2')){document.getElementById('lErr').textContent='❌ لازم لاعبين';return}
+    await roomRef.update({status:'playing',game:{turn:'p1',clue:null,guessesLeft:0,revealed:{},turnsLeft:ROOM.settings.duetTurns||9,totalAgents:15,foundAgents:0,timerStart:null}});
+  }
+}
+
+// ═══════════════════════════════════════════
+// ONLINE GAME RENDER
+// ═══════════════════════════════════════════
+function renderOnlineGame(){
+  show('gameScr');document.getElementById('eBar').style.display='flex';
+  const G=ROOM.game;if(!G)return;
+  const isClassic=ROOM.mode==='classic';
+  
+  const gt=document.getElementById('gtBar');
+  if(isClassic)gt.innerHTML=`<div class="gs gr"><span class="gn">${G.redLeft}</span>أحمر</div><div class="gs gbl"><span class="gn">${G.blueLeft}</span>أزرق</div><div class="gs gk"><span class="gn">${G.turnCount||0}</span>دور</div>`;
+  else gt.innerHTML=`<div class="gs ggr"><span class="gn">${G.foundAgents||0}</span>اتلقوا</div><div class="gs gbl"><span class="gn">${(G.totalAgents||15)-(G.foundAgents||0)}</span>فاضلين</div><div class="gs gk"><span class="gn">${G.turnsLeft||0}</span>أدوار</div>`;
+
+  let isSpy=false,canGuess=false,canClue=false,myTeam='';
+  if(isClassic){
+    myTeam=ME.role.startsWith('red')?'red':'blue';isSpy=ME.role.endsWith('-spy');
+    const myTurn=G.turn===myTeam;canClue=myTurn&&isSpy&&!G.clue;canGuess=myTurn&&!isSpy&&!!G.clue;
+  }else{
+    myTeam=ME.role;isSpy=(G.turn===ME.role);canClue=(G.turn===ME.role)&&!G.clue;canGuess=(G.turn!==ME.role)&&!!G.clue;
+  }
+
+  const trn=document.getElementById('gTrn');
+  if(isClassic){trn.className='gtrn '+(G.turn==='red'?'tr':'tb');trn.textContent=canClue?'🗺️ ادّي تلميح!':canGuess?'👆 خمّن!':'دور '+(G.turn==='red'?'الأحمر 🔴':'الأزرق 🔵')}
+  else{trn.className='gtrn tg';trn.textContent=canClue?'🗺️ ادّي تلميح!':canGuess?'👆 خمّن!':'دور '+(G.turn==='p1'?'لاعب ١ 🟢':'لاعب ٢ 🟠')}
+
+  const ce=document.getElementById('gCl');
+  if(G.clue){const gl=G.guessesLeft>20?'∞':G.guessesLeft;ce.innerHTML='<b>'+G.clue.word+' '+G.clue.num+'</b> — '+gl+' متبقي'}
+  else ce.textContent=canClue?'ادّي تلميح':'مستنيين...';
+
+  handleTimer(G);
+
+  const grid=document.getElementById('gG');grid.innerHTML='';
+  ROOM.words.forEach((w,i)=>{
     const c=document.createElement('div');
-    if(G.rev[i])c.className='spc t'+G.rType[i][0]+' fd';
-    else{const t=key[i];c.className='spc t'+(t==='green'?'g':t==='assassin'?'a':'n');if(t==='green')gc++}
+    const rv=G.revealed?G.revealed[i]:null;
+    if(rv){const tc=isClassic?{red:'xr',blue:'xb',neutral:'xn',assassin:'xa'}[rv]:{green:'xg',neutral:'xn',assassin:'xa'}[rv];c.className='gx rv '+(tc||'xn')}
+    else{c.className='gx';
+      if(isSpy){if(isClassic){const t=ROOM.types[i];c.className+=' s'+(t[0]==='r'?'r':t[0]==='b'?'b':t[0]==='a'?'a':'n')}
+        else{const key=ME.role==='p1'?ROOM.duetKeys.k1:ROOM.duetKeys.k2;const t=key[i];c.className+=' s'+(t==='green'?'g':t==='assassin'?'a':'n')}}
+      if(canGuess)c.addEventListener('click',()=>{sClick();guessOnline(i)})}
     c.textContent=w;grid.appendChild(c);
   });
-  document.getElementById('spC').textContent=gc;
-  const btn=document.getElementById('spB');
-  btn.className='spb '+(guesser==='p1'?'g1':'g2');
-  btn.textContent='🔙 رجوع للوحة';
-  btn.onclick=()=>{btn.onclick=()=>spyDone();if(G.turnTime>0)startTimer();showBoard()};
-  show('spyScr');
+
+  document.getElementById('clueBtn').style.display=canClue?'block':'none';
+  const bdg=document.getElementById('myBdg');
+  if(isClassic){bdg.className='bdg '+(myTeam==='red'?'bdg-r':'bdg-b');bdg.textContent=isSpy?(myTeam==='red'?'🔴 قائد':'🔵 قائد'):(myTeam==='red'?'🔴 عميل':'🔵 عميل')}
+  else{bdg.className='bdg bdg-g';bdg.textContent=ME.role==='p1'?'🟢 لاعب ١':'🟠 لاعب ٢'}
 }
 
-function showRes(icon,title,sub){
-  stopTimer();
-  document.getElementById('rI').textContent=icon;
-  document.getElementById('rT').textContent=title;
-  document.getElementById('rS').textContent=sub;
-  show('resultScr');
+function handleTimer(G){
+  const tt=ROOM.settings?.turnTime||0;
+  if(!tt||!G.timerStart){document.getElementById('tmF').style.width='100%';document.getElementById('tmT').textContent=tt?'⏱️':'⏱️ ∞';return}
+  const left=Math.max(0,tt-Math.floor((Date.now()-G.timerStart)/1000));
+  const p=left/tt*100;const f=document.getElementById('tmF');f.style.width=p+'%';
+  f.style.background=p>50?'var(--grn)':p>20?'var(--gld)':'var(--kill)';
+  const m=Math.floor(left/60),s=left%60;
+  document.getElementById('tmT').textContent='⏱️ '+(m>0?m+':'+(s<10?'0':'')+s:s+'ث');
+  if(left<=0&&ME.isHost){if(ROOM.mode==='classic')switchClassicTurn();else switchDuetOnline()}
+}
+setInterval(()=>{if(!isOffline&&ROOM&&ROOM.status==='playing'&&ROOM.game)handleTimer(ROOM.game)},1000);
+
+// ═══════════════════════════════════════════
+// CLUE
+// ═══════════════════════════════════════════
+function showClueMo(){document.getElementById('clW').value='';document.getElementById('clN').value='1';clueMo(1)}
+function clueMo(v){document.getElementById('clueMo').classList[v?'add':'remove']('show')}
+
+async function submitClue(){
+  const w=document.getElementById('clW').value.trim(),n=parseInt(document.getElementById('clN').value)||0;
+  if(!w){toast('اكتب التلميح!','ter');return}
+  clueMo(0);sClick();
+  if(isOffline){
+    offlineG.clue={word:w,num:n};offlineG.gl=n===0?99:n+1;
+    // Switch to guesser
+    document.getElementById('psE').textContent='🔍';
+    const guesser=offlineG.turn==='p1'?'p2':'p1';
+    const tag=document.getElementById('psTag');
+    tag.className='ps-tag '+(guesser==='p1'?'fp1':'fp2');
+    tag.textContent=guesser==='p1'?'لاعب ١ 🟢':'لاعب ٢ 🟠';
+    document.getElementById('psT').textContent='سلّم الموبايل للعميل';
+    document.getElementById('psS').textContent='القائد ما يبصش!';
+    document.getElementById('psBtn').textContent='👀 ابدأ التخمين';
+    document.getElementById('psBtn').onclick=()=>{document.getElementById('eBar').style.display='none';renderOfflineGame(false)};
+    show('passScr');
+  }else{
+    await roomRef.child('game').update({clue:{word:w,num:n},guessesLeft:n===0?99:n+1,timerStart:Date.now()});
+  }
 }
 
-// PWA
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+// ═══════════════════════════════════════════
+// ONLINE GUESS
+// ═══════════════════════════════════════════
+async function guessOnline(i){
+  const G=ROOM.game;if(!G||!G.clue||(G.revealed&&G.revealed[i]))return;
+  const isClassic=ROOM.mode==='classic';
+  let type;
+  if(isClassic)type=ROOM.types[i];
+  else{const key=G.turn==='p1'?ROOM.duetKeys.k1:ROOM.duetKeys.k2;type=key[i]}
+  const up={};up['game/revealed/'+i]=type;
+  if(isClassic){
+    let rL=G.redLeft,bL=G.blueLeft,gl=G.guessesLeft-1;
+    if(type==='red')rL--;if(type==='blue')bL--;
+    up['game/redLeft']=rL;up['game/blueLeft']=bL;up['game/guessesLeft']=gl;
+    if(type==='assassin'){sKill();up.status='ended';up.result={icon:'☠️',title:'القاتل!',sub:(G.turn==='red'?'الأحمر':'الأزرق')+' اختار القاتل!\n🏆 '+(G.turn==='red'?'الأزرق':'الأحمر')+' كسب'};await roomRef.update(up);return}
+    if(rL===0){sWin();up.status='ended';up.result={icon:'🏆',title:'الأحمر كسب! 🔴',sub:'مبروك!'};await roomRef.update(up);return}
+    if(bL===0){sWin();up.status='ended';up.result={icon:'🏆',title:'الأزرق كسب! 🔵',sub:'مبروك!'};await roomRef.update(up);return}
+    if(type!==G.turn){sNo();up['game/turn']=G.turn==='red'?'blue':'red';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnCount']=(G.turnCount||0)+1;await roomRef.update(up);return}
+    if(gl<=0){sOk();up['game/turn']=G.turn==='red'?'blue':'red';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnCount']=(G.turnCount||0)+1;await roomRef.update(up);return}
+    sOk();up['game/guessesLeft']=gl;await roomRef.update(up);toast('✅ صح!');
+  }else{
+    let fA=G.foundAgents||0,gl=G.guessesLeft-1;up['game/guessesLeft']=gl;
+    if(type==='assassin'){sKill();up.status='ended';up.result={icon:'☠️',title:'القاتل!',sub:'خسرتوا!'};await roomRef.update(up);return}
+    if(type==='green'){fA++;up['game/foundAgents']=fA;
+      if(fA>=15){sWin();up.status='ended';up.result={icon:'🏆',title:'مبروك!',sub:'لقيتوا كل العملاء! 🤝'};await roomRef.update(up);return}
+      if(gl<=0){sOk();switchDuetOnline(up);return}
+      sOk();await roomRef.update(up);toast('✅ عميل!');return}
+    sNo();switchDuetOnline(up);
+  }
+}
+
+async function switchDuetOnline(up={}){
+  const G=ROOM.game;let tl=(G.turnsLeft||1)-1;
+  if(tl<=0){up.status='ended';up.result={icon:'⏰',title:'خلصت الأدوار!',sub:'لقيتوا '+(G.foundAgents||0)+' من 15'};await roomRef.update(up);return}
+  up['game/turn']=G.turn==='p1'?'p2':'p1';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnsLeft']=tl;
+  await roomRef.update(up);
+}
+
+async function switchClassicTurn(){
+  const G=ROOM.game;
+  await roomRef.child('game').update({turn:G.turn==='red'?'blue':'red',clue:null,guessesLeft:0,timerStart:null,turnCount:(G.turnCount||0)+1});
+}
+
+function endTurn(){
+  sClick();
+  if(isOffline){switchOffline();return}
+  if(!ROOM||!ROOM.game)return;
+  if(ROOM.mode==='classic')switchClassicTurn();else switchDuetOnline();
+}
+
+// ═══════════════════════════════════════════
+// REACTIONS
+// ═══════════════════════════════════════════
+function react(emoji){
+  sReact();floatEmoji(emoji);
+  if(!isOffline&&roomRef)roomRef.child('reactions').push({emoji,by:ME.name,ts:Date.now()});
+}
+function floatEmoji(e){const d=document.createElement('div');d.className='efloat';d.textContent=e;d.style.left=Math.random()*60+20+'%';d.style.bottom='80px';document.body.appendChild(d);setTimeout(()=>d.remove(),1500)}
+
+// ═══════════════════════════════════════════
+// RESULT
+// ═══════════════════════════════════════════
+function showRes(icon,title,sub){document.getElementById('rI').textContent=icon;document.getElementById('rT').textContent=title;document.getElementById('rS').textContent=sub;show('resultScr')}
+function renderResult(){if(!ROOM||!ROOM.result)return;showRes(ROOM.result.icon,ROOM.result.title,ROOM.result.sub)}
 </script>
 </body>
 </html>
