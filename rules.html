@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#FFB300">
+<title>قواعد الجاسوسية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b11;
+  --card: #10161f;
+  --bdr: #1a2330;
+  --txt: #e2e6ec;
+  --dim: #6a7888;
+  --gld: #FFB300;
+  --gg: rgba(255,179,0,.10);
+  --gb: rgba(255,179,0,.30);
+  --r: #C62828; --rl: #EF5350; --rg: rgba(198,40,40,.13); --rb: rgba(198,40,40,.35);
+  --bl: #1565C0; --bll: #42A5F5; --blg: rgba(21,101,192,.13); --blb: rgba(21,101,192,.35);
+  --neu: #455A64; --neug: rgba(69,90,100,.15); --neub: rgba(69,90,100,.4);
+  --kill: #B71C1C;
+  --grn: #2E7D32; --grnl: #66BB6A;
+  --radius: 14px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Tajawal', sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* ── HERO ── */
+.hero {
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,179,0,.18) 0%, transparent 70%),
+              linear-gradient(180deg, #0d1220 0%, var(--bg) 100%);
+  padding: 48px 20px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 39px, rgba(255,179,0,.03) 39px, rgba(255,179,0,.03) 40px
+  ),
+  repeating-linear-gradient(
+    90deg, transparent, transparent 39px, rgba(255,179,0,.03) 39px, rgba(255,179,0,.03) 40px
+  );
+  pointer-events: none;
+}
+.hero-icon {
+  font-size: 52px;
+  margin-bottom: 8px;
+  display: block;
+  filter: drop-shadow(0 0 20px rgba(255,179,0,.4));
+  animation: bob 3s ease-in-out infinite;
+}
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+
+.hero h1 {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.8em, 6vw, 2.8em);
+  background: linear-gradient(135deg, #fff 20%, var(--gld) 60%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.hero p {
+  color: var(--dim);
+  font-size: .9em;
+  max-width: 340px;
+  margin: 0 auto 20px;
+  line-height: 1.6;
+}
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 1px solid var(--gb);
+  border-radius: 8px;
+  background: var(--gg);
+  color: var(--gld);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: .82em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: .2s;
+}
+.back-btn:hover { background: rgba(255,179,0,.2); }
+
+/* ── NAV PILLS ── */
+.nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,11,17,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--bdr);
+  padding: 10px 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-wrap::-webkit-scrollbar { display:none }
+.nav-pills {
+  display: flex;
+  gap: 7px;
+  width: max-content;
+  min-width: 100%;
+  justify-content: flex-start;
+}
+.pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--bdr);
+  background: transparent;
+  color: var(--dim);
+  font-family: 'Cairo', sans-serif;
+  font-size: .76em;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: .2s;
+  flex-shrink: 0;
+}
+.pill:hover { border-color: var(--gb); color: var(--gld); }
+.pill.active { background: var(--gg); border-color: var(--gb); color: var(--gld); }
+
+/* ── SECTIONS ── */
+.sections {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 14px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.section {
+  background: var(--card);
+  border: 1px solid var(--bdr);
+  border-radius: var(--radius);
+  overflow: hidden;
+  scroll-margin-top: 70px;
+}
+
+.sec-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  gap: 10px;
+  transition: background .15s;
+}
+.sec-hdr:hover { background: rgba(255,255,255,.03); }
+
+.sec-hdr-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sec-icon { font-size: 1.3em; flex-shrink:0 }
+.sec-title {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: .95em;
+  color: var(--txt);
+}
+.sec-num {
+  font-family: 'Cairo', sans-serif;
+  font-size: .7em;
+  color: var(--dim);
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--bdr);
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+.chevron {
+  color: var(--dim);
+  font-size: .9em;
+  transition: transform .25s;
+  flex-shrink: 0;
+}
+.section.open .chevron { transform: rotate(180deg); }
+
+.sec-body {
+  display: none;
+  border-top: 1px solid var(--bdr);
+  padding: 16px;
+}
+.section.open .sec-body { display: block; }
+
+/* ── CONTENT HELPERS ── */
+p, li { line-height: 1.65; font-size: .87em; color: var(--dim); margin-bottom: 6px; }
+p:last-child, li:last-child { margin-bottom: 0; }
+b, strong { color: var(--txt); font-weight: 600; }
+h3 { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: .9em; color: var(--txt); margin-bottom: 8px; margin-top: 4px; }
+ul { padding-right: 16px; }
+li { list-style: disc; }
+.gap { margin-bottom: 12px; }
+
+/* ── ROLES GRID ── */
+.roles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.role-card {
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid;
+  text-align: center;
+}
+.role-card.spy {
+  background: var(--rg); border-color: var(--rb);
+}
+.role-card.spy2 {
+  background: var(--blg); border-color: var(--blb);
+}
+.role-card .role-icon { font-size: 1.8em; margin-bottom: 4px; display: block; }
+.role-card .role-name {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: .82em;
+  color: var(--txt);
+  margin-bottom: 2px;
+}
+.role-card .role-desc { font-size: .72em; color: var(--dim); line-height: 1.4; }
+
+/* ── CARD TYPES ── */
+.card-types {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.ctype {
+  border-radius: 10px;
+  padding: 12px 10px;
+  border: 1px solid;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ctype.red { background: var(--rg); border-color: var(--rb); }
+.ctype.blue { background: var(--blg); border-color: var(--blb); }
+.ctype.neutral { background: var(--neug); border-color: var(--neub); }
+.ctype.killer { background: rgba(183,28,28,.12); border-color: rgba(183,28,28,.4); }
+
+.ctype-word {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  font-size: .9em;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.red .ctype-word { background: var(--r); color: #fff; }
+.blue .ctype-word { background: var(--bl); color: #fff; }
+.neutral .ctype-word { background: var(--neu); color: #e0e0e0; }
+.killer .ctype-word { background: #1a0000; color: #ef5350; border: 1px solid #922b21; }
+
+.ctype-label { font-size: .73em; color: var(--dim); line-height: 1.4; }
+.ctype-label b { display: block; margin-bottom: 2px; }
+
+/* ── FLOW STEPS ── */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  right: 19px; top: 24px; bottom: 24px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--gb) 0%, transparent 100%);
+}
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  position: relative;
+}
+.step-num {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--gg);
+  border: 1.5px solid var(--gb);
+  color: var(--gld);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  font-size: .85em;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-content { flex: 1; padding-top: 8px; }
+.step-content strong { display: block; font-size: .85em; color: var(--txt); margin-bottom: 2px; font-family: 'Cairo', sans-serif; }
+.step-content p { margin-bottom: 0; }
+
+/* ── INTERACTIVE DEMO BOARD ── */
+.demo-section {
+  background: rgba(255,179,0,.04);
+  border: 1px dashed var(--gb);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 12px;
+}
+.demo-label {
+  font-family: 'Cairo', sans-serif;
+  font-size: .74em;
+  color: var(--gld);
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.mini-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+.mc {
+  aspect-ratio: 1.4;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: .52em;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .15s, opacity .15s;
+  border: 1.5px solid transparent;
+  padding: 2px;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+.mc:active { transform: scale(.9); }
+.mc.hidden-card { background: var(--card); border-color: var(--bdr); color: var(--txt); }
+.mc.hidden-card:hover { border-color: rgba(255,179,0,.5); }
+.mc.red-card { background: #c0392b; border-color: #e74c3c; color: #fff; }
+.mc.blue-card { background: #1a5276; border-color: #2980b9; color: #d6eaf8; }
+.mc.neutral-card { background: #3d5166; border-color: #5d6d7e; color: #d5dbdb; }
+.mc.killer-card { background: #160000; border-color: #c0392b; color: #ff6b6b; box-shadow: inset 0 0 8px rgba(231,76,60,.3); }
+.mc.revealed { opacity: .85; cursor: default; }
+.mc.revealed::after { content:'✓'; position:absolute; top:1px; right:2px; font-size:.7em; opacity:.6; }
+.mc.killer-revealed::after { content:'☠️'; }
+
+.demo-hint {
+  text-align: center;
+  margin-top: 8px;
+  font-size: .72em;
+  color: var(--dim);
+}
+.demo-clue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: rgba(0,0,0,.3);
+  border-radius: 8px;
+  border: 1px solid var(--bdr);
+}
+.demo-clue-word {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  font-size: .95em;
+  color: var(--gld);
+}
+.demo-clue-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--gg);
+  border: 1.5px solid var(--gb);
+  color: var(--gld);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  font-size: .85em;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── CLUE EXAMPLES ── */
+.clue-example {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+}
+.clue-example .ce-word {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: .88em;
+  color: var(--gld);
+}
+.clue-example .ce-targets {
+  font-size: .75em;
+  color: var(--dim);
+  margin-top: 2px;
+}
+.clue-example .ce-targets span {
+  display: inline-block;
+  background: var(--gg);
+  border: 1px solid var(--gb);
+  border-radius: 10px;
+  padding: 1px 8px;
+  margin: 2px 2px 0 0;
+  color: var(--gld);
+  font-weight: 600;
+}
+
+/* ── SPECIAL NUMBERS ── */
+.special-nums {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.snum-card {
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid var(--bdr);
+  background: rgba(255,255,255,.03);
+  text-align: center;
+}
+.snum-badge {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  font-size: 1.5em;
+  color: var(--gld);
+  display: block;
+  margin-bottom: 6px;
+}
+.snum-card p { font-size: .76em; }
+
+/* ── WIN/LOSE ── */
+.outcome-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.outcome {
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid;
+}
+.outcome.win { background: rgba(46,125,50,.12); border-color: rgba(46,125,50,.35); }
+.outcome.lose { background: rgba(183,28,28,.10); border-color: rgba(183,28,28,.35); }
+.outcome-icon { font-size: 2em; display:block; margin-bottom: 6px; }
+.outcome-title { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: .85em; color: var(--txt); margin-bottom: 4px; }
+.outcome p { font-size: .74em; }
+
+/* ── DO / DONT ── */
+.do-dont {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.do-card, .dont-card {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid;
+}
+.do-card { background: rgba(46,125,50,.08); border-color: rgba(46,125,50,.3); }
+.dont-card { background: rgba(198,40,40,.08); border-color: rgba(198,40,40,.3); }
+.do-card h4, .dont-card h4 {
+  font-family: 'Cairo', sans-serif;
+  font-size: .78em;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.do-card h4 { color: #66BB6A; }
+.dont-card h4 { color: #EF5350; }
+.do-card p, .dont-card p { font-size: .73em; margin-bottom: 4px; }
+.do-card p::before { content: '✓ '; color: #66BB6A; }
+.dont-card p::before { content: '✗ '; color: #EF5350; }
+
+/* ── TURN END ── */
+.turn-end-list { margin-top: 8px; }
+.te-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.te-item:last-child { border-bottom: none; }
+.te-bullet {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--rg);
+  border: 1.5px solid var(--rb);
+  color: var(--rl);
+  font-size: .8em;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.te-text { flex:1; font-size: .84em; }
+.te-text strong { display:block; color: var(--txt); margin-bottom: 1px; font-family:'Cairo',sans-serif; }
+
+/* ── TIPS BANNER ── */
+.tips-banner {
+  background: var(--gg);
+  border: 1px solid var(--gb);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+.tips-banner .tip-icon { font-size: 1.3em; flex-shrink:0; margin-top: 1px; }
+.tips-banner p { font-size: .8em; color: var(--txt); margin-bottom: 0; }
+
+/* ── PROGRESS COUNTER ── */
+.progress-bar-wrap {
+  background: rgba(0,0,0,.3);
+  border-radius: 0;
+  height: 3px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gld), #fff, var(--gld));
+  transition: width .3s ease;
+  border-radius: 0;
+  width: 0%;
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--dim);
+  font-size: .76em;
+  border-top: 1px solid var(--bdr);
+}
+
+/* ── ANIMATIONS ── */
+.section { animation: fadeUp .4s ease both; }
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(12px); }
+  to { opacity:1; transform: translateY(0); }
+}
+.section:nth-child(2) { animation-delay: .05s; }
+.section:nth-child(3) { animation-delay: .10s; }
+.section:nth-child(4) { animation-delay: .15s; }
+.section:nth-child(5) { animation-delay: .20s; }
+.section:nth-child(6) { animation-delay: .25s; }
+.section:nth-child(7) { animation-delay: .30s; }
+.section:nth-child(8) { animation-delay: .35s; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:400px) {
+  .roles-grid, .card-types, .special-nums, .outcome-grid, .do-dont { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-icon">🕵️</span>
+  <h1>الجاسوسية</h1>
+  <p>دليل القواعد الكامل — تعلّم كيف تلعب وتفوز!</p>
+  <a class="back-btn" onclick="history.back()" href="index.html">← العودة للعبة</a>
+</div>
+
+<!-- STICKY NAV -->
+<div class="nav-wrap">
+  <div class="nav-pills" id="navPills">
+    <button class="pill active" onclick="goTo('s1')">🎮 نظرة عامة</button>
+    <button class="pill" onclick="goTo('s2')">👥 الأدوار</button>
+    <button class="pill" onclick="goTo('s3')">🃏 الكروت</button>
+    <button class="pill" onclick="goTo('s4')">💡 التلميحات</button>
+    <button class="pill" onclick="goTo('s5')">✅ التخمين</button>
+    <button class="pill" onclick="goTo('s6')">⏭️ نهاية الدور</button>
+    <button class="pill" onclick="goTo('s7')">🏆 الفوز</button>
+    <button class="pill" onclick="goTo('s8')">🎯 نصائح</button>
+  </div>
+</div>
+
+<!-- SECTIONS -->
+<div class="sections">
+
+  <!-- 1. نظرة عامة -->
+  <div class="section open" id="s1">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">🎮</span>
+        <span class="sec-title">نظرة عامة على اللعبة</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <p class="gap">الجاسوسية لعبة تلاحم وكلمات لفريقين — <b>الأحمر</b> و<b>الأزرق</b>. كل فريق يحاول اكتشاف كلماته السرية قبل الفريق الآخر، ولكن خطأ واحد قد يكلفكم الخسارة!</p>
+
+      <h3>كيف تجري اللعبة؟</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">١</div>
+          <div class="step-content">
+            <strong>التهيئة</strong>
+            <p>يتقسم اللاعبون إلى فريقين. تُعرض ٢٥ كرت كلمة على الطاولة.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">٢</div>
+          <div class="step-content">
+            <strong>التلميح</strong>
+            <p>القائد يعطي كلمة واحدة وعدداً لمساعدة فريقه على التعرف على كلماتهم.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">٣</div>
+          <div class="step-content">
+            <strong>التخمين</strong>
+            <p>العملاء يناقشون ثم يلمسون الكروت التي يعتقدون أنها تخص فريقهم.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">٤</div>
+          <div class="step-content">
+            <strong>الفوز</strong>
+            <p>أول فريق يكتشف جميع كلماته يفوز — لكن احذر القاتل!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive mini board -->
+      <div class="demo-section">
+        <div class="demo-label">🎲 جرّب اللوحة التفاعلية — اضغط على الكروت!</div>
+        <div class="demo-clue">
+          <span class="demo-clue-word">حيوان</span>
+          <span class="demo-clue-num">٣</span>
+        </div>
+        <div class="mini-board" id="demoBoard"></div>
+        <div class="demo-hint" id="demoHint">👆 القائد أعطى التلميح — اختر الكروت الصحيحة!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. الأدوار -->
+  <div class="section" id="s2">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">👥</span>
+        <span class="sec-title">الأدوار</span>
+        <span class="sec-num">٤ أدوار</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <p class="gap">كل فريق يحتاج إلى <b>قائد واحد (Spymaster)</b> وعميل واحد أو أكثر. في لعبتنا الإلكترونية يمكن للبوتات تعبئة الأدوار الفارغة تلقائياً!</p>
+
+      <div class="roles-grid">
+        <div class="role-card spy">
+          <span class="role-icon">🗺️</span>
+          <div class="role-name">🔴 القائد الأحمر</div>
+          <div class="role-desc">يرى ألوان جميع الكروت — مهمته إعطاء التلميحات الذكية</div>
+        </div>
+        <div class="role-card spy2">
+          <span class="role-icon">🗺️</span>
+          <div class="role-name">🔵 القائد الأزرق</div>
+          <div class="role-desc">يرى ألوان جميع الكروت — مهمته إعطاء التلميحات الذكية</div>
+        </div>
+        <div class="role-card" style="background:var(--rg);border-color:var(--rb)">
+          <span class="role-icon">👆</span>
+          <div class="role-name">🔴 عميل أحمر</div>
+          <div class="role-desc">يخمّن الكروت بناءً على تلميح قائده — لا يرى الخريطة</div>
+        </div>
+        <div class="role-card" style="background:var(--blg);border-color:var(--blb)">
+          <span class="role-icon">👆</span>
+          <div class="role-name">🔵 عميل أزرق</div>
+          <div class="role-desc">يخمّن الكروت بناءً على تلميح قائده — لا يرى الخريطة</div>
+        </div>
+      </div>
+
+      <div class="tips-banner" style="margin-top:12px">
+        <span class="tip-icon">⚠️</span>
+        <p><b>قاعدة مهمة:</b> كل فريق يجب أن يكون له قائد واحد بالضبط — لا صفر ولا اثنين. اللعبة لن تبدأ بدون قادة لكلا الفريقين.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. الكروت -->
+  <div class="section" id="s3">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">🃏</span>
+        <span class="sec-title">أنواع الكروت</span>
+        <span class="sec-num">٢٥ كرت</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <p class="gap">كل كلمة على اللوحة مخصصة سرياً لأحد الأنواع الأربعة التالية. القائد هو الوحيد الذي يعرف كل الألوان!</p>
+
+      <div class="card-types">
+        <div class="ctype red">
+          <div class="ctype-word">نار 🔴</div>
+          <div class="ctype-label"><b>كروت حمراء — ٩ كروت</b>الفريق الأحمر يجب أن يجدها</div>
+        </div>
+        <div class="ctype blue">
+          <div class="ctype-word">ماء 🔵</div>
+          <div class="ctype-label"><b>كروت زرقاء — ٨ كروت</b>الفريق الأزرق يجب أن يجدها</div>
+        </div>
+        <div class="ctype neutral">
+          <div class="ctype-word">جبل ⬜</div>
+          <div class="ctype-label"><b>محايدة — ٧ كروت</b>لا تخص أي فريق — تُنهي الدور</div>
+        </div>
+        <div class="ctype killer">
+          <div class="ctype-word">☠️ قاتل</div>
+          <div class="ctype-label"><b>القاتل — ١ كرت</b>اضغطها وفريقك يخسر فوراً!</div>
+        </div>
+      </div>
+
+      <div class="tips-banner">
+        <span class="tip-icon">💡</span>
+        <p>ملاحظة: الأحمر يبدأ أولاً لذا لديه كرت إضافي (٩ بدلاً من ٨)، هذا ميزة وتحدٍّ في نفس الوقت!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. التلميحات -->
+  <div class="section" id="s4">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">💡</span>
+        <span class="sec-title">إعطاء التلميحات</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <h3>عندما يحين دورك كقائد:</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">١</div>
+          <div class="step-content">
+            <strong>اختر كلمة رابطة</strong>
+            <p>ابحث عن كلمة واحدة تربط عدداً من كروت فريقك معاً.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">٢</div>
+          <div class="step-content">
+            <strong>حدد العدد</strong>
+            <p>قل عدد الكروت التي تربطها تلك الكلمة (من ١ إلى ٩).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">٣</div>
+          <div class="step-content">
+            <strong>أعلن التلميح</strong>
+            <p>قل الكلمة والعدد فقط — لا مزيد من المعلومات!</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">أمثلة على تلميحات ذكية:</h3>
+      <div class="clue-example">
+        <span class="ce-word">🐾 حيوان — ٣</span>
+        <div class="ce-targets">يستهدف: <span>كلب</span><span>قطة</span><span>أسد</span></div>
+      </div>
+      <div class="clue-example">
+        <span class="ce-word">🌊 ماء — ٢</span>
+        <div class="ce-targets">يستهدف: <span>بحر</span><span>نهر</span></div>
+      </div>
+      <div class="clue-example">
+        <span class="ce-word">🍎 فاكهة — ٢</span>
+        <div class="ce-targets">يستهدف: <span>تفاح</span><span>موز</span></div>
+      </div>
+
+      <h3 style="margin-top:14px">قواعد التلميح:</h3>
+      <div class="do-dont">
+        <div class="do-card">
+          <h4>✅ مسموح</h4>
+          <p>كلمة واحدة فقط</p>
+          <p>تتعلق بمعنى الكلمات</p>
+          <p>أسماء أماكن مركبة</p>
+        </div>
+        <div class="dont-card">
+          <h4>❌ ممنوع</h4>
+          <p>أي كلمة موجودة على اللوحة</p>
+          <p>التلميح بالحروف أو المواضع</p>
+          <p>أكثر من كلمة واحدة</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">أعداد خاصة:</h3>
+      <div class="special-nums">
+        <div class="snum-card">
+          <span class="snum-badge">صفر ٠</span>
+          <p>لا يوجد كرت لفريقك مرتبط بهذه الكلمة. فريقك يمكنه التخمين بلا حدود — مفيد للابتعاد عن الخطر!</p>
+        </div>
+        <div class="snum-card">
+          <span class="snum-badge">∞ لا نهاية</span>
+          <p>كلمات كثيرة مرتبطة بالتلميح. فريقك يخمّن بحرية حتى يخطئ أو يتوقف اختيارياً.</p>
+        </div>
+      </div>
+
+      <div class="tips-banner">
+        <span class="tip-icon">🤖</span>
+        <p>في لعبتنا، القائد البوت يرى الشات ليتابع تخمينات فريقه، لكنه <b>لا يستطيع الكتابة</b> في الشات — القائد يتواصل عبر التلميحات فقط!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. التخمين -->
+  <div class="section" id="s5">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">✅</span>
+        <span class="sec-title">التخمين</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <h3>بعد استلام التلميح، العملاء:</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">١</div>
+          <div class="step-content">
+            <strong>ناقشوا في الشات</strong>
+            <p>استخدموا الشات لتبادل الأفكار والاقتراحات مع فريقكم.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">٢</div>
+          <div class="step-content">
+            <strong>اقترحوا كلمة</strong>
+            <p>اكتبوا في الشات الكلمة التي تعتقدون أنها صحيحة — يُشجع على التصويت الجماعي.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">٣</div>
+          <div class="step-content">
+            <strong>أكدوا الاختيار</strong>
+            <p>اضغطوا على الكرت في اللوحة لتأكيد التخمين النهائي.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:12px">ماذا يحدث عند التخمين؟</h3>
+      <div class="outcome-grid" style="grid-template-columns:1fr 1fr 1fr; margin-top:8px">
+        <div class="outcome win">
+          <span class="outcome-icon">✅</span>
+          <div class="outcome-title">صواب!</div>
+          <p style="font-size:.72em">كلمة فريقك — استمر في التخمين</p>
+        </div>
+        <div class="outcome" style="background:var(--neug);border-color:var(--neub)">
+          <span class="outcome-icon">⬜</span>
+          <div class="outcome-title">محايد</div>
+          <p style="font-size:.72em">انتهى دورك فوراً</p>
+        </div>
+        <div class="outcome lose">
+          <span class="outcome-icon">❌</span>
+          <div class="outcome-title">كلمة الخصم!</div>
+          <p style="font-size:.72em">دورك ينتهي ويكسب الخصم كرتاً</p>
+        </div>
+      </div>
+
+      <div class="tips-banner" style="margin-top:10px">
+        <span class="tip-icon">⚠️</span>
+        <p>لا تضغط على <b>الكرت الأسود (القاتل)</b> تحت أي ظرف — فريقك يخسر فوراً بدون نقاش!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. نهاية الدور -->
+  <div class="section" id="s6">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">⏭️</span>
+        <span class="sec-title">متى ينتهي الدور؟</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <div class="turn-end-list">
+        <div class="te-item">
+          <div class="te-bullet">١</div>
+          <div class="te-text">
+            <strong>خطأ في التخمين</strong>
+            الفريق لمس كرتاً محايداً أو كرت الفريق الآخر — الدور ينتهي فوراً.
+          </div>
+        </div>
+        <div class="te-item">
+          <div class="te-bullet">٢</div>
+          <div class="te-text">
+            <strong>نفاد عدد التخمينات</strong>
+            الفريق يمكنه التخمين العدد + ١ مرة على الأكثر (مثال: تلميح "٣" = ٤ تخمينات).
+          </div>
+        </div>
+        <div class="te-item">
+          <div class="te-bullet">٣</div>
+          <div class="te-text">
+            <strong>الإنهاء الاختياري</strong>
+            الفريق يختار إنهاء دوره مبكراً بالضغط على زر "إنهاء الدور".
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-banner">
+        <span class="tip-icon">🔒</span>
+        <p><b>قاعدة مهمة:</b> القائد الأحمر <b>لا يستطيع</b> إنهاء دور الفريق الأزرق والعكس صحيح! زر "إنهاء الدور" يعمل فقط عندما يكون دورك أنت.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. الفوز -->
+  <div class="section" id="s7">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">🏆</span>
+        <span class="sec-title">كيف تفوز أو تخسر؟</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <div class="outcome-grid">
+        <div class="outcome win">
+          <span class="outcome-icon">🏆</span>
+          <div class="outcome-title">الفوز!</div>
+          <p>اكتشاف جميع كلمات فريقك قبل الفريق الآخر</p>
+        </div>
+        <div class="outcome lose">
+          <span class="outcome-icon">☠️</span>
+          <div class="outcome-title">الخسارة الفورية</div>
+          <p>لمس الكرت القاتل يُنهي اللعبة على الفور لصالح الفريق الآخر</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">جدول الكروت:</h3>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:8px;padding:10px;margin-top:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+          <span style="font-size:.82em;color:var(--rl);font-weight:700">🔴 الأحمر</span>
+          <span style="font-size:.82em;color:var(--txt)">٩ كروت — يبدأ أولاً</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+          <span style="font-size:.82em;color:var(--bll);font-weight:700">🔵 الأزرق</span>
+          <span style="font-size:.82em;color:var(--txt)">٨ كروت</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+          <span style="font-size:.82em;color:var(--dim);font-weight:700">⬜ محايد</span>
+          <span style="font-size:.82em;color:var(--txt)">٧ كروت</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0">
+          <span style="font-size:.82em;color:#ef5350;font-weight:700">☠️ القاتل</span>
+          <span style="font-size:.82em;color:var(--txt)">١ كرت</span>
+        </div>
+      </div>
+
+      <div class="tips-banner">
+        <span class="tip-icon">🧠</span>
+        <p>الأحمر يبدأ أولاً لكن لديه كرت إضافي — الأزرق عنده أفضلية أنه يردّ بدلاً من أن يبادر!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. نصائح -->
+  <div class="section" id="s8">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="sec-hdr-left">
+        <span class="sec-icon">🎯</span>
+        <span class="sec-title">نصائح للاعبين</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="sec-body">
+      <div class="tips-banner" style="margin-bottom:8px">
+        <span class="tip-icon">👑</span>
+        <p><b>للقائد:</b> ابحث دائماً عن الروابط التي تجمع أكبر عدد من كروت فريقك — لكن تجنّب أي تلميح قد يقود فريقك للقاتل!</p>
+      </div>
+      <div class="tips-banner" style="margin-bottom:8px">
+        <span class="tip-icon">🤝</span>
+        <p><b>للعملاء:</b> ناقشوا في الشات قبل الضغط — رأيكم الجماعي أفضل من القرار الفردي.</p>
+      </div>
+      <div class="tips-banner" style="margin-bottom:8px">
+        <span class="tip-icon">⚖️</span>
+        <p><b>الأمان أولاً:</b> إذا كنتم غير متأكدين، أنهوا الدور بـ "إنهاء الدور" بدلاً من المخاطرة بالكرت القاتل أو كروت الخصم.</p>
+      </div>
+      <div class="tips-banner" style="margin-bottom:8px">
+        <span class="tip-icon">🤖</span>
+        <p><b>البوتات:</b> البوتات تعطي تلميحات ذكية بناءً على معاني الكلمات العربية، لكنها ليست مثالية — أحياناً فريق البشر أذكى!</p>
+      </div>
+      <div class="tips-banner">
+        <span class="tip-icon">🎉</span>
+        <p><b>الأهم:</b> الجاسوسية لعبة ترفيهية — استمتعوا بها واضحكوا مع بعض حتى لو أخطأتم!</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  الجاسوسية — مستوحاة من  مبنية بـ ❤️ بالعربية
+</div>
+
+<script>
+// ── SECTION TOGGLE ──
+function toggle(hdr) {
+  var sec = hdr.parentElement;
+  var wasOpen = sec.classList.contains('open');
+  sec.classList.toggle('open', !wasOpen);
+}
+
+// ── SCROLL TO SECTION ──
+function goTo(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  // Open it
+  el.classList.add('open');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Update pills
+  document.querySelectorAll('.pill').forEach(function(p, i) {
+    p.classList.toggle('active', p.getAttribute('onclick') === 'goTo("' + id + '")');
+  });
+}
+
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', function() {
+  var docH = document.documentElement.scrollHeight - window.innerHeight;
+  var pct = docH > 0 ? (window.scrollY / docH * 100) : 0;
+  document.getElementById('progressBar').style.width = pct.toFixed(1) + '%';
+});
+
+// ── INTERSECTION OBSERVER for nav pills ──
+var sectionIds = ['s1','s2','s3','s4','s5','s6','s7','s8'];
+var pillBtns = document.querySelectorAll('.pill');
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting && e.intersectionRatio > 0.3) {
+      var idx = sectionIds.indexOf(e.target.id);
+      if (idx >= 0) {
+        pillBtns.forEach(function(p, i) { p.classList.toggle('active', i === idx); });
+        // scroll pill into view
+        if (pillBtns[idx]) {
+          pillBtns[idx].scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    }
+  });
+}, { threshold: [0.3], rootMargin: '-60px 0px -40% 0px' });
+
+sectionIds.forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) obs.observe(el);
+});
+
+// ── INTERACTIVE DEMO BOARD ──
+var boardData = [
+  {w:'كلب',  t:'red'},    {w:'قطة',   t:'blue'},   {w:'بحر',   t:'neutral'},
+  {w:'نار',  t:'red'},    {w:'شمس',   t:'neutral'},
+  {w:'أسد',  t:'red'},    {w:'ماء',   t:'blue'},    {w:'جبل',   t:'neutral'},
+  {w:'موز',  t:'blue'},   {w:'نهر',   t:'neutral'},
+  {w:'قمر',  t:'blue'},   {w:'صقر',   t:'red'},     {w:'كتاب',  t:'neutral'},
+  {w:'ذهب',  t:'red'},    {w:'صحراء', t:'neutral'},
+  {w:'سيف',  t:'blue'},   {w:'وردة',  t:'neutral'}, {w:'نجمة',  t:'red'},
+  {w:'خنجر', t:'killer'}, {w:'رمل',   t:'neutral'},
+  {w:'تفاح', t:'blue'},   {w:'خيمة',  t:'neutral'}, {w:'حصان',  t:'red'},
+  {w:'طائر', t:'blue'},   {w:'صخرة',  t:'neutral'}
+];
+
+// Correct animal answers
+var animalCorrect = ['كلب','أسد','صقر'];
+var score = 0;
+var guessed = {};
+
+function buildBoard() {
+  var board = document.getElementById('demoBoard');
+  board.innerHTML = '';
+  boardData.forEach(function(card, i) {
+    var c = document.createElement('div');
+    c.className = 'mc hidden-card';
+    c.textContent = card.w;
+    c.dataset.idx = i;
+    c.dataset.type = card.t;
+    c.addEventListener('click', function() { revealCard(i, c, card); });
+    board.appendChild(c);
+  });
+}
+
+function revealCard(i, el, card) {
+  if (guessed[i]) return;
+  guessed[i] = true;
+  el.classList.remove('hidden-card');
+  el.classList.add('revealed');
+  var hint = document.getElementById('demoHint');
+
+  if (card.t === 'killer') {
+    el.classList.add('killer-card', 'killer-revealed');
+    hint.textContent = '☠️ اخترت القاتل! — الفريق الآخر يفوز!';
+    hint.style.color = '#EF5350';
+    return;
+  }
+  if (card.t === 'red') { el.classList.add('red-card'); }
+  if (card.t === 'blue') { el.classList.add('blue-card'); }
+  if (card.t === 'neutral') { el.classList.add('neutral-card'); }
+
+  var isAnimal = animalCorrect.indexOf(card.w) >= 0;
+  if (card.t === 'red') {
+    if (isAnimal) {
+      score++;
+      hint.textContent = '✅ ممتاز! كلمة فريقك — التلميح "حيوان" ينطبق عليها (' + score + '/٣)';
+      hint.style.color = '#66BB6A';
+      if (score >= 3) {
+        setTimeout(function() { hint.textContent = '🏆 أحسنت! لقيت كل الكلمات الصحيحة!'; }, 500);
+      }
+    } else {
+      hint.textContent = '✅ كلمة فريقك — لكن التلميح "حيوان" لا ينطبق عليها تماماً!';
+      hint.style.color = '#FFB300';
+    }
+  } else if (card.t === 'blue') {
+    hint.textContent = '❌ هذه كلمة الفريق الآخر! — دورك ينتهي';
+    hint.style.color = '#42A5F5';
+  } else if (card.t === 'neutral') {
+    hint.textContent = '⬜ كلمة محايدة — دورك ينتهي';
+    hint.style.color = '#8b949e';
+  }
+}
+
+buildBoard();
+
+// Reset board after 8s of all guessed
+setInterval(function() {
+  var total = Object.keys(guessed).length;
+  if (total >= 25 || (Object.keys(guessed).length > 0 && guessed[18])) {
+    setTimeout(function() {
+      guessed = {}; score = 0;
+      buildBoard();
+      document.getElementById('demoHint').textContent = '👆 اللوحة تجددت — جرّب مجدداً!';
+      document.getElementById('demoHint').style.color = '';
+    }, 3000);
+  }
+}, 2000);
+</script>
+</body>
+</html>
