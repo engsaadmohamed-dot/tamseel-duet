@@ -944,25 +944,46 @@ function roleName(r){
 }
 
 // ── Bot guesses online (host triggers for all bots) ──
+// Track which (turn+clue) combos we've already scheduled to avoid duplicates
+var _botScheduled={};
+
 function botsTakeTurn(){
   if(!ME.isHost||!ROOM||!ROOM.bots||!ROOM.game)return;
   var G=ROOM.game;var mode=ROOM.mode;
+
+  // Build a fingerprint for the current game state so we schedule each bot action only once
+  var turnKey=mode==='classic'
+    ?(G.turn+'_'+(G.clue?G.clue.word:'noClue')+'_'+(G.turnCount||0))
+    :('duet_'+(G.clue?G.clue.word:'noClue')+'_'+(G.turnsLeft||0));
+
   Object.values(ROOM.bots||{}).forEach(function(b){
     if(!b||!b.role)return;
     var role=b.role;
     var botTeam=role.indexOf('red')===0?'red':(role.indexOf('blue')===0?'blue':null);
-    // If no clue yet → check if this bot is spymaster and should give hint (FIX 6)
+    var schedKey=b.id+'_'+turnKey;
+
+    // Already scheduled this exact action → skip
+    if(_botScheduled[schedKey])return;
+
     if(!G.clue){
+      // Spymaster needs to give a hint
+      var isMyHintTurn=mode==='classic'
+        ?(role.indexOf('-spy')>=0&&G.turn===botTeam)
+        :(role==='duet-spy');
+      if(!isMyHintTurn)return;
+      _botScheduled[schedKey]=true;
       botSpymasterGiveHint(b);
       return;
     }
+
     // Clue exists → bot guesser acts
     if(mode==='classic'){
-      if(role.indexOf('-op')===-1)return; // not a guesser
+      if(role.indexOf('-op')===-1)return;
       if(G.turn!==botTeam)return;
     }else{
       if(role!=='duet-agent')return;
     }
+    _botScheduled[schedKey]=true;
     var delay=5000+Math.random()*25000;
     setTimeout(function(){doBotGuessOnline(b)},delay);
   });
@@ -1039,22 +1060,28 @@ function botSpymasterGiveHint(bot){
     var isTeam=(mode==='classic'&&type===botTeam)||(mode!=='classic'&&type==='green');
     if(isTeam)teamWords.push({w:w,i:i});
   });
-  if(!teamWords.length)return;
+  // If no team words left → switch turn automatically (bot team already won or stuck)
+  if(!teamWords.length){
+    if(mode==='classic')switchClassicTurn();
+    return;
+  }
   var iq=bot.iq||0.7;
   var boardWords=ROOM.words||[];
-  // Random 5-30s delay before giving hint
-  var delay=5000+Math.random()*25000;
+  // 5-15s delay before giving hint (reduced from 5-30s so all-bot games don't stall)
+  var delay=5000+Math.random()*10000;
   setTimeout(function(){
     if(!ROOM||!ROOM.game||ROOM.game.clue)return; // someone else gave hint
     var result=findBestClue(teamWords,iq,boardWords);
-    if(!result)return;
-    // Post clue to game
+    if(!result){
+      // Fallback: switch turn to avoid deadlock
+      if(mode==='classic')switchClassicTurn();
+      return;
+    }
     var up={};
     up['game/clue']={word:result.clue,num:result.num};
     up['game/guessesLeft']=result.num+1;
     up['game/timerStart']=Date.now();
     roomRef.update(up);
-    // Also post to chat
     roomRef.child('chat').push({
       name:bot.name,
       text:'تلميحي: '+result.clue+' ('+result.num+')',
@@ -2359,6 +2386,19 @@ function renderOnlineGame(){
 
   document.getElementById('clueBtn').style.display=canClue?'block':'none';
   document.getElementById('endGameBtn').style.display=ME.isHost?'block':'none';
+  // End-turn button: only show for your team in classic mode
+  var endTurnBtn=document.getElementById('gaBar')&&document.querySelector('.gab.ge');
+  if(endTurnBtn){
+    if(isClassic){
+      var myTurnET=ME.role.indexOf('red')===0?'red':'blue';
+      var showEndTurn=myTurnET===G.turn;
+      endTurnBtn.style.opacity=showEndTurn?'1':'0.35';
+      endTurnBtn.style.pointerEvents=showEndTurn?'auto':'none';
+      endTurnBtn.title=showEndTurn?'إنهاء دورك':'⏳ دور الفريق الآخر';
+    }else{
+      endTurnBtn.style.opacity='1';endTurnBtn.style.pointerEvents='auto';endTurnBtn.title='';
+    }
+  }
   var bdg=document.getElementById('myBdg');
   if(isClassic){bdg.className='bdg '+(myTeam==='red'?'bdg-r':'bdg-b');bdg.textContent=isSpy?(myTeam==='red'?'🔴 قائد':'🔵 قائد'):(myTeam==='red'?'🔴 عميل':'🔵 عميل')}
   else{bdg.className='bdg bdg-g';bdg.textContent=isSpy?'🟢🗺️ القائد':'🟠👆 العميل'}
@@ -2424,8 +2464,8 @@ function guessOnline(i){
     if(type==='assassin'){sKill();up['status']='ended';up['result']={icon:'☠️',title:'القاتل!',sub:(G.turn==='red'?'الأحمر':'الأزرق')+' اختار القاتل!\n🏆 '+(G.turn==='red'?'الأزرق':'الأحمر')+' كسب'};roomRef.update(up);return}
     if(rL===0){sWin();up['status']='ended';up['result']={icon:'🏆',title:'الأحمر كسب! 🔴',sub:'مبروك!'};roomRef.update(up);return}
     if(bL===0){sWin();up['status']='ended';up['result']={icon:'🏆',title:'الأزرق كسب! 🔵',sub:'مبروك!'};roomRef.update(up);return}
-    if(type!==G.turn){sNo();up['game/turn']=G.turn==='red'?'blue':'red';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnCount']=(G.turnCount||0)+1;roomRef.update(up);return}
-    if(gl<=0){sOk();up['game/turn']=G.turn==='red'?'blue':'red';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnCount']=(G.turnCount||0)+1;roomRef.update(up);return}
+    if(type!==G.turn){sNo();_botScheduled={};up['game/turn']=G.turn==='red'?'blue':'red';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnCount']=(G.turnCount||0)+1;roomRef.update(up);return}
+    if(gl<=0){sOk();_botScheduled={};up['game/turn']=G.turn==='red'?'blue':'red';up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnCount']=(G.turnCount||0)+1;roomRef.update(up);return}
     sOk();up['game/guessesLeft']=gl;roomRef.update(up);toast('✅ صح!');
   }else{
     var fA=G.foundAgents||0,gl2=G.guessesLeft-1;up['game/guessesLeft']=gl2;
@@ -2440,6 +2480,7 @@ function guessOnline(i){
 
 function switchDuetOnline(up){
   var G=ROOM.game;var tl=(G.turnsLeft||1)-1;
+  _botScheduled={}; // clear debounce so bots act fresh on new turn
   if(tl<=0){up['status']='ended';up['result']={icon:'⏰',title:'خلصت الأدوار!',sub:'لقيتوا '+(G.foundAgents||0)+' من 15'};roomRef.update(up);return}
   up['game/clue']=null;up['game/guessesLeft']=0;up['game/timerStart']=null;up['game/turnsLeft']=tl;
   roomRef.update(up);
@@ -2447,6 +2488,7 @@ function switchDuetOnline(up){
 
 function switchClassicTurn(){
   var G=ROOM.game;
+  _botScheduled={}; // clear debounce so bots act fresh on new turn
   roomRef.child('game').update({turn:G.turn==='red'?'blue':'red',clue:null,guessesLeft:0,timerStart:null,turnCount:(G.turnCount||0)+1});
 }
 
@@ -2454,7 +2496,16 @@ function endTurn(){
   sClick();
   if(isOffline){switchOffline();return}
   if(!ROOM||!ROOM.game)return;
-  if(ROOM.mode==='classic')switchClassicTurn();else switchDuetOnline({});
+  if(ROOM.mode==='classic'){
+    // Guard: only the CURRENT team can end their own turn
+    var myTeamET=ME.role.indexOf('red')===0?'red':'blue';
+    if(myTeamET!==ROOM.game.turn){
+      toast('⏳ مش دورك — انتظر الفريق الثاني','ter');return;
+    }
+    switchClassicTurn();
+  }else{
+    switchDuetOnline({});
+  }
 }
 
 // ══════════════════════════════════════════════════════

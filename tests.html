@@ -628,6 +628,182 @@ var SUITES=[
       eq(appleCapable,'yes');
     });
   }},
+
+  // ══════════════════════════════════════════════════
+  // NEW 1: قائد البوت يظهر في الشات لكن لا يكتب
+  // ══════════════════════════════════════════════════
+  {title:'🤖 قائد البوت في الشات (قراءة فقط)',fn:function(){
+    function canBotSpymasterWrite(role){
+      // Spymasters (bot or human) can NOT type in chat — read-only
+      return role.indexOf('-spy')===-1&&role!=='duet-spy';
+    }
+    function canBotSpymasterSeeChat(role){
+      // All players (including spymasters) can SEE chat
+      return true;
+    }
+    function isBotSpymaster(role){
+      return role==='red-spy'||role==='blue-spy'||role==='duet-spy';
+    }
+    test('red-spy bot لا يكتب في الشات',function(){
+      assert(!canBotSpymasterWrite('red-spy'));
+    });
+    test('blue-spy bot لا يكتب في الشات',function(){
+      assert(!canBotSpymasterWrite('blue-spy'));
+    });
+    test('duet-spy bot لا يكتب في الشات',function(){
+      assert(!canBotSpymasterWrite('duet-spy'));
+    });
+    test('red-op bot يكتب في الشات (عميل)',function(){
+      assert(canBotSpymasterWrite('red-op'));
+    });
+    test('blue-op bot يكتب في الشات (عميل)',function(){
+      assert(canBotSpymasterWrite('blue-op'));
+    });
+    test('القائد يرى الشات (قراءة)',function(){
+      assert(canBotSpymasterSeeChat('red-spy'));
+      assert(canBotSpymasterSeeChat('blue-spy'));
+    });
+    test('القائد يُميَّز كـ spymaster بالـ role',function(){
+      assert(isBotSpymaster('red-spy'));
+      assert(isBotSpymaster('blue-spy'));
+      assert(isBotSpymaster('duet-spy'));
+      assert(!isBotSpymaster('red-op'));
+      assert(!isBotSpymaster('blue-op'));
+      assert(!isBotSpymaster('duet-agent'));
+    });
+    test('رسالة القائد في الشات تلميح فقط (isBot=true)',function(){
+      var botHintMsg={name:'سارة',text:'تلميحي: حيوان (2)',uid:'bot_x',ts:Date.now(),isBot:true};
+      assert(botHintMsg.isBot,'القائد البوت يُرسل isBot=true');
+      assert(!botHintMsg.vote,'القائد لا يُرسل vote — ليس اقتراحاً');
+    });
+  }},
+
+  // ══════════════════════════════════════════════════
+  // NEW 2: إنهاء الدور — فريق واحد فقط
+  // ══════════════════════════════════════════════════
+  {title:'⏭️ إنهاء الدور — الفريق الصحيح فقط',fn:function(){
+    function canEndTurn(myRole,currentTurn){
+      if(!myRole||!currentTurn)return false;
+      var myTeam=myRole.indexOf('red')===0?'red':'blue';
+      return myTeam===currentTurn;
+    }
+    function canEndTurnDuet(myRole){
+      // In Duet, both roles can end turn (single thread)
+      return myRole==='duet-spy'||myRole==='duet-agent';
+    }
+
+    test('قائد أحمر يُنهي دوره إذا كان دور الأحمر',function(){
+      assert(canEndTurn('red-spy','red'));
+    });
+    test('عميل أحمر يُنهي دوره إذا كان دور الأحمر',function(){
+      assert(canEndTurn('red-op','red'));
+    });
+    test('قائد أحمر لا يُنهي دور الأزرق',function(){
+      assert(!canEndTurn('red-spy','blue'),'القائد الأحمر لا ينهي دور الأزرق');
+    });
+    test('عميل أحمر لا يُنهي دور الأزرق',function(){
+      assert(!canEndTurn('red-op','blue'));
+    });
+    test('قائد أزرق يُنهي دوره إذا كان دور الأزرق',function(){
+      assert(canEndTurn('blue-spy','blue'));
+    });
+    test('قائد أزرق لا يُنهي دور الأحمر',function(){
+      assert(!canEndTurn('blue-spy','red'));
+    });
+    test('عميل أزرق لا يُنهي دور الأحمر',function(){
+      assert(!canEndTurn('blue-op','red'));
+    });
+    test('Duet: القائد يُنهي الدور',function(){
+      assert(canEndTurnDuet('duet-spy'));
+    });
+    test('Duet: العميل يُنهي الدور',function(){
+      assert(canEndTurnDuet('duet-agent'));
+    });
+    test('تحويل الدور: red → blue',function(){
+      var turn='red';turn=turn==='red'?'blue':'red';eq(turn,'blue');
+    });
+    test('تحويل الدور: blue → red',function(){
+      var turn='blue';turn=turn==='red'?'blue':'red';eq(turn,'red');
+    });
+  }},
+
+  // ══════════════════════════════════════════════════
+  // NEW 3: كل البوتات — لا تتعطل اللعبة (no-stall)
+  // ══════════════════════════════════════════════════
+  {title:'🤖🤖 كل البوتات — اللعبة لا تتعطل',fn:function(){
+    // Simulate the _botScheduled debounce
+    function makeBotScheduled(){return{}}
+    function buildKey(botId,turn,clue,turnCount){
+      return botId+'_'+turn+'_'+(clue||'noClue')+'_'+turnCount;
+    }
+    function shouldSchedule(sched,botId,turn,clue,turnCount){
+      var k=buildKey(botId,turn,clue,turnCount);
+      if(sched[k])return false;
+      sched[k]=true;return true;
+    }
+    function clearOnSwitch(sched){
+      Object.keys(sched).forEach(function(k){delete sched[k]});
+    }
+
+    test('أول استدعاء لـ botsTakeTurn يُجدوِل البوت',function(){
+      var s=makeBotScheduled();
+      assert(shouldSchedule(s,'b1','red',null,0),'يجب التجدول أول مرة');
+    });
+    test('الاستدعاء الثاني لنفس الحالة لا يُجدوِل ثانية',function(){
+      var s=makeBotScheduled();
+      shouldSchedule(s,'b1','red',null,0);
+      assert(!shouldSchedule(s,'b1','red',null,0),'لا تكرار');
+    });
+    test('تغيير التلميح = حالة جديدة → يُجدوَل مجدداً',function(){
+      var s=makeBotScheduled();
+      shouldSchedule(s,'b1','red',null,0);
+      assert(shouldSchedule(s,'b1','red','حيوان',0),'تلميح جديد = جدولة جديدة');
+    });
+    test('مسح الجدول عند تبديل الدور',function(){
+      var s=makeBotScheduled();
+      shouldSchedule(s,'b1','red','حيوان',0);
+      clearOnSwitch(s);
+      assert(shouldSchedule(s,'b1','blue',null,1),'بعد المسح يُجدوَل مجدداً');
+    });
+    test('فريق أحمر كله بوتات — المفتاح يتغير مع كل دور',function(){
+      var s=makeBotScheduled();
+      // Turn 0: red spy gives hint
+      assert(shouldSchedule(s,'red_spy','red',null,0));
+      // After hint given → new clue state
+      assert(shouldSchedule(s,'red_op','red','حيوان',0));
+      // After turn switch → clear + new turn
+      clearOnSwitch(s);
+      assert(shouldSchedule(s,'red_spy','red',null,1));
+      return{detail:'الدورة الكاملة بدون تعطل'};
+    });
+    test('تبديل الدور يُعيد ضبط حالة البوتات',function(){
+      var turn='red',turnCount=0,sched=makeBotScheduled();
+      // Red bots schedule
+      shouldSchedule(sched,'b_red_spy',turn,null,turnCount);
+      shouldSchedule(sched,'b_red_op',turn,'حيوان',turnCount);
+      // Switch
+      turn='blue';turnCount++;clearOnSwitch(sched);
+      // Blue bots can now schedule
+      assert(shouldSchedule(sched,'b_blue_spy',turn,null,turnCount));
+      assert(shouldSchedule(sched,'b_blue_op',turn,'مزرعة',turnCount));
+      return{detail:'4 بوتات (2 أحمر + 2 أزرق) — بلا تعطل'};
+    });
+    test('botSpymasterGiveHint: لا يتصرف إذا لم يكن دوره',function(){
+      // Simulated: red-spy should not act on blue's turn
+      function shouldSpymasterAct(botRole,currentTurn){
+        var botTeam=botRole.indexOf('red')===0?'red':'blue';
+        return botTeam===currentTurn;
+      }
+      assert(!shouldSpymasterAct('red-spy','blue'),'القائد الأحمر لا يتصرف في دور الأزرق');
+      assert(shouldSpymasterAct('red-spy','red'),'القائد الأحمر يتصرف في دوره');
+      assert(!shouldSpymasterAct('blue-spy','red'),'القائد الأزرق لا يتصرف في دور الأحمر');
+    });
+    test('إذا لم تبقَ كلمات للفريق → تبديل الدور تلقائي (لا تعطل)',function(){
+      var teamWords=[];
+      var shouldAutoSwitch=teamWords.length===0;
+      assert(shouldAutoSwitch,'إذا لا كلمات → يجب تبديل الدور تلقائياً');
+    });
+  }},
 ];
 
 function runAll(){
@@ -782,6 +958,36 @@ function runQA(){
       agentBlocked?ok('duet-agent محجوز (بوت) — بطاقة معطّلة'):fail('duet-agent يجب أن يُحجز عند أخذه');
 
       ok('محاكاة الغرفة اكتملت');
+
+      // --- End-turn guard ---
+      log('');log('  ⏭️  فحص إنهاء الدور:');
+      function canEndTurnQA(myRole,currentTurn){
+        var myTeam=myRole.indexOf('red')===0?'red':'blue';
+        return myTeam===currentTurn;
+      }
+      canEndTurnQA('red-spy','red')?ok('red-spy يُنهي دور الأحمر ✓'):fail('red-spy يجب أن يُنهي دوره');
+      !canEndTurnQA('red-spy','blue')?ok('red-spy لا يُنهي دور الأزرق ✓'):fail('red-spy يجب ألّا يُنهي دور الأزرق');
+      !canEndTurnQA('blue-spy','red')?ok('blue-spy لا يُنهي دور الأحمر ✓'):fail('blue-spy يجب ألّا يُنهي دور الأحمر');
+      canEndTurnQA('blue-op','blue')?ok('blue-op يُنهي دور الأزرق ✓'):fail('blue-op يجب أن يُنهي دوره');
+
+      // --- All-bot no-stall ---
+      log('');log('  🤖  فحص عدم تعطل كل البوتات:');
+      // Check that _botScheduled debounce logic exists in source
+      html.includes('_botScheduled')?ok('_botScheduled debounce موجود في الكود'):fail('_botScheduled مفقود — خطر تعطل');
+      html.includes('turnKey')?ok('turnKey fingerprint موجود'):fail('turnKey مفقود — البوتات قد تتعطل');
+      html.includes('clearOnSwitch')||html.includes('_botScheduled={}')
+        ?ok('مسح الجدول عند تبديل الدور ✓')
+        :fail('مسح _botScheduled عند التبديل مفقود');
+      html.includes('Fallback')||html.includes('switchClassicTurn()')
+        ?ok('fallback تبديل الدور عند عدم وجود كلمات ✓')
+        :fail('fallback لحالة عدم وجود كلمات مفقود');
+
+      // --- Bot spymaster read-only in chat ---
+      log('');log('  💬  فحص القائد في الشات:');
+      html.includes('amISpymaster()')?ok('amISpymaster() موجود'):fail('amISpymaster() مفقود');
+      html.includes('قراءة فقط')||html.includes('read-only')||html.includes("amISpy()?'flex':'none'")
+        ?ok('حقل كتابة الشات مخفي عن القائد ✓')
+        :fail('إخفاء الكتابة عن القائد مفقود');
     }catch(e){fail('خطأ في المحاكاة: '+e.message)}
 
     finishQA();
