@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#FFB300">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<!-- manifest loaded externally -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="الجاسوسية">
 <title>الجاسوسية v2</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -133,11 +137,11 @@ body.kids-mode .gx{min-height:52px;font-size:.58em;line-height:1.1}
 .gx.rv.xn{background:#3d5166;color:#d5dbdb;border-color:#5d6d7e}
 .gx.rv.xa{background:#1c0a0a;color:#e74c3c;border-color:#922b21}
 .gx.rv.xg{background:#1e6b35;color:#d5f5e3;border-color:#27ae60;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.gx.sr{border-color:#e74c3c;background:rgba(192,57,43,.45);color:#fde8e8;border-width:3px}
-.gx.sb{border-color:#2980b9;background:rgba(26,82,118,.45);color:#d6eaf8;border-width:3px}
-.gx.sa{border-color:#922b21;background:rgba(28,10,10,.7);color:#e74c3c;border-width:3px}
-.gx.sn{border-color:#5d6d7e;background:rgba(61,81,102,.35);color:#aab7c4;border-width:2px}
-.gx.sg{border-color:#27ae60;background:rgba(30,107,53,.45);color:#a9dfbf;border-width:3px}
+.gx.sr{border-color:#e74c3c;background:#c0392b;color:#fff;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.gx.sb{border-color:#2980b9;background:#1a5276;color:#d6eaf8;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.gx.sa{border-color:#c0392b;background:#160000;color:#ff6b6b;border-width:3px;box-shadow:inset 0 0 10px rgba(231,76,60,.4);text-shadow:0 0 8px #e74c3c}
+.gx.sn{border-color:#7f8c8d;background:#3d5166;color:#d5dbdb;border-width:2px}
+.gx.sg{border-color:#27ae60;background:#1e6b35;color:#a9dfbf;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 /* Kids mode — spy hint gets colored strip at top */
 body.kids-mode .gx.sr::before{content:'🔴';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(192,57,43,.6);border-radius:4px 4px 0 0;text-align:center}
 body.kids-mode .gx.sb::before{content:'🔵';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(26,82,118,.6);border-radius:4px 4px 0 0;text-align:center}
@@ -538,7 +542,7 @@ body.chat-is-open #gameScr{padding-bottom:41vh}
     </div>
     <div style="display:flex;align-items:center;gap:6px">
       <span class="chat-unread" id="chatUnread">0</span>
-      
+      <button class="chat-toggle-btn" onclick="toggleChat()" id="chatToggleBtn" title="إغلاق الشات">✕</button>
     </div>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
@@ -552,7 +556,10 @@ body.chat-is-open #gameScr{padding-bottom:41vh}
   </div>
 </div>
 
-<!-- chat open btn removed — chat always open -->
+<!-- chat open btn -->
+<div id="chatOpenBtn" onclick="toggleChat()">
+  <span>💬</span><span id="chatOpenUnread" style="display:none;background:#e74c3c;color:#fff;border-radius:10px;font-size:.65em;padding:1px 5px;margin-right:2px"></span><span>شات</span>
+</div>
 
 <div class="tst" id="tst"></div>
 
@@ -676,9 +683,22 @@ function amISpymaster(){
   if(ROOM.mode==='classic')return ME.role==='red-spy'||ME.role==='blue-spy';
   return ME.role==='duet-spy';
 }
+// Check each team has exactly 1 leader (no more, no less)
+function validateLeaders(players,bots,mode){
+  if(mode!=='classic')return{ok:true};
+  var allRoles=[];
+  Object.values(players||{}).forEach(function(p){if(p.role)allRoles.push(p.role)});
+  Object.values(bots||{}).forEach(function(b){if(b.role)allRoles.push(b.role)});
+  var redLeaders=allRoles.filter(function(r){return r==='red-spy'}).length;
+  var blueLeaders=allRoles.filter(function(r){return r==='blue-spy'}).length;
+  if(redLeaders===0)return{ok:false,msg:'❌ الفريق الأحمر بدون قائد'};
+  if(blueLeaders===0)return{ok:false,msg:'❌ الفريق الأزرق بدون قائد'};
+  if(redLeaders>1)return{ok:false,msg:'❌ الفريق الأحمر له أكثر من قائد'};
+  if(blueLeaders>1)return{ok:false,msg:'❌ الفريق الأزرق له أكثر من قائد'};
+  return{ok:true};
+}
 
 function openChat(){chatOpen=true;renderChatPanel()}
-function toggleChat(){chatOpen=!chatOpen;renderChatPanel()}
 
 function renderChatPanel(){
   var panel=document.getElementById('chatPanel');
@@ -701,9 +721,14 @@ function renderChatPanel(){
   if(pendingGuessWord)confirmBtn.textContent='✅ نختار: '+pendingGuessWord;
   // 5.1: Only spies (not spymaster) can type in chat
   document.getElementById('chatInpRow').style.display=amISpy()?'flex':'none';
-  // 1.2 & 1.5 — Chat is ALWAYS open during game
-  panel.classList.add('open');
-  document.body.classList.add('chat-is-open');
+  // Respect toggle state — don't force-open every render
+  if(chatOpen){
+    panel.classList.add('open');
+    document.body.classList.add('chat-is-open');
+  }else{
+    panel.classList.remove('open');
+    document.body.classList.remove('chat-is-open');
+  }
   chatUnreadCount=0;updateChatBadges();
   setTimeout(function(){var m=document.getElementById('chatMsgs');if(m)m.scrollTop=m.scrollHeight},60);
 }
@@ -791,7 +816,39 @@ function resetChat(){
   document.body.classList.remove('chat-is-open');
   var panel=document.getElementById('chatPanel');if(panel)panel.classList.remove('open');
   var msgs=document.getElementById('chatMsgs');if(msgs)msgs.innerHTML='';
-  updateChatBadges();
+  updateChatBadges();updateChatVisibility();
+}
+
+// Toggle chat open/closed
+function toggleChat(){
+  chatOpen=!chatOpen;
+  var panel=document.getElementById('chatPanel');
+  if(!panel)return;
+  panel.classList.toggle('open',chatOpen);
+  document.body.classList.toggle('chat-is-open',chatOpen);
+  var btn=document.getElementById('chatOpenBtn');
+  if(btn)btn.style.display=chatOpen?'none':'flex';
+  if(chatOpen){chatUnreadCount=0;updateChatBadges();setTimeout(function(){var m=document.getElementById('chatMsgs');if(m)m.scrollTop=m.scrollHeight},60)}
+}
+
+// Show/hide chat based on current screen (rooms only)
+var CHAT_ALLOWED_SCREENS=['lobbyScr','gameScr','resultScr'];
+function updateChatVisibility(){
+  var active=document.querySelector('.scr.on');
+  var inRoom=!!(ME.code&&(roomRef||isOffline));
+  var onRoomScreen=active&&CHAT_ALLOWED_SCREENS.indexOf(active.id)>=0;
+  var chatVisible=inRoom&&onRoomScreen;
+  var panel=document.getElementById('chatPanel');
+  var openBtn=document.getElementById('chatOpenBtn');
+  if(!chatVisible){
+    if(panel){panel.classList.remove('open');document.body.classList.remove('chat-is-open')}
+    if(openBtn)openBtn.style.display='none';
+  }else{
+    if(panel&&chatOpen)panel.classList.add('open');
+    // Show open button only on gameScr when chat is closed and not spymaster
+    var onGame=active&&active.id==='gameScr';
+    if(openBtn)openBtn.style.display=(onGame&&!chatOpen&&!amISpymaster())?'flex':'none';
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -804,13 +861,13 @@ var BOT_NAMES=[
   'مريم','شيخة','فاطمة','عائشة','زينب','ليلى','أسماء','رهف','جود','لارا'
 ];
 var botCheckInterval=null;
-var BOT_JOIN_DELAY=5000;
+var BOT_JOIN_DELAY=2000+Math.floor(Math.random()*5001); // random 2-7s per session
 
 function botIQ(){return 0.5+Math.random()*0.45}
 
 function startBotWatch(){
   clearBotWatch();
-  var remaining=BOT_JOIN_DELAY;
+  var remaining=2000+Math.floor(Math.random()*5001); // fresh random 2-7s each call
   var cdEl=document.getElementById('botCountdown');
   if(cdEl)cdEl.textContent='';
   botCheckInterval=setInterval(function(){
@@ -836,21 +893,16 @@ function maybeAddBots(){
   var bots=ROOM.bots||{};
   var botCount=Object.keys(bots).length;
   var playerCount=Object.keys(players).length;
-  // Keep adding until we have at least 2 total (enough to eventually start)
   var total=playerCount+botCount;
-  var toAdd=Math.max(0,Math.min(3-botCount,4-total,3)); // add up to 3 bots, never exceed 4 total
-  var added=0;
+  var toAdd=Math.max(0,Math.min(3-botCount,4-total,3));
+  // Clone bots locally so each pick sees previously-assigned roles
+  var botsLocal=JSON.parse(JSON.stringify(bots));
   for(var i=0;i<toAdd;i++){
+    var role=pickBotRole(botsLocal,players);
+    if(!role)break; // all roles already filled — stop
     var bid='bot_'+genId();
-    var allBotsCopy=JSON.parse(JSON.stringify(bots));
-    // Assign a fake entry so pickBotRole sees the ones we're about to add
-    allBotsCopy['_tmp'+i]={role:''};
-    var role=pickBotRole(bots,players);
-    if(!role)continue;
     roomRef.child('bots/'+bid).set({id:bid,name:BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)],iq:botIQ(),role:role});
-    // Update local bots so next pick sees the added role
-    bots[bid]={role:role};
-    added++;
+    botsLocal[bid]={role:role}; // update local view
   }
 }
 
@@ -873,11 +925,17 @@ function pickBotRole(bots,players){
   Object.values(players||{}).forEach(function(p){if(p.role)allRoles.push(p.role)});
   Object.values(bots||{}).forEach(function(b){if(b.role)allRoles.push(b.role)});
   if(ROOM.mode==='classic'){
-    var opts=['red-op','blue-op'];
-    for(var i=0;i<opts.length;i++){if(allRoles.indexOf(opts[i])===-1)return opts[i]}
-    return'red-op';
+    // Try op roles first (agents), fall back to spy only if missing
+    var want=['red-op','blue-op','red-spy','blue-spy'];
+    for(var i=0;i<want.length;i++){
+      if(allRoles.indexOf(want[i])===-1)return want[i];
+    }
+    return null; // all roles filled
   }else{
-    return allRoles.indexOf('duet-agent')===-1?'duet-agent':'duet-spy';
+    // Duet: both roles are unique
+    if(allRoles.indexOf('duet-spy')===-1)return'duet-spy';
+    if(allRoles.indexOf('duet-agent')===-1)return'duet-agent';
+    return null;
   }
 }
 
@@ -1259,21 +1317,25 @@ function updateBackToRoomBtn(){
 // 1.4 & 1.4.1 — Bots pick roles AFTER real user, complement them
 // ════════════════════════════════════════════════════════════════
 function onHumanPickedRole(role){
-  // After human picks, schedule bot role selection 2-5s later
   if(!ME.isHost||!ROOM||!ROOM.bots)return;
   var delay=2000+Math.random()*3000;
   setTimeout(function(){
     if(!ROOM||!roomRef)return;
     var players=ROOM.players||{};
     var bots=ROOM.bots||{};
-    var humanRoles=[];
-    Object.values(players).forEach(function(p){if(p.role)humanRoles.push(p.role)});
+    // Build full picture of all taken roles (humans + bots that already have roles)
+    var takenAll=[];
+    Object.values(players).forEach(function(p){if(p.role)takenAll.push(p.role)});
     Object.values(bots).forEach(function(b){
-      if(b.role)return; // already has role
-      var botRole=pickComplementaryRole(humanRoles,ROOM.mode);
+      if(b.role)takenAll.push(b.role);
+    });
+    // Only reassign bots that have NO role yet
+    Object.values(bots).forEach(function(b){
+      if(b.role)return;
+      var botRole=pickComplementaryRole(takenAll,ROOM.mode);
       if(botRole){
         roomRef.child('bots/'+b.id+'/role').set(botRole);
-        humanRoles.push(botRole);
+        takenAll.push(botRole); // mark taken so next bot doesn't duplicate
       }
     });
   },delay);
@@ -1499,7 +1561,7 @@ function doLeaveRoom(){
   show('homeScr');
 }
 
-function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on');updateChip()}
+function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on');updateChip();updateChatVisibility()}
 function shuf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=b[i];b[i]=b[j];b[j]=tmp}return b}
 function genCode(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var r='';for(var i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
 function genId(){return Math.random().toString(36).substr(2,9)}
@@ -1953,7 +2015,7 @@ if(APP.ageGroup){
 // ══════════════════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════════════════
-function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on');updateChip()}
+function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on');updateChip();updateChatVisibility()}
 function shuf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=b[i];b[i]=b[j];b[j]=tmp}return b}
 function genCode(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var r='';for(var i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
 function genId(){return Math.random().toString(36).substr(2,9)}
@@ -2194,20 +2256,37 @@ function renderLobby(){
   });
   var rc=document.getElementById('rCards');rc.innerHTML='';
   var takenRoles=[];
+  // ← FIXED: include BOTH human and bot roles so UI correctly blocks taken roles
   Object.values(players).forEach(function(p){if(p.role)takenRoles.push(p.role)});
+  Object.values(ROOM.bots||{}).forEach(function(b){if(b.role)takenRoles.push(b.role)});
+
   var roles=ROOM.mode==='classic'?
     [['red-spy','🔴🗺️','قائد أحمر'],['red-op','🔴👆','عميل أحمر'],['blue-spy','🔵🗺️','قائد أزرق'],['blue-op','🔵👆','عميل أزرق']]:
     [['duet-spy','🟢🗺️','القائد — يرى الخريطة'],['duet-agent','🟠👆','العميل — يخمّن']];
+
+  // Roles that are strictly unique (only 1 allowed per game)
+  // Classic: only spy roles are unique. Duet: BOTH roles are unique (game has exactly 2 roles)
+  var uniqueRoles=ROOM.mode==='classic'?['red-spy','blue-spy']:['duet-spy','duet-agent'];
+
   roles.forEach(function(arr){
     var r=arr[0],ic=arr[1],t=arr[2];
-    // Only 1 spymaster per team — disable if taken by someone else
-    var spyRoles=['red-spy','blue-spy','duet-spy'];
-    var takenByOther=spyRoles.indexOf(r)>=0&&takenRoles.indexOf(r)>=0&&ME.role!==r;
+    var takenByOther=uniqueRoles.indexOf(r)>=0&&takenRoles.indexOf(r)>=0&&ME.role!==r;
     var d=document.createElement('div');
     d.className='rc'+(ME.role===r?' on':(takenByOther?' disabled':''));
     if(takenByOther)d.style.opacity='.4';
     d.innerHTML='<div class="rci">'+ic+'</div><div class="rct">'+t+(takenByOther?' <span style="font-size:.7em;color:var(--rl)">محجوز</span>':'')+'</div>';
-    d.onclick=takenByOther?null:function(rr){return function(){ME.role=rr;roomRef.child('players/'+ME.id+'/role').set(rr);if(ME.isHost)setTimeout(function(){onHumanPickedRole(rr)},200)}}(r);
+    d.onclick=takenByOther?null:function(rr){return function(){
+      // Server-side guard: re-read live ROOM state before writing
+      var takenNow=[];
+      Object.values(ROOM.players||{}).forEach(function(p){if(p.role)takenNow.push(p.role)});
+      Object.values(ROOM.bots||{}).forEach(function(b){if(b.role)takenNow.push(b.role)});
+      if(uniqueRoles.indexOf(rr)>=0&&takenNow.indexOf(rr)>=0&&ME.role!==rr){
+        toast('❌ هذا الدور محجوز — اختر دوراً آخر','ter');return;
+      }
+      ME.role=rr;
+      roomRef.child('players/'+ME.id+'/role').set(rr);
+      if(ME.isHost)setTimeout(function(){onHumanPickedRole(rr)},200);
+    }}(r);
     rc.appendChild(d);
   });
   document.getElementById('startBtn').style.display=ME.isHost?'block':'none';
@@ -2221,7 +2300,8 @@ function startOnline(){
   Object.keys(players).forEach(function(id){if(players[id].role)roles.push(players[id].role)});
   Object.keys(bots).forEach(function(id){if(bots[id].role)roles.push(bots[id].role)});
   if(ROOM.mode==='classic'){
-    if(roles.indexOf('red-spy')===-1||roles.indexOf('blue-spy')===-1){document.getElementById('lErr').textContent='❌ لازم قائد لكل فريق';return}
+    var lv=validateLeaders(players,bots,'classic');
+    if(!lv.ok){document.getElementById('lErr').textContent=lv.msg;return}
     ensureEnoughBots();clearBotWatch();roomRef.update({status:'playing',game:{turn:'red',clue:null,guessesLeft:0,revealed:{},redLeft:9,blueLeft:8,timerStart:null,turnCount:0}});
   }else{
     if(roles.indexOf('duet-spy')===-1||roles.indexOf('duet-agent')===-1){document.getElementById('lErr').textContent='❌ لازم قائد وعميل';return}
@@ -2433,6 +2513,31 @@ function renderOnlineResult(){
   renderResultBoard(words,types,revealed);
   show('resultScr');
 }
+
+// ══════════════════════════════════════════════════════
+// 📱 PWA — Service Worker Registration
+// ══════════════════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(err){console.warn('SW reg failed:',err)});
+  });
+}
+// PWA install prompt — show a banner when browser fires beforeinstallprompt
+var _pwaPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();_pwaPrompt=e;
+  // Show a subtle install toast after 3 seconds
+  setTimeout(function(){
+    if(!_pwaPrompt)return;
+    var t=document.getElementById('tst');
+    if(!t)return;
+    t.textContent='📲 ثبّت التطبيق على الشاشة الرئيسية!';
+    t.className='tst show tok';
+    t.style.cursor='pointer';
+    t.onclick=function(){if(_pwaPrompt){_pwaPrompt.prompt();_pwaPrompt=null;t.onclick=null;t.style.cursor=''}};
+    setTimeout(function(){t.classList.remove('show');t.style.cursor='';t.onclick=null},6000);
+  },3000);
+});
 </script>
 </body>
 </html>
