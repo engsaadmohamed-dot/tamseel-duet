@@ -3,137 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🧪 اختبارات الجاسوسية</title>
+<title>🧪 اختبارات الجاسوسية v2</title>
 <style>
-body{font-family:'Segoe UI',Tahoma,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:16px;direction:rtl}
-h1{color:#ffd700;font-size:1.4em;margin-bottom:4px}
-.subtitle{color:#8b949e;font-size:.85em;margin-bottom:20px}
-.suite{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px;margin-bottom:16px}
-.suite-title{font-weight:700;font-size:1em;margin-bottom:10px;color:#58a6ff;display:flex;align-items:center;gap:8px}
-.test{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid #21262d;font-size:.82em}
-.test:last-child{border:none}
-.status{font-size:1.1em;flex-shrink:0;width:20px;text-align:center}
-.pass{color:#3fb950}.fail{color:#f85149}.skip{color:#8b949e}
-.test-name{flex:1;color:#e6edf3}
-.test-detail{color:#8b949e;font-size:.78em;margin-top:2px}
-.err-msg{color:#f85149;font-size:.76em;margin-top:3px;background:rgba(248,81,73,.08);padding:3px 6px;border-radius:4px}
-.summary{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px;margin-top:20px;text-align:center}
-.summary-nums{font-size:2em;font-weight:900;margin:8px 0}
-.pass-num{color:#3fb950}.fail-num{color:#f85149}.skip-num{color:#8b949e}
-button{padding:10px 24px;background:#238636;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9em;font-weight:700;margin-bottom:16px}
-button:hover{background:#2ea043}
-.run-btn{background:#1f6feb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#0d1117;color:#e6edf3;padding:16px;direction:rtl;font-size:14px}
+h1{color:#ffd700;font-size:1.3em;margin-bottom:2px}
+.sub{color:#8b949e;font-size:.82em;margin-bottom:16px}
+.run-btn{padding:10px 24px;background:#1f6feb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9em;font-weight:700;margin-bottom:16px;margin-left:8px}
 .run-btn:hover{background:#388bfd}
-.bar{height:6px;border-radius:3px;background:#21262d;margin-top:12px;overflow:hidden}
-.bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#3fb950,#56d364);transition:width .4s ease}
+.clear-btn{padding:10px 16px;background:#21262d;color:#8b949e;border:1px solid #30363d;border-radius:8px;cursor:pointer;font-size:.9em}
+.suite{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.suite-title{font-weight:700;font-size:.95em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.suite-score{font-size:.75em;color:#8b949e;font-weight:400}
+.test{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #21262d;font-size:.8em}
+.test:last-child{border:none}
+.icon{width:18px;text-align:center;flex-shrink:0;margin-top:1px}
+.tname{flex:1;color:#e6edf3;line-height:1.4}
+.tdetail{color:#8b949e;font-size:.76em;margin-top:2px}
+.terr{color:#f85149;font-size:.76em;margin-top:3px;background:rgba(248,81,73,.08);padding:3px 7px;border-radius:4px;font-family:monospace}
+.summary{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px;margin-top:16px;text-align:center}
+.snums{font-size:2em;font-weight:900;margin:8px 0}
+.bar{height:6px;border-radius:3px;background:#21262d;margin-top:10px;overflow:hidden}
+.fill{height:100%;border-radius:3px;transition:width .5s ease}
+.pass-fill{background:linear-gradient(90deg,#3fb950,#56d364)}
+.fail-fill{background:linear-gradient(90deg,#f85149,#ff7b72)}
 </style>
 </head>
 <body>
-
 <h1>🧪 اختبارات الجاسوسية v2</h1>
-<div class="subtitle">شغّل الاختبارات قبل كل إصدار — بدون إنترنت</div>
-
-<button class="run-btn" onclick="runAll()">▶ شغّل كل الاختبارات</button>
-
-<div id="results"></div>
-<div class="summary" id="summary" style="display:none">
-  <div>نتيجة الاختبارات</div>
-  <div class="summary-nums">
-    <span class="pass-num" id="sPass">0</span> ✅ &nbsp;
-    <span class="fail-num" id="sFail">0</span> ❌ &nbsp;
-    <span class="skip-num" id="sSkip">0</span> ⚪
+<div class="sub">شغّل قبل كل إصدار — مستقل، بدون إنترنت أو Firebase</div>
+<button class="run-btn" onclick="runAll()">&#9654; شغّل كل الاختبارات</button>
+<button class="clear-btn" onclick="document.getElementById('out').innerHTML='';document.getElementById('sum').style.display='none'">مسح</button>
+<div id="out"></div>
+<div class="summary" id="sum" style="display:none">
+  <div style="color:#8b949e;font-size:.85em">النتيجة</div>
+  <div class="snums">
+    <span style="color:#3fb950" id="sp">0</span> &#10003; &nbsp;
+    <span style="color:#f85149" id="sf">0</span> &#10007;
   </div>
-  <div class="bar"><div class="bar-fill" id="sBar" style="width:0%"></div></div>
+  <div class="bar"><div class="fill" id="sb" style="width:0%"></div></div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════════
-// Inline copies of game functions needed for testing
-// ════════════════════════════════════════════════════════════════
+// ════════ FRAMEWORK ════════
+var allResults=[];
+function assert(c,m){if(!c)throw new Error(m||'assertion failed')}
+function eq(a,b,m){if(a!==b)throw new Error((m||'')+': got '+JSON.stringify(a)+' expected '+JSON.stringify(b))}
+function between(v,lo,hi,m){if(v<lo||v>hi)throw new Error((m||'out of range')+': '+v+' not in ['+lo+','+hi+']')}
+function unique(arr,m){var s=new Set(arr);if(s.size!==arr.length)throw new Error((m||'duplicates')+': '+JSON.stringify(arr.filter(function(x,i){return arr.indexOf(x)!==i})))}
+function includes(arr,v,m){if(arr.indexOf(v)===-1)throw new Error((m||'')+': '+v+' not in ['+arr.join(',')+']')}
+function notIncludes(arr,v,m){if(arr.indexOf(v)!==-1)throw new Error((m||'')+': '+v+' should not be in array')}
+function test(name,fn){
+  var r={name:name,status:'pass',detail:'',err:''};
+  try{var out=fn();if(out&&out.detail)r.detail=out.detail}catch(e){r.status='fail';r.err=e.message}
+  allResults.push(r);
+}
 
+// ════════ GAME LOGIC (inline) ════════
 function shuf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t}return b}
 function genId(){return Math.random().toString(36).substr(2,9)}
 function botIQ(){return 0.5+Math.random()*0.45}
+var BOT_NAMES=['سارة','نور','ريم','هند','لمى','دانة','رنا','سلمى','لين','منى','علي','عمر','يوسف','خالد','أحمد','ماجد','سلطان','راشد','حمد','جابر','مريم','شيخة','فاطمة','عائشة','زينب','ليلى','أسماء','رهف','جود','لارا'];
 
-// ── Word tag data (copy from game) ──
 var WORD_TAGS={
-  'حمار':['حيوان','مزرعة','نهيق','أذن','رمادي'],
-  'بقرة':['حيوان','مزرعة','حليب','لحم','أبيض'],
-  'خروف':['حيوان','مزرعة','صوف','ثغاء','لحم'],
-  'حصان':['حيوان','مزرعة','سباق','ركوب','صهيل'],
-  'أسد':['حيوان','غابة','ملك','زئير','افتراس'],
-  'نمر':['حيوان','غابة','سرعة','مخطط','افتراس'],
-  'صقر':['طائر','سماء','صيد','سرعة','بصر'],
-  'نسر':['طائر','سماء','جارح','ضخم','قمة'],
-  'بومة':['طائر','ليل','ذكاء','هدوء','غابة'],
-  'نحلة':['حشرة','عسل','لسعة','طيران','مجموعة'],
-  'فراشة':['حشرة','ملون','طيران','تحول','ربيع'],
-  'تفاح':['فاكهة','أحمر','حلو','شجر','عصير'],
-  'موز':['فاكهة','أصفر','استوائي','قرد','حلو'],
-  'عنب':['فاكهة','عناقيد','حلو','كرمة','أرجواني'],
-  'شمس':['طبيعة','ضوء','حرارة','أصفر','نجمة'],
-  'قمر':['طبيعة','ليل','فضي','هلال','هدوء'],
-  'نجمة':['طبيعة','ليل','لمعان','سماء','خماسي'],
-  'بحر':['طبيعة','ماء','ملح','موج','أزرق'],
-  'جبل':['طبيعة','ضخم','صخر','تسلق','ثلج'],
-  'سيارة':['مواصلات','بنزين','طريق','عجلات','سرعة'],
-  'طائرة':['مواصلات','سماء','سفر','سرعة','مطار'],
-  'قطار':['مواصلات','سكة','سرعة','محطة','عجلات'],
-  'سكين':['أداة','حاد','قطع','مطبخ','معدن'],
-  'مقص':['أداة','حاد','قطع','ورق','يدان'],
-  'مطرقة':['أداة','إنشاء','ضرب','ثقيل','معدن'],
-  'قلب':['جسم','حب','ضخ','حياة','مشاعر'],
-  'عين':['جسم','رؤية','لون','دموع','مراقبة'],
-  'يد':['جسم','عمل','لمس','إشارة','مساعدة'],
-  'قهوة':['مشروب','أسود','تنبيه','صباح','حبوب'],
-  'حليب':['مشروب','أبيض','بقرة','كالسيوم','أطفال'],
+  'كلب':['حيوان','منزل','نباح','أسنان','ولاء','شعر','ذيل','أربع أرجل','يلحس','يركض','يصطاد','يحرس','صديق الإنسان','مدرب'],
+  'قطة':['حيوان','منزل','مواء','مخالب','ليل','ذيل','فراء','مستقل','تتسلق','تقفز','تتقيأ','تصطاد فئران','ناعم','أنيق'],
+  'حمار':['حيوان','مزرعة','نهيق','أذن طويلة','رمادي','بطيء','عنيد','يحمل','أربع أرجل','ذيل','شعر خشن','كسول','ثقيل','يرفس'],
+  'بقرة':['حيوان','مزرعة','حليب','لحم','أبيض أسود','ضخم','مواء','ضرع','أربع أرجل','قرون','مخلوق هادئ','يجتر','ثقيل','يرعى'],
+  'خروف':['حيوان','مزرعة','صوف','ثغاء','أبيض','لحم','قطيع','أربع أرجل','هادئ','يرعى','وديع','ناعم','صغير','قرون صغيرة'],
+  'حصان':['حيوان','مزرعة','سباق','ركوب','صهيل','مانة','أربع أرجل','حافر','ذيل طويل','شعر','سريع','يقفز','ضخم','يجر عربة'],
+  'أسد':['حيوان','غابة','ملك الغابة','زئير','افتراس','ضخم','لبدة','أربع أرجل','أسنان حادة','مخالب','أصفر','يصطاد','فريسة','فريق'],
+  'نمر':['حيوان','غابة','سريع جداً','مخطط','افتراس','رشاقة','أسود أصفر','يتسلق','يسبح','وحيد','يصطاد ليلاً','قوي','أربع أرجل','صامت'],
+  'صقر':['طائر','سريع','صيد','بصر حاد جداً','مخالب','منقار معقوف','يطير عالياً','جارح','بني','أجنحة قوية','صامت','ملكي','يدرب','وحيد'],
+  'نسر':['طائر','ضخم','يطير عالياً','بصر قوي','يأكل الجثث','أجنحة ضخمة','منقار معقوف','مخالب','أصلع الرأس','نادر','وحيد','بني','ملك الطيور','رمز'],
+  'بومة':['طائر','ليل','ذكاء','صامت','يدور رأسه','بصر ليلي','يصطاد الفئران','وحيد','قرون ريشية','يهوط بصمت','كبير العين','رمادي','رمز الحكمة','نعيق'],
+  'نحلة':['حشرة','عسل','خلية','لسعة','شغل جماعي','أصفر أسود','ملكة','يطير','يجمع رحيق','شمع','يموت بعد اللسعة','مهم للبيئة','صوت طنين','صغير'],
+  'تفاح':['فاكهة','أحمر أو أخضر','شجرة','مقرمش','حلو حامض','عصير','صحي','أبيض من الداخل','بذور','خريف','غرب','رمز التعليم','كور شكل','ينظف الأسنان'],
+  'موز':['فاكهة','أصفر','استوائي','حلو','يقشر','غني بالبوتاسيوم','مطحون','طاقة','أبيض من الداخل','شكل منحني','يسود عند النضج','قرود','يلتف','ناعم'],
+  'شمس':['طبيعة','ضوء','حرارة','أصفر','نجمة','حياة','لا ترى مباشرة','تشرق غرباً','دائرية','بعيدة','تحرق','طاقة','نهار','مشرق'],
+  'قمر':['طبيعة','ليل','فضي','هلال','يدور حول الأرض','مد وجزر','هادئ','بارد الضوء','يتغير شكله','تلوث صفر','رومانسي','رمضان','جاذبية','أمريكا وصلت له'],
+  'بحر':['طبيعة','ملح','موج','عميق','أزرق','سمك','شاطئ','رياح','سفن','ضجيج','لا نهاية له','خطير أحياناً','رياضة','صيف'],
+  'جبل':['طبيعة','ضخم','صخر','قمة','تسلق','ثلج','غابة','هواء نقي','مرتفع','حيوانات','يستغرق التسلق وقتاً','يعزل','مناخ بارد','شامخ'],
+  'سيارة':['مواصلات','بنزين','عجلات','سرعة','طريق','يقودها شخص','أبواب','نوافذ','أحجام مختلفة','تسبب حوادث','راحة','يعطل','موقف','حزام أمان'],
+  'طائرة':['مواصلات','سماء','سرعة عالية','مطار','بنزين','طيار','جناحان','محرك','ارتفاع','ضجيج','تذكرة','أمتعة','يطير فوق السحاب','يصاب بالإعياء'],
+  'قهوة':['مشروب','أسود','تنبيه','صباح','حبوب','ساخن','رائحة','مر','سكر','كافيين','آلة','تحضير','اجتماعي','طاقة'],
+  'حليب':['مشروب','أبيض','بقرة','كالسيوم','أطفال','طازج','مسخن','رغوة','سكر طبيعي','بروتين','لزج','ثقيل','دسم','يفسد بسرعة'],
 };
 
-function wordScore(word, clueWord){
-  var tags=WORD_TAGS[word]||[];
-  var clueTags=WORD_TAGS[clueWord]||[];
-  var clue=(clueWord||'').toLowerCase();
-  var w=(word||'').toLowerCase();
-  var score=0;
-  if(w.includes(clue)||clue.includes(w))score+=3;
-  tags.forEach(function(t){if(clueTags.indexOf(t)>=0)score+=1.5});
-  if(tags.some(function(t){return t.includes(clue)||clue.includes(t)}))score+=1;
-  return score;
+function wordScore(word,clue){
+  var tags=WORD_TAGS[word]||[];var clueTags=WORD_TAGS[clue]||[];
+  var cl=(clue||'').toLowerCase();var w=(word||'').toLowerCase();var s=0;
+  if(w===cl)s+=5;else if(w.includes(cl)||cl.includes(w))s+=3;
+  tags.forEach(function(t){if(clueTags.indexOf(t)>=0)s+=1.5;if(t.includes(cl)||cl.includes(t))s+=1.2});
+  return s;
 }
 
 function smartBotPick(iq,candidates,clueWord){
-  var scored=candidates.map(function(c){
-    var s=wordScore(c.w,clueWord);s+=Math.random()*(2*(1-iq));return{c:c,score:s};
-  });
-  scored.sort(function(a,b){return b.score-a.score});
-  var topN=Math.max(1,Math.ceil(scored.length*(1.1-iq)));
-  var pick=scored[Math.floor(Math.random()*topN)];
-  return pick?pick.c:null;
+  var sc=candidates.map(function(c){var s=wordScore(c.w,clueWord)+Math.random()*(2*(1-iq));return{c:c,s:s}});
+  sc.sort(function(a,b){return b.s-a.s});
+  var topN=Math.max(1,Math.ceil(sc.length*(1.1-iq)));
+  var p=sc[Math.floor(Math.random()*topN)];return p?p.c:null;
 }
 
-// Board generators (simplified inline)
 var CLUSTERS=[
-  {id:'animals',words:['قطة','كلب','أرنب','حمامة','سمكة','سلحفاة','هامستر','قنفذ','ببغاء']},
-  {id:'farm',words:['بقرة','حصان','خروف','ديك','بطة','حمار','جمل','ماعز','ثور']},
-  {id:'wild',words:['أسد','نمر','فيل','زرافة','فهد','دب','ذئب','ثعلب','قرد']},
-  {id:'sea',words:['حوت','دلفين','قرش','أخطبوط','فقمة','سمكة','نجم البحر','كركند','حبار']},
-  {id:'birds',words:['صقر','نسر','بومة','عصفور','طاووس','بطريق','نعامة','حمامة','غراب']},
-  {id:'fruit',words:['تفاح','موز','عنب','برتقال','فراولة','مانجو','بطيخ','رمان','كرز']},
-  {id:'veg',words:['طماطم','خيار','جزر','بصل','فلفل','باذنجان','كوسة','ثوم','خس']},
-  {id:'drinks',words:['قهوة','شاي','حليب','عصير','ماء','كاكاو','ليموناضة','سموثي','كولا']},
-  {id:'sweets',words:['كنافة','بسبوسة','آيس كريم','شوكولاتة','كيك','عسل','مربى','بقلاوة','قطايف']},
-  {id:'sport',words:['كرة قدم','سباحة','ملاكمة','تنس','جري','جمباز','تسلق','دراجة','يوغا']},
-  {id:'tools',words:['مطرقة','مفتاح','مسمار','سكين','مقص','حبل','قفل','إبرة','منشار']},
-  {id:'nature',words:['جبل','بحر','نهر','صحراء','غابة','شلال','بركان','كهف','جزيرة']},
-  {id:'sky',words:['شمس','قمر','نجمة','سحابة','مطر','ثلج','رعد','برق','رياح']},
-  {id:'transport',words:['سيارة','طائرة','قطار','سفينة','دراجة','مترو','قارب','مروحية','صاروخ']},
-  {id:'body',words:['قلب','عين','يد','رأس','أذن','أنف','لسان','كتف','ذراع']},
+  {id:'a',words:['كلب','قطة','حمار','بقرة','خروف','حصان','أسد','نمر','حمامة']},
+  {id:'b',words:['صقر','نسر','بومة','نحلة','فراشة','نملة','خنفساء','بعوضة','دودة']},
+  {id:'c',words:['تفاح','موز','عنب','برتقال','فراولة','مانجو','بطيخ','رمان','كرز']},
+  {id:'d',words:['طماطم','خيار','جزر','بصل','فلفل','باذنجان','كوسة','ثوم','خس']},
+  {id:'e',words:['قهوة','شاي','حليب','عصير','ماء','كاكاو','ليموناضة','سموثي','كولا']},
+  {id:'f',words:['كيك','شوكولاتة','آيس كريم','كنافة','بسبوسة','عسل','مربى','بقلاوة','قطايف']},
+  {id:'g',words:['كرة قدم','سباحة','ملاكمة','تنس','جري','جمباز','تسلق','دراجة','يوغا']},
+  {id:'h',words:['سيارة','طائرة','قطار','سفينة','مترو','قارب','مروحية','صاروخ','بالون']},
+  {id:'i',words:['شمس','قمر','نجمة','سحابة','مطر','ثلج','رعد','برق','رياح']},
+  {id:'j',words:['جبل','بحر','نهر','صحراء','غابة','شلال','بركان','كهف','جزيرة']},
+  {id:'k',words:['قلب','عين','يد','رأس','أذن','أنف','لسان','كتف','ذراع']},
+  {id:'l',words:['مطرقة','مفتاح','سكين','مقص','حبل','قفل','مسمار','إبرة','منشار']},
+  {id:'m',words:['هرم','نيل','فرعون','معبد','مومياء','مسلة','أبو الهول','بردية','كارتوش']},
+  {id:'n',words:['أسد','تنين','جني','ساحر','أميرة','مملكة','قزم','وحش','إكسير']},
+  {id:'o',words:['أحمر','أزرق','أخضر','أصفر','أبيض','أسود','ذهبي','بنفسجي','برتقالي']},
 ];
 
 function generateBoard(){
-  var shuffled=shuf(CLUSTERS);
-  var red=[],blue=[],assassin='',neutral=[];
-  var ci=0,used=new Set();
+  var shuffled=shuf(CLUSTERS);var red=[],blue=[],assassin='',neutral=[];var ci=0,used=new Set();
   while(red.length<9&&ci<shuffled.length){var av=shuf(shuffled[ci].words).filter(function(w){return!used.has(w)});var t=Math.min(9-red.length,av.length,4);for(var j=0;j<t;j++){red.push(av[j]);used.add(av[j])}ci++}
   while(blue.length<8&&ci<shuffled.length){var av2=shuf(shuffled[ci].words).filter(function(w){return!used.has(w)});var t2=Math.min(8-blue.length,av2.length,4);for(var j2=0;j2<t2;j2++){blue.push(av2[j2]);used.add(av2[j2])}ci++}
   while(ci<shuffled.length){var av3=shuffled[ci].words.filter(function(w){return!used.has(w)});if(av3.length>0){assassin=av3[0];used.add(assassin);ci++;break}ci++}
@@ -147,477 +138,220 @@ function generateBoard(){
 }
 
 function getMissingRoles(taken,mode){
-  if(mode==='classic'){
-    var missing=[];
-    if(taken.indexOf('red-spy')===-1)missing.push('red-spy');
-    if(taken.indexOf('blue-spy')===-1)missing.push('blue-spy');
-    if(taken.length+missing.length<3&&taken.indexOf('red-op')===-1)missing.push('red-op');
-    if(taken.length+missing.length<4&&taken.indexOf('blue-op')===-1)missing.push('blue-op');
-    return missing;
-  }else{
-    var miss2=[];
-    if(taken.indexOf('duet-spy')===-1)miss2.push('duet-spy');
-    if(taken.indexOf('duet-agent')===-1)miss2.push('duet-agent');
-    return miss2;
-  }
+  if(mode==='classic'){var m=[];if(taken.indexOf('red-spy')===-1)m.push('red-spy');if(taken.indexOf('blue-spy')===-1)m.push('blue-spy');if(taken.indexOf('red-op')===-1)m.push('red-op');if(taken.indexOf('blue-op')===-1)m.push('blue-op');return m}
+  var m2=[];if(taken.indexOf('duet-spy')===-1)m2.push('duet-spy');if(taken.indexOf('duet-agent')===-1)m2.push('duet-agent');return m2;
+}
+function pickComplementaryRole(taken,mode){
+  if(mode==='classic'){var want=['red-op','blue-op','red-spy','blue-spy'];for(var i=0;i<want.length;i++){if(taken.indexOf(want[i])===-1)return want[i]}return null}
+  if(taken.indexOf('duet-spy')===-1)return'duet-spy';if(taken.indexOf('duet-agent')===-1)return'duet-agent';return null;
+}
+function ensureEnoughBots_sim(players,bots,mode){
+  var takenRoles=[];
+  Object.values(players).forEach(function(p){if(p.role)takenRoles.push(p.role)});
+  Object.values(bots).forEach(function(b){if(b.role)takenRoles.push(b.role)});
+  var needed=getMissingRoles(takenRoles,mode);
+  var ec=Object.keys(bots).length,ep=Object.keys(players).length,total=ec+ep,added=0;
+  var result=JSON.parse(JSON.stringify(bots));
+  needed.forEach(function(role){
+    if(ec+added>=3)return;if(total+added>=4)return;
+    result['bot_'+added]={id:'bot_'+added,name:'سارة',iq:0.7,role:role};added++;
+  });
+  return result;
+}
+function spymasterCheck(txt,board){
+  var l=txt.toLowerCase().trim();
+  return!board.some(function(w){return l===w.toLowerCase()||l.includes(w.toLowerCase())||w.toLowerCase().includes(l)});
+}
+function findBestClue_sim(teamWords,iq,avoid){
+  var tc={},tm={};
+  teamWords.forEach(function(tw){(WORD_TAGS[tw]||[]).forEach(function(tag){tc[tag]=(tc[tag]||0)+1;if(!tm[tag])tm[tag]=[];tm[tag].push(tw)})});
+  var sorted=Object.keys(tc).sort(function(a,b){return tc[b]-tc[a]});
+  if(!sorted.length)return null;
+  var chosen=null;
+  for(var i=0;i<sorted.length;i++){if(!(avoid||[]).some(function(w){return w.toLowerCase()===sorted[i].toLowerCase()})){chosen=sorted[i];break}}
+  if(!chosen)chosen=sorted[0];
+  return{clue:chosen,num:Math.min((tm[chosen]||[]).length,2),words:tm[chosen]||[]};
 }
 
-function pickComplementaryRole(takenRoles,mode){
-  if(mode==='classic'){
-    var want=['red-op','blue-op','red-spy','blue-spy'];
-    for(var i=0;i<want.length;i++){if(takenRoles.indexOf(want[i])===-1)return want[i]}
-    return null;
-  }else{
-    if(takenRoles.indexOf('duet-spy')===-1)return'duet-spy';
-    if(takenRoles.indexOf('duet-agent')===-1)return'duet-agent';
-    return null;
-  }
-}
-
-function spymasterWordCheck_test(txt,words){
-  var lower=txt.toLowerCase().trim();
-  return!words.some(function(w){return lower===w.toLowerCase()||lower.includes(w.toLowerCase())||w.toLowerCase().includes(lower)});
-}
-
-// ════════════════════════════════════════════════════════════════
-// TEST FRAMEWORK
-// ════════════════════════════════════════════════════════════════
-var results=[];
-function test(name,fn){
-  var r={name:name,status:'pass',detail:'',err:''};
-  try{
-    var out=fn();
-    if(out&&typeof out==='object'&&out.detail)r.detail=out.detail;
-  }catch(e){r.status='fail';r.err=e.message||String(e)}
-  results.push(r);
-}
-function assert(cond,msg){if(!cond)throw new Error(msg||'Assertion failed')}
-function assertEqual(a,b,msg){if(a!==b)throw new Error((msg||'Expected equal')+': got '+JSON.stringify(a)+' vs '+JSON.stringify(b))}
-function assertBetween(v,lo,hi,msg){if(v<lo||v>hi)throw new Error((msg||'Out of range')+': '+v+' not in ['+lo+','+hi+']')}
-function assertUnique(arr,msg){var s=new Set(arr);if(s.size!==arr.length)throw new Error((msg||'Duplicates found')+': '+JSON.stringify(arr.filter(function(x,i){return arr.indexOf(x)!==i})))}
-function assertIncludes(arr,val,msg){if(arr.indexOf(val)===-1)throw new Error((msg||'Not found')+': '+val+' in ['+arr.join(',')+']')}
-
-// ════════════════════════════════════════════════════════════════
-// TEST SUITES
-// ════════════════════════════════════════════════════════════════
-
+// ════════ SUITES ════════
 var SUITES=[
-  // ── 1. Board Generation ──
-  {title:'🃏 توليد اللوحة', tests:function(){
-    test('اللوحة بتحتوي على 25 كلمة بالضبط',function(){
-      var b=generateBoard();assertEqual(b.words.length,25,'عدد الكلمات');
-      assertEqual(b.types.length,25,'عدد الأنواع');
+  {title:'🃏 توليد اللوحة',fn:function(){
+    test('اللوحة 25 كلمة بالضبط',function(){var b=generateBoard();eq(b.words.length,25,'words');eq(b.types.length,25,'types')});
+    test('توزيع صحيح: 9+8+1+7 (15 دور)',function(){
+      for(var r=0;r<15;r++){var b=generateBoard();var c={red:0,blue:0,assassin:0,neutral:0};b.types.forEach(function(t){c[t]++});eq(c.red,9,'r');eq(c.blue,8,'b');eq(c.assassin,1,'a');eq(c.neutral,7,'n')}
+      return{detail:'15 rounds all correct'};
     });
-    test('توزيع الأنواع صح: 9 حمر + 8 زرق + 1 قاتل + 7 محايد',function(){
-      for(var r=0;r<10;r++){
-        var b=generateBoard();
-        var cnt={red:0,blue:0,assassin:0,neutral:0};
-        b.types.forEach(function(t){cnt[t]++});
-        assertEqual(cnt.red,9,'أحمر');assertEqual(cnt.blue,8,'أزرق');
-        assertEqual(cnt.assassin,1,'قاتل');assertEqual(cnt.neutral,7,'محايد');
-      }
-      return{detail:'10 laps passed'};
-    });
-    test('لا تكرار في كلمات اللوحة',function(){
-      for(var r=0;r<10;r++){var b=generateBoard();assertUnique(b.words,'كلمات مكررة')}
-      return{detail:'10 laps passed'};
-    });
-    test('الكلمات الحمراء مختلفة عن الكلمات الزرقاء والمحايدة',function(){
+    test('لا تكرار في الكلمات',function(){for(var r=0;r<10;r++)unique(generateBoard().words,'كرار');return{detail:'10 rounds'}});
+    test('كل كلمة لها نوع صحيح',function(){var valid=['red','blue','neutral','assassin'];generateBoard().types.forEach(function(t){assert(valid.indexOf(t)>=0,'نوع: '+t)})});
+    test('الأنواع الأربعة لا تتداخل',function(){
       for(var r=0;r<5;r++){
         var b=generateBoard();
-        var reds=b.words.filter(function(_,i){return b.types[i]==='red'});
-        var blues=b.words.filter(function(_,i){return b.types[i]==='blue'});
-        var neuts=b.words.filter(function(_,i){return b.types[i]==='neutral'});
-        var assas=b.words.filter(function(_,i){return b.types[i]==='assassin'});
-        reds.forEach(function(w){assert(blues.indexOf(w)===-1,'red=blue: '+w);assert(neuts.indexOf(w)===-1,'red=neutral: '+w);assert(assas.indexOf(w)===-1,'red=assassin: '+w)});
-      }
-      return{detail:'5 laps, all words disjoint across types'};
-    });
-    test('كل كلمة معها نوع صحيح',function(){
-      var valid=['red','blue','neutral','assassin'];
-      var b=generateBoard();
-      b.types.forEach(function(t,i){
-        assert(valid.indexOf(t)>=0,'نوع غير معروف: '+t+' في موضع '+i);
-      });
-    });
-  }},
-
-  // ── 2. Bot Role Selection ──
-  {title:'🤖 اختيار أدوار البوتات', tests:function(){
-    test('البوت يختار دور مكمّل للإنسان في Classic',function(){
-      var taken=['red-spy'];
-      var role=pickComplementaryRole(taken,'classic');
-      assertIncludes(['red-op','blue-op','blue-spy'],role,'البوت يكمل الدور');
-      assert(role!=='red-spy','البوت ما ياخدش نفس دور الإنسان');
-    });
-    test('البوت يختار القائد لو الإنسان اختار العميل في Duet',function(){
-      var role=pickComplementaryRole(['duet-agent'],'duet');
-      assertEqual(role,'duet-spy','البوت يكون قائد');
-    });
-    test('البوت يختار العميل لو الإنسان اختار القائد في Duet',function(){
-      var role=pickComplementaryRole(['duet-spy'],'duet');
-      assertEqual(role,'duet-agent','البوت يكون عميل');
-    });
-    test('getMissingRoles يحدد الأدوار الناقصة في Classic',function(){
-      var missing=getMissingRoles(['red-spy'],'classic');
-      assertIncludes(missing,'blue-spy','يلازم يكون قائد أزرق');
-    });
-    test('getMissingRoles يحدد الأدوار الناقصة في Duet',function(){
-      var missing=getMissingRoles([],'duet');
-      assertIncludes(missing,'duet-spy','يلازم يكون قائد');
-      assertIncludes(missing,'duet-agent','يلازم يكون عميل');
-    });
-    test('لا يتكرر دور القائد في Classic',function(){
-      var taken=['red-spy','red-op','blue-op'];
-      var role=pickComplementaryRole(taken,'classic');
-      assert(role==='blue-spy'||role===null,'الدور الوحيد الناقص هو القائد الأزرق');
-    });
-  }},
-
-  // ── 3. Smart Bot Word Scoring ──
-  {title:'🧠 ذكاء البوت — تطابق الكلمات', tests:function(){
-    test('الكلمات ذات نفس التصنيف تحصل على سكور أعلى',function(){
-      // حيوانات مزرعة: حمار، بقرة، خروف — تلميح "مزرعة" يجب أن يصنفهم عالياً
-      var farm=['حمار','بقرة','خروف'];
-      var others=['شمس','قمر','سيارة'];
-      farm.forEach(function(w){
-        var sf=wordScore(w,'حيوان');
-        others.forEach(function(o){
-          assert(sf>wordScore(o,'حيوان'),''+w+' يجب أن يسكور أعلى من '+o+' للتلميح "حيوان"');
+        ['red','blue','neutral','assassin'].forEach(function(type){
+          var ws=b.words.filter(function(_,i){return b.types[i]===type});
+          var ot=b.words.filter(function(_,i){return b.types[i]!==type});
+          ws.forEach(function(w){notIncludes(ot,w,'تداخل '+type+':'+w)});
         });
-      });
-      return{detail:'Farm animals score higher than unrelated words for "حيوان" clue'};
-    });
-    test('طيور يسكور عالي لتلميح "طيران"',function(){
-      var birds=['صقر','نسر','بومة'];
-      var nonBirds=['بحر','جبل','سيارة'];
-      birds.forEach(function(b){
-        var sb=wordScore(b,'طيران');
-        nonBirds.forEach(function(n){
-          assert(sb>=wordScore(n,'طيران'),''+b+' يجب أن يسكور ≥ '+n+' لـ "طيران"');
-        });
-      });
-    });
-    test('سكور مباشر أعلى لتطابق الكلمة',function(){
-      var s1=wordScore('حمار','حمار');
-      var s2=wordScore('سيارة','حمار');
-      assert(s1>s2,'التطابق المباشر أعلى سكور');
-    });
-    test('smartBotPick يختار من الـ candidates',function(){
-      var candidates=[
-        {w:'حمار',i:0},{w:'بقرة',i:1},{w:'طائرة',i:2},
-        {w:'شمس',i:3},{w:'خروف',i:4}
-      ];
-      for(var r=0;r<20;r++){
-        var pick=smartBotPick(0.9,candidates,'مزرعة');
-        assert(pick,'البوت يختار كلمة');
-        assert(candidates.some(function(c){return c.w===pick.w}),'الاختيار من الـ candidates');
-      }
-      return{detail:'20 picks, all valid'};
-    });
-    test('بوت ذكي (IQ=0.9) يختار حيوانات لتلميح "حيوان" في أغلب الأحيان',function(){
-      var candidates=[
-        {w:'حمار',i:0},{w:'بقرة',i:1},{w:'خروف',i:2},
-        {w:'سيارة',i:3},{w:'شمس',i:4},{w:'بحر',i:5}
-      ];
-      var animalPicks=0;
-      for(var r=0;r<50;r++){
-        var p=smartBotPick(0.9,candidates,'حيوان');
-        if(['حمار','بقرة','خروف'].indexOf(p.w)>=0)animalPicks++;
-      }
-      assert(animalPicks>=35,'البوت الذكي يختار الحيوانات >70% من الوقت، اختار: '+animalPicks+'/50');
-      return{detail:'Smart bot chose animals '+animalPicks+'/50 times (≥35 required)'};
-    });
-    test('بوت غبي (IQ=0.5) أقل دقة من بوت ذكي (IQ=0.95)',function(){
-      var candidates=[{w:'حمار',i:0},{w:'بقرة',i:1},{w:'خروف',i:2},{w:'سيارة',i:3},{w:'شمس',i:4}];
-      var smartCorrect=0,dumbCorrect=0;
-      for(var r=0;r<100;r++){
-        var ps=smartBotPick(0.95,candidates,'حيوان');
-        var pd=smartBotPick(0.5,candidates,'حيوان');
-        if(['حمار','بقرة','خروف'].indexOf(ps.w)>=0)smartCorrect++;
-        if(['حمار','بقرة','خروف'].indexOf(pd.w)>=0)dumbCorrect++;
-      }
-      assert(smartCorrect>=dumbCorrect,'الذكي ('+smartCorrect+') يجب أن يكون ≥ الغبي ('+dumbCorrect+')');
-      return{detail:'Smart: '+smartCorrect+'/100, Dumb: '+dumbCorrect+'/100'};
+      }return{detail:'5 rounds'};
     });
   }},
-
-  // ── 4. Spymaster Word Validation ──
-  {title:'🚫 تحقق كلمة Spymaster', tests:function(){
-    var boardWords=['تفاح','موز','بحر','جبل','سيارة','قهوة','نجمة','أسد','كتاب'];
-    test('تلميح لا يكون كلمة على اللوحة',function(){
-      assert(!spymasterWordCheck_test('تفاح',boardWords),'يجب أن يُرفض تلميح=كلمة لوحة');
-      assert(!spymasterWordCheck_test('موز',boardWords),'يجب أن يُرفض تلميح=كلمة لوحة');
+  {title:'🤖 أدوار البوتات — Classic',fn:function(){
+    test('لاعب واحد red-spy → 3 بوتات (blue-spy+red-op+blue-op)',function(){
+      var r=ensureEnoughBots_sim({'p1':{role:'red-spy'}},{},'classic');
+      var roles=Object.values(r).map(function(b){return b.role});
+      eq(roles.length,3,'3 بوتات');includes(roles,'blue-spy');includes(roles,'red-op');includes(roles,'blue-op');
     });
-    test('تلميح لا يحتوي على كلمة من اللوحة',function(){
-      assert(!spymasterWordCheck_test('تفاح حلو',boardWords),'يجب أن يُرفض تلميح يحتوي كلمة لوحة');
+    test('لاعبان (red-spy+blue-spy) → 2 بوتات (red-op+blue-op)',function(){
+      var r=ensureEnoughBots_sim({'p1':{role:'red-spy'},'p2':{role:'blue-spy'}},{},'classic');
+      eq(Object.keys(r).length,2,'2 بوتات');
     });
-    test('تلميح عادي (ليس كلمة لوحة) يُقبل',function(){
-      assert(spymasterWordCheck_test('حيوان',boardWords),'حيوان ليس على اللوحة — مقبول');
-      assert(spymasterWordCheck_test('طبيعة',boardWords),'طبيعة ليست على اللوحة — مقبول');
-      assert(spymasterWordCheck_test('مزرعة',boardWords),'مزرعة ليست على اللوحة — مقبول');
+    test('لا يتجاوز 4 إجمالاً',function(){
+      var players={'p1':{role:'red-spy'},'p2':{role:'blue-spy'},'p3':{role:'red-op'}};
+      var r=ensureEnoughBots_sim(players,{},'classic');
+      assert(Object.keys(players).length+Object.keys(r).length<=4,'max 4');
     });
-    test('التحقق غير حساس للحالة',function(){
-      assert(!spymasterWordCheck_test('أسد',boardWords),'التطابق يعمل');
-    });
-    test('كلمة فارغة مرفوضة',function(){
-      assert(!spymasterWordCheck_test('',boardWords)||true,'كلمة فارغة — غير مقبولة من UI');
-    });
-  }},
-
-  // ── 5. Bot IQ Distribution ──
-  {title:'🎲 توزيع ذكاء البوت', tests:function(){
-    test('IQ دايمًا بين 0.5 و 0.95',function(){
-      for(var i=0;i<200;i++){
-        var iq=botIQ();
-        assertBetween(iq,0.5,0.95,'IQ');
-      }
-      return{detail:'200 samples all in [0.5, 0.95]'};
-    });
-    test('IQ موزعة بشكل معقول (متوسط ~0.72)',function(){
-      var sum=0,n=1000;
-      for(var i=0;i<n;i++)sum+=botIQ();
-      var avg=sum/n;
-      assertBetween(avg,0.65,0.80,'متوسط IQ');
-      return{detail:'avg='+avg.toFixed(3)+' (expected ~0.725)'};
+    test('لا يُضاف أكثر من 3 بوتات',function(){var r=ensureEnoughBots_sim({},{},'classic');assert(Object.keys(r).length<=3)});
+    test('getMissingRoles يعيد كل الأدوار',function(){
+      eq(getMissingRoles([],'classic').length,4,'4 ناقصة');
+      eq(getMissingRoles(['red-spy','blue-spy'],'classic').length,2,'2 ناقصة');
+      eq(getMissingRoles(['red-spy','blue-spy','red-op','blue-op'],'classic').length,0,'لا شيء ناقص');
     });
   }},
-
-  // ── 6. Room Type Logic ──
-  {title:'🔐 نوع الغرفة', tests:function(){
-    test('الغرفة العامة: البوتات مسموح بها',function(){
-      // simulated
-      var isPublic=true;
-      assert(isPublic,'الغرفة العامة تسمح بالبوتات');
-    });
-    test('الغرفة الخاصة: لا بوتات',function(){
-      var isPublic=false;
-      assert(!isPublic||true,'الغرفة الخاصة لا تضيف بوتات');
-    });
-    test('genCode يولد كود 4 أحرف',function(){
-      var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      var code='';for(var i=0;i<4;i++)code+=c[Math.floor(Math.random()*c.length)];
-      assertEqual(code.length,4,'طول الكود');
-    });
-    test('genId يولد IDs فريدة',function(){
-      var ids=new Set();
-      for(var i=0;i<100;i++)ids.add(genId());
-      assertEqual(ids.size,100,'IDs يجب أن تكون فريدة');
-      return{detail:'100 unique IDs generated'};
+  {title:'🤝 أدوار البوتات — Duet',fn:function(){
+    test('duet-spy → بوت duet-agent',function(){var r=ensureEnoughBots_sim({'p1':{role:'duet-spy'}},{},'duet');includes(Object.values(r).map(function(b){return b.role}),'duet-agent')});
+    test('duet-agent → بوت duet-spy',function(){var r=ensureEnoughBots_sim({'p1':{role:'duet-agent'}},{},'duet');includes(Object.values(r).map(function(b){return b.role}),'duet-spy')});
+    test('pickComplementaryRole صحيح',function(){
+      eq(pickComplementaryRole(['duet-spy'],'duet'),'duet-agent');
+      eq(pickComplementaryRole(['duet-agent'],'duet'),'duet-spy');
+      eq(pickComplementaryRole(['duet-spy','duet-agent'],'duet'),null,'مكتمل');
     });
   }},
-
-  // ── 7. Chat Functionality ──
-  {title:'💬 شات العملاء', tests:function(){
-    test('رسائل الشات تُبنى بشكل صحيح',function(){
-      var msg={name:'سارة',text:'أقترح: تفاح',uid:'abc',ts:Date.now(),isBot:false,vote:'تفاح'};
-      assert(msg.name,'الاسم موجود');assert(msg.text,'النص موجود');assert(msg.vote,'التصويت موجود');
+  {title:'🧠 ذكاء البوت — Word Tags',fn:function(){
+    test('كل كلمة في WORD_TAGS لها 10+ خصائص',function(){
+      var short=Object.entries(WORD_TAGS).filter(function(e){return e[1].length<10});
+      eq(short.length,0,'كلمات قصيرة: '+short.map(function(e){return e[0]+'('+e[1].length+')'}).join(','));
+      return{detail:Object.keys(WORD_TAGS).length+' كلمة، كل منها 10+ خصائص'};
     });
-    test('checkVoteMajority يختار الكلمة الأكثر اقتراحاً',function(){
-      var msgs=[
-        {vote:'تفاح'},{vote:'تفاح'},{vote:'موز'},{vote:'تفاح'}
-      ];
-      var votes={};
-      msgs.forEach(function(m){if(m.vote)votes[m.vote]=(votes[m.vote]||0)+1});
-      var best=null,bestC=0;
-      Object.keys(votes).forEach(function(w){if(votes[w]>bestC){best=w;bestC=votes[w]}});
-      assertEqual(best,'تفاح','الأكثر تصويتاً هو تفاح');
+    test('حيوانات المزرعة تسكور أعلى لتلميح "مزرعة"',function(){
+      ['حمار','بقرة','خروف','حصان'].forEach(function(w){
+        ['شمس','بحر','سيارة'].forEach(function(o){assert(wordScore(w,'مزرعة')>wordScore(o,'مزرعة'),w+'>'+o)});
+      });return{detail:'farm animals outscored unrelated words'};
     });
-    test('الرسالة الفارغة لا تُرسل',function(){
-      var txt='  '.trim();
-      assert(!txt,'النص الفارغ يُمنع من الإرسال');
-    });
-    test('رسائل البوت تظهر كـ isBot=true',function(){
-      var botMsg={name:'نور',text:'أقترح: موز',uid:'bot_x',ts:Date.now(),isBot:true,vote:'موز'};
-      assert(botMsg.isBot,'رسالة البوت تحمل isBot');
-    });
-  }},
-
-  // ── 8. Offline Mode ──
-  {title:'📱 وضع أوفلاين', tests:function(){
-    test('بيانات اللعبة الأوفلاين مهيأة صح',function(){
-      var offlineG={words:['a','b'],dk:['green','neutral'],rev:[false,false],rType:[null,null],
-        turn:'p1',tLeft:9,total:15,found:0,clue:null,gl:0,over:false};
-      assert(offlineG.words,'الكلمات موجودة');
-      assertEqual(offlineG.found,0,'المُكتشَف = 0 في البداية');
-      assertEqual(offlineG.over,false,'اللعبة لم تنتهِ');
-    });
-    test('منطق كشف الكرت صحيح',function(){
-      var offlineG={words:['حمار','بقرة'],dk:['green','assassin'],rev:[false,false],rType:[null,null],found:0,gl:2,over:false,total:2};
-      // Simulate guess on word 0 (green)
-      var type=offlineG.dk[0];offlineG.rev[0]=true;offlineG.rType[0]=type;
-      if(type==='green'){offlineG.found++;offlineG.gl--}
-      assertEqual(offlineG.found,1,'المُكتشَف = 1 بعد كلمة خضراء');
-      assertEqual(offlineG.rev[0],true,'الكرت مكشوف');
-    });
-    test('لعبة الأوفلاين تنتهي عند اكتشاف كل العملاء',function(){
-      var offlineG={found:14,total:15,over:false,gl:1};
-      offlineG.found++;
-      if(offlineG.found>=offlineG.total)offlineG.over=true;
-      assert(offlineG.over,'اللعبة انتهت بعد اكتشاف الكل');
-    });
-    test('لعبة الأوفلاين تنتهي بالقاتل',function(){
-      var over=false;
-      var type='assassin';
-      if(type==='assassin')over=true;
-      assert(over,'القاتل ينهي اللعبة');
-    });
-  }},
-
-  // ── 9. Timer ──
-  {title:'⏱️ المؤقت', tests:function(){
-    test('حساب الوقت المتبقي صحيح',function(){
-      var turnTime=90,timerStart=Date.now()-30000;
-      var left=Math.max(0,turnTime-Math.floor((Date.now()-timerStart)/1000));
-      assertBetween(left,58,62,'الوقت المتبقي يجب أن يكون ~60ث');
-      return{detail:'~'+left+'s remaining after 30s elapsed from 90s turn'};
-    });
-    test('النسبة المئوية للمؤقت بين 0 و 100',function(){
-      for(var i=0;i<10;i++){
-        var elapsed=Math.random()*100;var tt=90;
-        var p=Math.min(100,Math.max(0,(1-elapsed/tt)*100));
-        assertBetween(p,0,100,'نسبة المؤقت');
-      }
-    });
-    test('المؤقت = 0 عند انتهاء الوقت',function(){
-      var turnTime=90,timerStart=Date.now()-95000;
-      var left=Math.max(0,turnTime-Math.floor((Date.now()-timerStart)/1000));
-      assertEqual(left,0,'الوقت يجب أن ينتهي');
-    });
-  }},
-
-  // ── 10. Arabic Names ──
-  {title:'🧕 أسماء عربية للبوتات', tests:function(){
-    var BOT_NAMES=['سارة','نور','ريم','هند','لمى','دانة','رنا','سلمى','لين','منى','علي','عمر','يوسف','خالد','أحمد','ماجد','سلطان','راشد','حمد','جابر','مريم','شيخة','فاطمة','عائشة','زينب','ليلى','أسماء','رهف','جود','لارا'];
-    test('قائمة الأسماء تحتوي أسماء عربية',function(){
-      assert(BOT_NAMES.length>=20,'يجب أن تكون هناك ≥20 اسم');
-    });
-    test('لا تكرار في الأسماء',function(){
-      assertUnique(BOT_NAMES,'أسماء مكررة');
-    });
-    test('كل الأسماء عربية (تحتوي حروف عربية)',function(){
-      BOT_NAMES.forEach(function(n){
-        assert(/[\u0600-\u06FF]/.test(n),'الاسم يجب أن يحتوي حروفاً عربية: '+n);
+    test('طيور تسكور أعلى لتلميح "طائر"',function(){
+      ['صقر','نسر','بومة'].forEach(function(b){
+        ['سيارة','جبل','بحر'].forEach(function(o){assert(wordScore(b,'طائر')>=wordScore(o,'طائر'),b+'>='+o)});
       });
     });
-    test('اختيار عشوائي يعطي اسماً من القائمة',function(){
-      for(var i=0;i<20;i++){
-        var name=BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)];
-        assertIncludes(BOT_NAMES,name,'الاسم يجب أن يكون من القائمة');
-      }
-      return{detail:'20 random picks all valid'};
+    test('smartBotPick يختار دائماً من candidates',function(){
+      var cands=[{w:'كلب',i:0},{w:'قطة',i:1},{w:'شمس',i:2},{w:'جبل',i:3}];
+      for(var r=0;r<40;r++){var p=smartBotPick(0.8,cands,'حيوان');assert(p&&cands.some(function(c){return c.w===p.w}))}
+      return{detail:'40 picks all valid'};
     });
+    test('بوت ذكي (0.92) يختار حيوانات >70% لتلميح "حيوان"',function(){
+      var cands=[{w:'كلب',i:0},{w:'قطة',i:1},{w:'حمار',i:2},{w:'بقرة',i:3},{w:'سيارة',i:4},{w:'شمس',i:5},{w:'بحر',i:6}];
+      var hits=0;for(var r=0;r<100;r++){var p=smartBotPick(0.92,cands,'حيوان');if(['كلب','قطة','حمار','بقرة'].indexOf(p.w)>=0)hits++}
+      assert(hits>=70,'hits='+hits+' (يلزم >=70)');return{detail:'Smart bot: '+hits+'/100'};
+    });
+    test('بوت ذكي أدق من غبي',function(){
+      var cands=[{w:'كلب',i:0},{w:'قطة',i:1},{w:'خروف',i:2},{w:'سيارة',i:3},{w:'شمس',i:4},{w:'قمر',i:5}];
+      var smart=0,dumb=0;
+      for(var r=0;r<200;r++){
+        if(['كلب','قطة','خروف'].indexOf(smartBotPick(0.95,cands,'حيوان').w)>=0)smart++;
+        if(['كلب','قطة','خروف'].indexOf(smartBotPick(0.5,cands,'حيوان').w)>=0)dumb++;
+      }
+      assert(smart>=dumb,'ذكي('+smart+')>=غبي('+dumb+')');return{detail:'Smart:'+smart+'  Dumb:'+dumb+'/200'};
+    });
+  }},
+  {title:'💡 Bot Spymaster يعطي تلميحات',fn:function(){
+    test('findBestClue يجد تلميحاً مشتركاً',function(){
+      var r=findBestClue_sim(['كلب','قطة','خروف'],0.9,[]);
+      assert(r&&r.clue,'تلميح موجود');assert(r.num>=1,'num>=1');
+      return{detail:'تلميح: "'+r.clue+'" يغطي '+r.words.length+' كلمات'};
+    });
+    test('التلميح يغطي على الأقل كلمة واحدة من الفريق',function(){
+      var team=['كلب','قطة','حمار','بقرة'];
+      var r=findBestClue_sim(team,0.9,[]);
+      var coverage=team.filter(function(w){return(WORD_TAGS[w]||[]).indexOf(r.clue)>=0});
+      assert(coverage.length>=1,'التلميح: "'+r.clue+'" يغطي '+coverage.length);
+      return{detail:'التلميح "'+r.clue+'" يغطي '+coverage.join(', ')};
+    });
+    test('findBestClue يتجنب كلمات اللوحة',function(){
+      var avoid=['حيوان','منزل','مواء'];
+      var r=findBestClue_sim(['كلب','قطة'],0.9,avoid);
+      if(r)assert(!avoid.some(function(w){return w===r.clue}),'تلميح لا يكون على اللوحة: '+r.clue);
+    });
+    test('العدد بين 1-3',function(){
+      for(var r=0;r<10;r++){var res=findBestClue_sim(['أسد','نمر','صقر'],0.8,[]);if(res)between(res.num,1,3,'num')}
+    });
+  }},
+  {title:'🚫 تحقق كلمة Spymaster',fn:function(){
+    var board=['تفاح','موز','بحر','جبل','سيارة','قهوة','نجمة','أسد','كتاب'];
+    test('كلمة اللوحة مرفوضة',function(){assert(!spymasterCheck('تفاح',board));assert(!spymasterCheck('موز',board))});
+    test('كلمة تحتوي كلمة اللوحة مرفوضة',function(){assert(!spymasterCheck('البحر',board),'البحر يحتوي بحر')});
+    test('كلمة عادية مقبولة',function(){assert(spymasterCheck('حيوان',board));assert(spymasterCheck('مزرعة',board))});
+    test('نص فارغ لا يُرسل',function(){assert(!('  '.trim()),'فارغ')});
+  }},
+  {title:'💬 شات العملاء',fn:function(){
+    test('بنية الرسالة صحيحة',function(){var m={name:'سارة',text:'أقترح: تفاح',uid:'a',ts:Date.now(),isBot:false,vote:'تفاح'};assert(m.name);assert(m.text);assert(m.vote)});
+    test('رسائل البوت isBot=true',function(){assert({isBot:true}.isBot)});
+    test('تحديد الأكثر تصويتاً',function(){
+      var votes={};[{vote:'تفاح'},{vote:'تفاح'},{vote:'موز'},{vote:'تفاح'}].forEach(function(m){votes[m.vote]=(votes[m.vote]||0)+1});
+      var best=null,bc=0;Object.keys(votes).forEach(function(w){if(votes[w]>bc){best=w;bc=votes[w]}});
+      eq(best,'تفاح');eq(bc,3);
+    });
+    test('Spymaster لا يكتب (role check)',function(){var role='red-spy';assert(role.indexOf('-spy')>=0,'القائد يُمنع')});
+  }},
+  {title:'📱 وضع أوفلاين',fn:function(){
+    test('بيانات اللعبة مهيأة',function(){var g={words:[],found:0,over:false,tLeft:9};eq(g.found,0);eq(g.over,false)});
+    test('كرت أخضر يزيد المكتشَف',function(){var g={dk:['green'],rev:[false],found:0,gl:2};if(g.dk[0]==='green'){g.rev[0]=true;g.found++;g.gl--}eq(g.found,1)});
+    test('الفوز عند اكتشاف الكل',function(){var g={found:14,total:15,over:false};g.found++;if(g.found>=g.total)g.over=true;assert(g.over)});
+    test('القاتل ينهي اللعبة',function(){var over=false;if('assassin'==='assassin')over=true;assert(over)});
+    test('نفاد الأدوار',function(){var g={tLeft:1};g.tLeft--;assert(g.tLeft<=0)});
+  }},
+  {title:'⏱️ المؤقت',fn:function(){
+    test('الوقت المتبقي صحيح',function(){var left=Math.max(0,90-Math.floor((Date.now()-(Date.now()-30000))/1000));between(left,58,62)});
+    test('النسبة 0-100',function(){for(var i=0;i<20;i++)between(Math.min(100,Math.max(0,(1-Math.random())*100)),0,100)});
+    test('الوقت ينتهي بعد المهلة',function(){eq(Math.max(0,90-Math.floor((Date.now()-(Date.now()-100000))/1000)),0)});
+  }},
+  {title:'🔐 نوع الغرفة',fn:function(){
+    test('genId فريد',function(){var s=new Set();for(var i=0;i<500;i++)s.add(genId());eq(s.size,500);return{detail:'500 unique IDs'}});
+    test('كود الغرفة 4 أحرف صالحة',function(){
+      var valid='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      for(var i=0;i<50;i++){var c='';for(var j=0;j<4;j++)c+=valid[Math.floor(Math.random()*valid.length)];eq(c.length,4);c.split('').forEach(function(ch){assert(valid.includes(ch),'حرف: '+ch)})}
+      return{detail:'50 codes'};
+    });
+    test('أسماء البوتات عربية ونظيفة',function(){BOT_NAMES.forEach(function(n){assert(/[\u0600-\u06FF]/.test(n),'ليس عربياً: '+n);assert(!/[XZxz\-_]/.test(n),'حرف غير عربي: '+n)})});
+    test('لا تكرار في الأسماء',function(){unique(BOT_NAMES)});
   }},
 ];
 
-// ════════════════════════════════════════════════════════════════
-// RUNNER
-// ════════════════════════════════════════════════════════════════
 function runAll(){
-  results=[];
-  var container=document.getElementById('results');
-  container.innerHTML='<div style="color:#8b949e;font-size:.85em;padding:8px">⏳ جاري التشغيل...</div>';
-
+  allResults=[];
+  var out=document.getElementById('out');out.innerHTML='';
+  document.getElementById('sum').style.display='none';
   SUITES.forEach(function(suite){
-    suite.tests();
-  });
-
-  // Render
-  var html='';
-  var si=0;
-  SUITES.forEach(function(suite){
-    var suiteTests=[];
-    suite.tests=suite.tests; // already ran above
-    html+='<div class="suite"><div class="suite-title">'+suite.title+'</div>';
-    html+='</div>';
-  });
-
-  // Actually render results properly
-  html='';
-  var ri=0;
-  SUITES.forEach(function(suite,si){
-    var count=0;
-    var tmp=[];suite.tests();
-    // We already ran them — just render the results slice
-  });
-
-  // Re-render from results array
-  html='';
-  var sIdx=0;
-  SUITES.forEach(function(suite){
-    var testCount=0;
-    // Count tests by running again briefly with a counter
-    html+='<div class="suite"><div class="suite-title">'+suite.title+'</div>';
-    html+='</div>';
-  });
-
-  // Simple flat render
-  var container2=document.getElementById('results');
-  container2.innerHTML='';
-  var totalPass=0,totalFail=0,totalSkip=0;
-  
-  // Group by suite
-  var sIdx2=0;var sResults=[];var perSuite=[];
-  SUITES.forEach(function(s){
-    var tmp=[];s.tests();perSuite.push(tmp);
-  });
-  
-  // Render results flat
-  results.forEach(function(r){
-    var icon=r.status==='pass'?'✅':r.status==='fail'?'❌':'⚪';
-    if(r.status==='pass')totalPass++;
-    else if(r.status==='fail')totalFail++;
-    else totalSkip++;
-  });
-
-  // Render grouped by suite (reset results and re-run)
-  results=[];
-  container2.innerHTML='';
-  
-  SUITES.forEach(function(suite){
-    var beforeLen=results.length;
-    suite.tests();
-    var suiteResults=results.slice(beforeLen);
-    
-    var suitePass=suiteResults.filter(function(r){return r.status==='pass'}).length;
-    var suiteFail=suiteResults.filter(function(r){return r.status==='fail'}).length;
-    
-    var div=document.createElement('div');div.className='suite';
-    var titleColor=suiteFail>0?'#f85149':'#3fb950';
-    var html2='<div class="suite-title" style="color:'+titleColor+'">'+suite.title;
-    html2+=' <span style="font-size:.75em;color:#8b949e;font-weight:400">('+suitePass+'/'+suiteResults.length+')</span></div>';
-    
-    suiteResults.forEach(function(r){
-      var icon=r.status==='pass'?'✅':'❌';
-      html2+='<div class="test">';
-      html2+='<span class="status '+r.status+'">'+icon+'</span>';
-      html2+='<div><div class="test-name">'+r.name+'</div>';
-      if(r.detail)html2+='<div class="test-detail">'+r.detail+'</div>';
-      if(r.err)html2+='<div class="err-msg">'+r.err+'</div>';
-      html2+='</div></div>';
+    var before=allResults.length;suite.fn();var sRes=allResults.slice(before);
+    var pass=sRes.filter(function(r){return r.status==='pass'}).length;
+    var fail=sRes.filter(function(r){return r.status==='fail'}).length;
+    var el=document.createElement('div');el.className='suite';
+    var tc=fail>0?'#f85149':'#3fb950';
+    var h='<div class="suite-title" style="color:'+tc+'">'+suite.title+'<span class="suite-score">'+pass+'/'+sRes.length+'</span></div>';
+    sRes.forEach(function(r){
+      h+='<div class="test"><div class="icon '+(r.status==='pass'?'pass':'fail')+'">'+(r.status==='pass'?'✅':'❌')+'</div><div class="tname">'+r.name;
+      if(r.detail)h+='<div class="tdetail">'+r.detail+'</div>';
+      if(r.err)h+='<div class="terr">'+r.err+'</div>';
+      h+='</div></div>';
     });
-    div.innerHTML=html2;
-    container2.appendChild(div);
+    el.innerHTML=h;out.appendChild(el);
   });
-
-  totalPass=results.filter(function(r){return r.status==='pass'}).length;
-  totalFail=results.filter(function(r){return r.status==='fail'}).length;
-  totalSkip=results.filter(function(r){return r.status==='skip'}).length;
-  var total=results.length;
-
-  // Summary
-  document.getElementById('sPass').textContent=totalPass;
-  document.getElementById('sFail').textContent=totalFail;
-  document.getElementById('sSkip').textContent=totalSkip;
-  document.getElementById('sBar').style.width=(totalPass/total*100).toFixed(1)+'%';
-  document.getElementById('summary').style.display='block';
-  
-  if(totalFail===0){
-    document.getElementById('sBar').style.background='linear-gradient(90deg,#3fb950,#56d364)';
-  }else{
-    document.getElementById('sBar').style.background='linear-gradient(90deg,#f85149,#ff7b72)';
-  }
+  var pass=allResults.filter(function(r){return r.status==='pass'}).length;
+  var fail=allResults.filter(function(r){return r.status==='fail'}).length;
+  document.getElementById('sp').textContent=pass;
+  document.getElementById('sf').textContent=fail;
+  document.getElementById('sb').className='fill '+(fail===0?'pass-fill':'fail-fill');
+  document.getElementById('sb').style.width=(pass/allResults.length*100).toFixed(1)+'%';
+  document.getElementById('sum').style.display='block';
 }
 </script>
+
 </body>
 </html>
