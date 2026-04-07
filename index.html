@@ -297,7 +297,36 @@ body.chat-is-open #chatOpenBtn{display:none!important}
 /* Push game content up when chat open */
 body.chat-is-open #gameScr{padding-bottom:41vh}
 
-/* ═══ BOT INDICATOR ═══ */
+/* ═══ BOTTOM TAB BAR ═══ */
+#bottomBar{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:550;
+  background:rgba(10,14,22,.96);backdrop-filter:blur(12px);
+  border-top:1px solid var(--bdr);
+  flex-direction:row;align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  height:calc(52px + env(safe-area-inset-bottom,0px));
+}
+#bottomBar.visible{display:flex}
+.btab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;cursor:pointer;border:none;background:transparent;
+  color:var(--dim);font-family:'Cairo',sans-serif;font-size:.55em;font-weight:700;
+  padding:6px 2px 2px;transition:.15s;position:relative;
+}
+.btab:active{transform:scale(.9)}
+.btab .bi{font-size:1.5em;line-height:1}
+.btab.active{color:var(--gld)}
+.btab.active .bi-dot{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--gld);
+}
+.btab.leave-tab{color:#ef5350}
+.btab.leave-tab:active{color:#c0392b}
+/* Push content up above bottom bar */
+body.has-tabbar .scr{padding-bottom:60px}
+body.has-tabbar #gameScr{padding-bottom:60px}
+body.has-tabbar.chat-is-open #gameScr{padding-bottom:calc(41vh + 60px)}
+body.has-tabbar .tst{bottom:68px}
 .bot-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
   border-radius:8px;background:rgba(79,195,247,.12);border:1px solid rgba(79,195,247,.3);
   color:#4fc3f7;font-size:.65em;font-weight:700;margin-right:4px}
@@ -530,6 +559,23 @@ body.chat-is-open #gameScr{padding-bottom:41vh}
   </div>
 </div>
 
+<!-- ═══════ BOTTOM TAB BAR ═══════ -->
+<div id="bottomBar">
+  <button class="btab" id="tabHome" onclick="tabGoHome()">
+    <span class="bi">🏠</span><span>الرئيسية</span>
+  </button>
+  <button class="btab" id="tabRoom" onclick="tabGoRoom()" style="display:none">
+    <span class="bi">🎮</span><span>الغرفة</span>
+    <span class="bi-dot"></span>
+  </button>
+  <button class="btab" id="tabRules" onclick="window.open('rules.html','_blank')">
+    <span class="bi">📖</span><span>القواعد</span>
+  </button>
+  <button class="btab leave-tab" id="tabLeave" onclick="chipLeave()" style="display:none">
+    <span class="bi">🚪</span><span>خروج</span>
+  </button>
+</div>
+
 <!-- ═══════ CONFETTI CANVAS ═══════ -->
 <canvas id="confettiCanvas"></canvas>
 
@@ -593,6 +639,29 @@ function loadSettings(){
 }
 function saveSettings(){
   try{localStorage.setItem('jasusiya_v2',JSON.stringify({ageGroup:APP.ageGroup,soundsOn:APP.soundsOn}))}catch(e){}
+}
+
+// ── SESSION PERSISTENCE: save/restore room membership across reloads ──
+function saveSession(){
+  try{
+    if(ME.code){
+      sessionStorage.setItem('jasusiya_session',JSON.stringify({
+        code:ME.code,playerId:ME.id,playerName:ME.name,
+        role:ME.role,isHost:ME.isHost,isOffline:isOffline
+      }));
+    }else{
+      sessionStorage.removeItem('jasusiya_session');
+    }
+  }catch(e){}
+}
+function clearSession(){
+  try{sessionStorage.removeItem('jasusiya_session')}catch(e){}
+}
+function loadSession(){
+  try{
+    var s=sessionStorage.getItem('jasusiya_session');
+    return s?JSON.parse(s):null;
+  }catch(e){return null}
 }
 
 function setAge(group){
@@ -1547,6 +1616,30 @@ function updateChip(){
   chipEl.classList.toggle('visible',!hideChip);
   document.body.classList.toggle('has-chip',!hideChip);
 
+  // ── BOTTOM TAB BAR ──
+  var bar=document.getElementById('bottomBar');
+  var tabHome=document.getElementById('tabHome');
+  var tabRoom=document.getElementById('tabRoom');
+  var tabLeave=document.getElementById('tabLeave');
+  var tabRules=document.getElementById('tabRules');
+
+  // Show bar on all screens except age gate
+  var showBar=activeScrId!=='ageScr';
+  bar.classList.toggle('visible',showBar);
+  document.body.classList.toggle('has-tabbar',showBar);
+
+  // Room & Leave tabs only when in a room
+  if(tabRoom)tabRoom.style.display=inRoom?'flex':'none';
+  if(tabLeave)tabLeave.style.display=inRoom?'flex':'none';
+
+  // Active state
+  var roomScreens=['lobbyScr','gameScr','resultScr'];
+  var onRoomScr=roomScreens.indexOf(activeScrId)>=0;
+  if(tabHome)tabHome.classList.toggle('active',!onRoomScr||!inRoom);
+  if(tabRoom)tabRoom.classList.toggle('active',inRoom&&onRoomScr);
+  if(tabRules)tabRules.classList.toggle('active',false);
+  if(tabLeave)tabLeave.classList.toggle('active',false);
+
   updateBackToRoomBtn();
   if(!hideChip){
     document.getElementById('chipCode').textContent=ME.code||'';
@@ -1554,6 +1647,9 @@ function updateChip(){
     var modeStr=isOffline?'أوفلاين':(ROOM?('غرفة '+(ROOM.mode==='classic'?'⚔️':'🤝')):'');
     document.getElementById('chipName').textContent=nameStr+modeStr;
   }
+
+  // Persist session whenever chip updates
+  saveSession();
 }
 
 function chipCopy(){
@@ -1582,11 +1678,26 @@ function chipLeave(){
 
 function doLeaveRoom(){
   sClick();
+  clearSession();
   if(!isOffline&&roomRef){roomRef.off();roomRef=null}
   ROOM=null;offlineG=null;isOffline=false;
   ME={id:'',name:'',role:'',code:'',isHost:false};
   updateChip();
   show('homeScr');
+}
+
+// ── BOTTOM TAB NAV FUNCTIONS ──
+function tabGoHome(){
+  if(ME.code&&(roomRef||isOffline)){
+    // Already in room — just navigate home screen without leaving
+    show('homeScr');
+  }else{
+    show('homeScr');
+  }
+}
+function tabGoRoom(){
+  if(!ME.code)return;
+  backToRoom();
 }
 
 function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on');updateChip();updateChatVisibility()}
@@ -2031,14 +2142,92 @@ var mutedReactions=false;
 // ══════════════════════════════════════════════════════
 loadSettings();
 if(APP.ageGroup){
-  // Already set — skip age gate, go home
   applyAgeTheme();
   document.getElementById('ageScr').classList.remove('on');
   document.getElementById('homeScr').classList.add('on');
-  // Restore sound button state
   document.getElementById('sndOnBtn').classList.toggle('on',APP.soundsOn);
   document.getElementById('sndOffBtn').classList.toggle('on',!APP.soundsOn);
 }
+
+// ── BLOCK PULL-TO-REFRESH when user is in a room ──
+(function(){
+  var startY=0,startX=0;
+  document.addEventListener('touchstart',function(e){
+    startY=e.touches[0].clientY;
+    startX=e.touches[0].clientX;
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!ME||!ME.code)return; // not in a room — allow normal scroll
+    var dy=e.touches[0].clientY-startY;
+    var dx=Math.abs(e.touches[0].clientX-startX);
+    var scrollEl=e.target.closest('.chat-msgs,[data-scroll]');
+    // Allow scrolling inside scrollable sub-elements
+    if(scrollEl&&scrollEl.scrollTop>0)return;
+    // Block pull-down at page top
+    if(dy>8&&dx<dy){
+      e.preventDefault();
+    }
+  },{passive:false});
+})();
+
+// ── BLOCK beforeunload reload when in room ──
+window.addEventListener('beforeunload',function(e){
+  if(ME&&ME.code&&(roomRef||isOffline)){
+    saveSession(); // persist before unload
+    // Modern browsers ignore custom messages but still show native dialog
+    e.preventDefault();
+    e.returnValue='';
+  }
+});
+
+// ── RESTORE SESSION after reload ──
+(function(){
+  var sess=loadSession();
+  if(!sess||!sess.code)return;
+  if(sess.isOffline){
+    // Offline sessions can't be restored from Firebase — just clear
+    clearSession();return;
+  }
+  // Show reconnecting toast after a brief delay
+  setTimeout(function(){
+    if(ME.code)return; // already in a room
+    toast('🔄 إعادة الاتصال بالغرفة '+sess.code+'...','tin');
+    // Re-join the room
+    if(!fbReady){clearSession();return;}
+    ME={id:sess.playerId,name:sess.playerName,role:sess.role,code:sess.code,isHost:sess.isHost,isOffline:false};
+    roomRef=db.ref('rooms/'+sess.code);
+    roomRef.get().then(function(snap){
+      if(!snap.exists()||snap.val().status==='ended'){
+        toast('❌ الغرفة انتهت','ter');
+        ME={id:'',name:'',role:'',code:'',isHost:false};roomRef=null;
+        clearSession();updateChip();return;
+      }
+      var rData=snap.val();
+      if(rData.ageGroup)APP.ageGroup=rData.ageGroup;
+      // Check if our player ID still exists in room
+      var stillInRoom=rData.players&&rData.players[sess.playerId];
+      if(!stillInRoom){
+        // Re-add ourselves
+        roomRef.child('players/'+sess.playerId).set({name:sess.playerName,role:sess.role,online:true});
+      }else{
+        roomRef.child('players/'+sess.playerId+'/online').set(true);
+      }
+      roomRef.child('players/'+sess.playerId+'/online').onDisconnect().set(false);
+      listenRoom();
+      updateChip();
+      // Restore room code display in lobby
+      var lc=document.getElementById('lCode');if(lc)lc.textContent=sess.code;
+      if(ME.isHost)startBotWatch();
+      // Navigate back to the right screen based on room status
+      setTimeout(function(){if(ROOM)backToRoom()},400);
+      toast('✅ عدت للغرفة '+sess.code,'tok');
+    }).catch(function(){
+      toast('❌ تعذّرت إعادة الاتصال','ter');
+      ME={id:'',name:'',role:'',code:'',isHost:false};roomRef=null;
+      clearSession();updateChip();
+    });
+  },600);
+})();
 
 // ══════════════════════════════════════════════════════
 // NAV
@@ -2053,7 +2242,7 @@ function toast(m,t){t=t||'tok';var e=document.getElementById('tst');e.textConten
 function showJoinScr(){if(!fbReady){toast('⚠️ Firebase مش متوصل','ter');return}show('joinScr');document.getElementById('jCode').focus()}
 function pickMode(m){gameMode=m;document.querySelectorAll('.mcard').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-m')===m)});document.getElementById('duetOpts').style.display=m==='duet'?'block':'none'}
 function copyCode(){navigator.clipboard.writeText(ME.code).then(function(){toast('📋 تم!')}).catch(function(){toast(ME.code,'tin')})}
-function exitToHome(){if(!isOffline&&roomRef){roomRef.off();roomRef=null}ROOM=null;offlineG=null;isOffline=false;ME={id:'',name:'',role:'',code:'',isHost:false};updateChip();show('homeScr')}
+function exitToHome(){clearSession();if(!isOffline&&roomRef){roomRef.off();roomRef=null}ROOM=null;offlineG=null;isOffline=false;ME={id:'',name:'',role:'',code:'',isHost:false};updateChip();show('homeScr')}
 
 // ══════════════════════════════════════════════════════
 // 🃏 CARD RENDER — kids shows emoji, adults shows text
@@ -2522,7 +2711,7 @@ function confirmEndGame(){
 }
 
 function leaveGame(){
-  sClick();
+  sClick();clearSession();
   if(!isOffline&&roomRef){roomRef.off();roomRef=null}
   ROOM=null;offlineG=null;isOffline=false;
   ME={id:'',name:'',role:'',code:'',isHost:false};

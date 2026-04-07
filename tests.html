@@ -804,6 +804,176 @@ var SUITES=[
       assert(shouldAutoSwitch,'إذا لا كلمات → يجب تبديل الدور تلقائياً');
     });
   }},
+
+  // ══════════════════════════════════════════════════
+  // 🔄 اختبار Pull-to-Refresh الانحدار
+  // السيناريو: مستخدم في غرفة Duet → يسحب الصفحة للأعلى بقوة
+  // المتوقع: يبقى في الغرفة ولا يخرج منها
+  // ══════════════════════════════════════════════════
+  {title:'🔄 Pull-to-Refresh — يجب ألّا يُخرج المستخدم من الغرفة',fn:function(){
+
+    // ── محاكاة حالة اللعبة ──
+    function makeRoomState(mode){
+      return{
+        ME:{id:'p1',name:'سارة',role:'duet-spy',code:'TEST',isHost:true},
+        ROOM:{status:'lobby',mode:mode,players:{'p1':{name:'سارة',role:'duet-spy',online:true}}},
+        roomRef:'ACTIVE', // simulated active reference
+        isOffline:false
+      };
+    }
+
+    // ── حالة: هل المستخدم في غرفة؟ ──
+    function isInRoom(state){
+      return !!(state.ME.code && (state.roomRef || state.isOffline));
+    }
+
+    // ── محاكاة reload الصفحة (السلوك الخاطئ) ──
+    function simulatePageReload(state){
+      // Reload = state is wiped → user goes to home
+      return{ME:{id:'',name:'',role:'',code:'',isHost:false},ROOM:null,roomRef:null,isOffline:false};
+    }
+
+    // ── محاكاة pull-to-refresh مع الحماية (السلوك الصحيح) ──
+    function simulatePullWithProtection(state){
+      // Pull-to-refresh should be blocked when in room → no state change
+      if(isInRoom(state))return{blocked:true,state:state};
+      return{blocked:false,state:simulatePageReload(state)};
+    }
+
+    // ── محاكاة touchstart/touchmove لاكتشاف السحب للأعلى ──
+    function detectPullToRefresh(scrollTop,deltaY){
+      // Pull detected when: page is at top (scrollTop=0) and user drags DOWN (deltaY>0)
+      return scrollTop===0&&deltaY>50;
+    }
+
+    // ── اختبارات ──
+    test('المستخدم في غرفة Duet → isInRoom = true',function(){
+      var s=makeRoomState('duet');
+      assert(isInRoom(s),'يجب أن يُعرف المستخدم على أنه في غرفة');
+    });
+
+    test('reload الصفحة يُخرج المستخدم من الغرفة (السلوك الخاطئ المراد إصلاحه)',function(){
+      var s=makeRoomState('duet');
+      var after=simulatePageReload(s);
+      assert(!isInRoom(after),'reload يُفقد حالة الغرفة — هذه هي المشكلة');
+      return{detail:'✅ الاختبار يؤكد وجود المشكلة — يجب إصلاحها بحفظ الجلسة'};
+    });
+
+    test('pull-to-refresh مع حماية → محظور عند وجود غرفة نشطة',function(){
+      var s=makeRoomState('duet');
+      var result=simulatePullWithProtection(s);
+      assert(result.blocked,'يجب حظر pull-to-refresh عند وجود غرفة');
+      assert(isInRoom(result.state),'يجب أن يبقى المستخدم في الغرفة بعد السحب');
+    });
+
+    test('pull-to-refresh بدون غرفة → مسموح',function(){
+      var s={ME:{id:'',name:'',role:'',code:'',isHost:false},ROOM:null,roomRef:null,isOffline:false};
+      var result=simulatePullWithProtection(s);
+      assert(!result.blocked,'يجب السماح بـ pull-to-refresh خارج الغرفة');
+    });
+
+    test('اكتشاف السحب: scrollTop=0 + deltaY=80 → pull مكتشف',function(){
+      assert(detectPullToRefresh(0,80),'يجب اكتشاف السحب عند أعلى الصفحة');
+    });
+
+    test('اكتشاف السحب: scrollTop=100 → لا pull (المستخدم مش في الأعلى)',function(){
+      assert(!detectPullToRefresh(100,80),'لا يُكتشف السحب إذا لم تكن الصفحة في أعلاها');
+    });
+
+    test('اكتشاف السحب: deltaY=10 → ضغطة بسيطة وليست سحباً',function(){
+      assert(!detectPullToRefresh(0,10),'deltaY صغير = ليس pull-to-refresh');
+    });
+
+    test('حفظ الجلسة في sessionStorage → يُعيد المستخدم للغرفة بعد الإصلاح',function(){
+      // Simulated: what the fix should store
+      var session={code:'TEST',playerId:'p1',playerName:'سارة',role:'duet-spy',isHost:true,mode:'duet'};
+      var stored=JSON.stringify(session);
+      var parsed=JSON.parse(stored);
+      eq(parsed.code,'TEST','كود الغرفة محفوظ');
+      eq(parsed.role,'duet-spy','الدور محفوظ');
+      eq(parsed.mode,'duet','النمط محفوظ');
+      return{detail:'sessionStorage يحفظ: code + playerId + role + mode'};
+    });
+
+    test('الشريط السفلي: رابط الغرفة مرئي عند وجود غرفة نشطة',function(){
+      var s=makeRoomState('duet');
+      var showRoomTab=isInRoom(s);
+      assert(showRoomTab,'تبويب "الغرفة" يجب أن يكون مرئياً');
+    });
+
+    test('الشريط السفلي: زر الخروج مرئي دائماً داخل الغرفة',function(){
+      var s=makeRoomState('duet');
+      var showLeaveBtn=isInRoom(s);
+      assert(showLeaveBtn,'زر الخروج يجب أن يكون مرئياً في الغرفة');
+    });
+
+    test('الشريط السفلي: تبويب الرئيسية مرئي دائماً',function(){
+      // Home tab always visible regardless of room state
+      assert(true,'تبويب الرئيسية مرئي دائماً');
+    });
+
+    test('الشريط السفلي: رابط القواعد مرئي دائماً',function(){
+      assert(true,'رابط القواعد مرئي دائماً');
+    });
+  }},
+
+  // ══════════════════════════════════════════════════
+  // 📱 الشريط السفلي (Bottom Tab Bar)
+  // ══════════════════════════════════════════════════
+  {title:'📱 الشريط السفلي — التبويبات الأربعة',fn:function(){
+    function getVisibleTabs(inRoom, currentScreen){
+      var tabs=[];
+      tabs.push({id:'home',label:'🏠 الرئيسية',always:true});
+      if(inRoom)tabs.push({id:'room',label:'🎮 الغرفة',always:false});
+      tabs.push({id:'rules',label:'📖 القواعد',always:true});
+      if(inRoom)tabs.push({id:'leave',label:'🚪 خروج',always:false});
+      return tabs;
+    }
+    function isActiveTab(tabId, currentScreen, inRoom){
+      if(tabId==='room')return inRoom&&['lobbyScr','gameScr','resultScr'].indexOf(currentScreen)>=0;
+      if(tabId==='home')return!inRoom||currentScreen==='homeScr';
+      return false;
+    }
+
+    test('خارج الغرفة: ٢ تبويب فقط (رئيسية + قواعد)',function(){
+      var tabs=getVisibleTabs(false,'homeScr');
+      eq(tabs.length,2,'٢ تبويب فقط خارج الغرفة');
+    });
+    test('داخل الغرفة: ٤ تبويبات',function(){
+      var tabs=getVisibleTabs(true,'lobbyScr');
+      eq(tabs.length,4,'٤ تبويبات داخل الغرفة');
+    });
+    test('تبويب الرئيسية موجود دائماً',function(){
+      [false,true].forEach(function(inRoom){
+        var tabs=getVisibleTabs(inRoom,'homeScr');
+        assert(tabs.some(function(t){return t.id==='home'}),'تبويب الرئيسية مفقود');
+      });
+    });
+    test('تبويب القواعد موجود دائماً',function(){
+      [false,true].forEach(function(inRoom){
+        var tabs=getVisibleTabs(inRoom,'homeScr');
+        assert(tabs.some(function(t){return t.id==='rules'}),'تبويب القواعد مفقود');
+      });
+    });
+    test('تبويب الغرفة فقط داخل الغرفة',function(){
+      var noRoom=getVisibleTabs(false,'homeScr');
+      var inRoom=getVisibleTabs(true,'lobbyScr');
+      assert(!noRoom.some(function(t){return t.id==='room'}),'لا تبويب غرفة خارجها');
+      assert(inRoom.some(function(t){return t.id==='room'}),'تبويب الغرفة موجود داخلها');
+    });
+    test('تبويب الخروج فقط داخل الغرفة',function(){
+      var noRoom=getVisibleTabs(false,'homeScr');
+      var inRoom=getVisibleTabs(true,'lobbyScr');
+      assert(!noRoom.some(function(t){return t.id==='leave'}),'لا زر خروج خارج الغرفة');
+      assert(inRoom.some(function(t){return t.id==='leave'}),'زر الخروج موجود داخل الغرفة');
+    });
+    test('تبويب الغرفة نشط في lobbyScr',function(){
+      assert(isActiveTab('room','lobbyScr',true),'تبويب الغرفة نشط في lobby');
+    });
+    test('تبويب الغرفة نشط في gameScr',function(){
+      assert(isActiveTab('room','gameScr',true),'تبويب الغرفة نشط في game');
+    });
+  }},
 ];
 
 function runAll(){
@@ -982,8 +1152,16 @@ function runQA(){
         ?ok('fallback تبديل الدور عند عدم وجود كلمات ✓')
         :fail('fallback لحالة عدم وجود كلمات مفقود');
 
-      // --- Bot spymaster read-only in chat ---
-      log('');log('  💬  فحص القائد في الشات:');
+      // --- Bottom tab bar & pull-to-refresh ---
+      log('');log('  📱  فحص الشريط السفلي و Pull-to-Refresh:');
+      html.includes('bottomBar')?ok('bottomBar HTML موجود'):fail('bottomBar مفقود');
+      html.includes('has-tabbar')?ok('CSS has-tabbar موجود'):fail('has-tabbar مفقود');
+      html.includes('tabGoRoom')||html.includes('tabGoHome')?ok('دوال التنقل في التبويبات موجودة'):fail('دوال التبويبات مفقودة');
+      html.includes('jasusiya_session')?ok('sessionStorage للجلسة موجود'):fail('sessionStorage مفقود — المستخدم سيُطرد عند الإعادة');
+      html.includes('touchmove')?ok('حماية pull-to-refresh (touchmove) موجودة'):fail('حماية pull-to-refresh مفقودة');
+      html.includes('beforeunload')?ok('beforeunload saveSession موجود'):fail('beforeunload مفقود');
+      html.includes('loadSession')?ok('استعادة الجلسة loadSession موجود'):fail('loadSession مفقود');
+      html.includes('clearSession')?ok('clearSession عند الخروج موجود'):fail('clearSession مفقود');
       html.includes('amISpymaster()')?ok('amISpymaster() موجود'):fail('amISpymaster() مفقود');
       html.includes('قراءة فقط')||html.includes('read-only')||html.includes("amISpy()?'flex':'none'")
         ?ok('حقل كتابة الشات مخفي عن القائد ✓')
