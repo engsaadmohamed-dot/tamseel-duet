@@ -137,11 +137,22 @@ body.kids-mode .gx{min-height:52px;font-size:.58em;line-height:1.1}
 .gx.rv.xn{background:#3d5166;color:#d5dbdb;border-color:#5d6d7e}
 .gx.rv.xa{background:#1c0a0a;color:#e74c3c;border-color:#922b21}
 .gx.rv.xg{background:#1e6b35;color:#d5f5e3;border-color:#27ae60;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.gx.sr{border-color:#e74c3c;background:#c0392b;color:#fff;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.gx.sb{border-color:#2980b9;background:#1a5276;color:#d6eaf8;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.gx.sa{border-color:#c0392b;background:#160000;color:#ff6b6b;border-width:3px;box-shadow:inset 0 0 10px rgba(231,76,60,.4);text-shadow:0 0 8px #e74c3c}
-.gx.sn{border-color:#7f8c8d;background:#3d5166;color:#d5dbdb;border-width:2px}
-.gx.sg{border-color:#27ae60;background:#1e6b35;color:#a9dfbf;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.gx.sr{border-color:#e74c3c;border-width:3px;background:rgba(192,57,43,.20);color:var(--txt)}
+.gx.sb{border-color:#2980b9;border-width:3px;background:rgba(26,82,118,.20);color:var(--txt)}
+.gx.sa{border-color:#c0392b;border-width:3px;background:rgba(28,10,10,.40);color:#ff6b6b;box-shadow:inset 0 0 6px rgba(231,76,60,.25)}
+.gx.sn{border-color:#5d6d7e;border-width:2px;background:rgba(61,81,102,.12);color:var(--dim)}
+.gx.sg{border-color:#27ae60;border-width:3px;background:rgba(30,107,53,.20);color:var(--txt)}
+/* Color pip in corner so spy still knows card type at a glance */
+.gx{position:relative}
+.gx.sr::after,.gx.sb::after,.gx.sa::after,.gx.sg::after,.gx.sn::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:6px;height:6px;border-radius:50%;pointer-events:none;
+}
+.gx.sr::after{background:#e74c3c}
+.gx.sb::after{background:#2980b9}
+.gx.sa::after{background:#922b21;box-shadow:0 0 4px #e74c3c}
+.gx.sg::after{background:#27ae60}
+.gx.sn::after{background:#5d6d7e}
 /* Kids mode — spy hint gets colored strip at top */
 body.kids-mode .gx.sr::before{content:'🔴';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(192,57,43,.6);border-radius:4px 4px 0 0;text-align:center}
 body.kids-mode .gx.sb::before{content:'🔵';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(26,82,118,.6);border-radius:4px 4px 0 0;text-align:center}
@@ -959,6 +970,7 @@ function clearBotWatch(){
 
 function maybeAddBots(){
   if(!ROOM||!roomRef)return;
+  if(!ROOM.isPublic)return; // private rooms: no bots
   var players=ROOM.players||{};
   var bots=ROOM.bots||{};
   var botCount=Object.keys(bots).length;
@@ -1415,6 +1427,7 @@ function updateBackToRoomBtn(){
 // ════════════════════════════════════════════════════════════════
 function onHumanPickedRole(role){
   if(!ME.isHost||!ROOM||!ROOM.bots)return;
+  if(!ROOM.isPublic)return; // private rooms: no bots
   var delay=2000+Math.random()*3000;
   setTimeout(function(){
     if(!ROOM||!roomRef)return;
@@ -1456,6 +1469,11 @@ function pickComplementaryRole(takenRoles,mode){
 // ════════════════════════════════════════════════════════════════
 function ensureEnoughBots(){
   if(!ME.isHost||!ROOM||!roomRef)return;
+  // Private rooms: no bots — remove any that may have slipped in
+  if(!ROOM.isPublic){
+    if(ROOM.bots&&Object.keys(ROOM.bots).length>0)roomRef.child('bots').remove();
+    return;
+  }
   var players=ROOM.players||{};
   var bots=ROOM.bots||{};
   var takenRoles=[];
@@ -2379,13 +2397,13 @@ function createRoom(){
   var roomData;
   if(gameMode==='classic'){
     var board=generateSmartBoard();
-    roomData={code:code,host:ME.id,mode:'classic',ageGroup:APP.ageGroup,settings:{turnTime:turnTime},
+    roomData={code:code,host:ME.id,mode:'classic',isPublic:roomType==='public',ageGroup:APP.ageGroup,settings:{turnTime:turnTime},
       words:board.words,types:board.types,duetKey:null,
       players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
   }else{
     var board2=generateDuetBoard();
     var duetTurns=parseInt(document.getElementById('cDT').value);
-    roomData={code:code,host:ME.id,mode:'duet',ageGroup:APP.ageGroup,settings:{turnTime:turnTime,duetTurns:duetTurns},
+    roomData={code:code,host:ME.id,mode:'duet',isPublic:roomType==='public',ageGroup:APP.ageGroup,settings:{turnTime:turnTime,duetTurns:duetTurns},
       words:board2.words,types:null,duetKey:board2.duetKey,
       players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
   }
@@ -2393,7 +2411,8 @@ function createRoom(){
   roomRef=db.ref('rooms/'+code);
   roomRef.set(roomData).then(function(){
     roomRef.child('players/'+ME.id+'/online').onDisconnect().set(false);
-    listenRoom();show('lobbyScr');document.getElementById('lCode').textContent=code;updateChip();if(ME.isHost)startBotWatch();
+    listenRoom();show('lobbyScr');document.getElementById('lCode').textContent=code;updateChip();
+    if(ME.isHost&&roomType==='public')startBotWatch();
   }).catch(function(err){document.getElementById('cErr').textContent='❌ خطأ: '+err.message});
 }
 
@@ -2456,9 +2475,10 @@ function renderLobby(){
   // Fix 1: show waiting message for public rooms
   var lWait=document.getElementById('lWait');
   var lWaitTxt=document.getElementById('lWaitTxt');
-  if(ROOM.isPublic&&!ME.isHost){if(lWait)lWait.style.display='flex';if(lWaitTxt)lWaitTxt.textContent='بندور على لاعبين للانضمام...';}
-  else if(ROOM.isPublic&&ME.isHost){if(lWait)lWait.style.display='flex';if(lWaitTxt)lWaitTxt.textContent='بنستنى لاعبين ينضموا...';}
-  else{if(lWait)lWait.style.display='none';}
+  if(ROOM.isPublic&&!ME.isHost){if(lWait)lWait.style.display='flex';if(lWaitTxt)lWaitTxt.textContent='🤖 بنستنى — ممكن ينضم بوت تلقائياً...';}
+  else if(ROOM.isPublic&&ME.isHost){if(lWait)lWait.style.display='flex';if(lWaitTxt)lWaitTxt.textContent='🌐 غرفة عامة — بوتات تنضم تلقائياً';}
+  else if(!ROOM.isPublic&&ME.isHost){if(lWait)lWait.style.display='flex';if(lWaitTxt)lWaitTxt.textContent='🔒 غرفة خاصة — ابعت الكود لأصحابك (لا بوتات)';}
+  else{if(lWait)lWait.style.display='flex';if(lWaitTxt)lWaitTxt.textContent='🔒 غرفة خاصة — مستنيين اللاعبين...';}
   var list=document.getElementById('pList');list.innerHTML='';
   var players=ROOM.players||{};
   Object.keys(players).forEach(function(id){
