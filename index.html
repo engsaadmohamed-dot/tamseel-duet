@@ -29,39 +29,6 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-height:100dvh;overflow-x:hidden;user-select:none;transition:background .4s}
 
-/* ═══ HIDDEN DEV PANEL ═══ */
-#devPanel{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
-#devPanel.show{display:flex}
-.dev-box{background:#0d1117;border:1px solid #30363d;border-radius:14px;padding:20px;width:100%;max-width:360px;font-family:'Tajawal',sans-serif}
-.dev-title{font-family:'Cairo',sans-serif;font-weight:900;font-size:1em;color:#ffd700;margin-bottom:3px;display:flex;align-items:center;gap:7px}
-.dev-sub{color:#8b949e;font-size:.72em;margin-bottom:14px;line-height:1.5}
-.dev-row{margin-bottom:10px}
-.dev-lbl{font-family:'Cairo',sans-serif;font-size:.76em;font-weight:700;color:#c9d1d9;margin-bottom:4px;display:flex;align-items:center;gap:5px}
-.dev-inp{width:100%;padding:8px 10px;font-family:monospace;font-size:.76em;border:1px solid #30363d;border-radius:7px;background:#161b22;color:#e6edf3;outline:none}
-.dev-inp:focus{border-color:#ffd700}
-.dev-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:#161b22;border:1px solid #30363d;border-radius:8px;margin-bottom:10px}
-.dev-toggle-lbl{font-family:'Cairo',sans-serif;font-size:.82em;font-weight:700;color:#c9d1d9}
-.dev-toggle{position:relative;width:40px;height:22px;flex-shrink:0}
-.dev-toggle input{opacity:0;width:0;height:0;position:absolute}
-.dev-slider{position:absolute;inset:0;border-radius:22px;background:#30363d;cursor:pointer;transition:.25s}
-.dev-slider::before{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;left:3px;top:3px;transition:.25s}
-.dev-toggle input:checked+.dev-slider{background:#238636}
-.dev-toggle input:checked+.dev-slider::before{transform:translateX(18px)}
-.dev-status{font-size:.72em;padding:6px 10px;border-radius:7px;margin-bottom:10px;text-align:center;font-family:'Cairo',sans-serif;font-weight:600}
-.dev-status.ds-off{background:rgba(255,255,255,.04);border:1px solid #30363d;color:#8b949e}
-.dev-status.ds-on{background:rgba(35,134,54,.15);border:1px solid rgba(35,134,54,.4);color:#3fb950}
-.dev-status.ds-busy{background:rgba(31,111,235,.15);border:1px solid #388bfd;color:#79c0ff}
-.dev-status.ds-err{background:rgba(248,81,73,.12);border:1px solid #f85149;color:#f85149}
-.dev-model-sel{width:100%;padding:7px 9px;font-family:'Cairo',sans-serif;font-size:.8em;border:1px solid #30363d;border-radius:7px;background:#161b22;color:#e6edf3;outline:none;margin-top:4px}
-.dev-model-sel:focus{border-color:#ffd700}
-.dev-btns{display:flex;gap:7px;margin-top:12px}
-.dev-btn{flex:1;padding:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.8em;border:none;border-radius:8px;cursor:pointer;transition:.15s}
-.dev-btn:active{transform:scale(.95)}
-.dev-save{background:#238636;color:#fff}.dev-test{background:#1f6feb;color:#fff}.dev-close{background:#21262d;color:#8b949e;border:1px solid #30363d}
-.dev-cost{font-size:.67em;color:#8b949e;text-align:center;margin-top:8px;line-height:1.5}
-/* Invisible 30×30 tap zone bottom-left — 5 taps opens dev panel */
-#devTrigger{position:fixed;bottom:0;left:0;width:36px;height:36px;z-index:200;opacity:0}
-
 /* ═══ KIDS THEME ═══ */
 body.kids-mode{background:var(--kids-bg)}
 body.kids-mode .scr{background:var(--kids-bg)}
@@ -641,51 +608,6 @@ body.has-tabbar .tst{bottom:68px}
   <span>💬</span><span id="chatOpenUnread" style="display:none;background:#e74c3c;color:#fff;border-radius:10px;font-size:.65em;padding:1px 5px;margin-right:2px"></span><span>شات</span>
 </div>
 
-<!-- ═══════ HIDDEN DEV PANEL — Cloudflare Worker AI ═══════ -->
-<div id="devPanel">
-  <div class="dev-box">
-    <div class="dev-title">⚙️ إعدادات المطور — AI</div>
-    <div class="dev-sub">مخفي عن المستخدمين — يُحفظ محلياً على الجهاز فقط.<br>اضغط ٥× على الزاوية السفلية اليسرى لفتح هذه اللوحة.</div>
-
-    <div class="dev-toggle-row">
-      <span class="dev-toggle-lbl">🤖 تفعيل Claude AI للبوتات</span>
-      <label class="dev-toggle">
-        <input type="checkbox" id="devAiEnabled" onchange="devSyncStatus()">
-        <span class="dev-slider"></span>
-      </label>
-    </div>
-
-    <div id="devAiStatus" class="dev-status ds-off">⚪ AI معطّل — يستخدم Smart Tags</div>
-
-    <div class="dev-row">
-      <div class="dev-lbl">🌐 Cloudflare Worker URL</div>
-      <input class="dev-inp" id="devWorkerUrl" type="url"
-        placeholder="https://jasusiya-ai.YOUR.workers.dev"
-        autocomplete="off" autocorrect="off" spellcheck="false">
-    </div>
-
-    <div class="dev-row">
-      <div class="dev-lbl">🧠 النموذج (يُضبط في Worker env)</div>
-      <select class="dev-model-sel" id="devModel">
-        <option value="claude-haiku-4-5-20251001">Haiku 4.5 — أسرع وأرخص ($1/$5 MTok)</option>
-        <option value="claude-sonnet-4-6" selected>Sonnet 4.6 — متوازن ($3/$15 MTok)</option>
-        <option value="claude-opus-4-6">Opus 4.6 — الأذكى ($5/$25 MTok)</option>
-      </select>
-    </div>
-
-    <div class="dev-cost" id="devCostEst">💰 تقدير: كل دور ~170 token — Haiku أقل من $0.000001/دور</div>
-
-    <div class="dev-btns">
-      <button class="dev-btn dev-test" onclick="devTestWorker()">🧪 اختبار</button>
-      <button class="dev-btn dev-save" onclick="devSave()">💾 حفظ</button>
-      <button class="dev-btn dev-close" onclick="devClose()">✕ إغلاق</button>
-    </div>
-  </div>
-</div>
-
-<!-- Secret tap zone: 5 taps on bottom-left corner opens dev panel -->
-<div id="devTrigger" onclick="devSecretTap()"></div>
-
 <div class="tst" id="tst"></div>
 
 <script>
@@ -720,19 +642,32 @@ function saveSettings(){
 }
 
 // ════════════════════════════════════════════════════════════════
-// 🤖 AI CONFIG — Cloudflare Worker proxy (hidden dev feature)
-// Key never touches the client — Worker holds it server-side
+// 🤖 AI — Cloudflare Worker proxy (always on, key is server-side)
 // ════════════════════════════════════════════════════════════════
-var AI_CFG={enabled:false,workerUrl:'',model:'claude-haiku-4-5-20251001'};
+var AI_WORKER_URL='https://jasusiya-ai.eng-saad-mohamed.workers.dev/pick';
+var AI_MODEL='claude-haiku-4-5-20251001';
 
-function loadAICfg(){
-  try{
-    var s=localStorage.getItem('jasusiya_ai');
-    if(s){var p=JSON.parse(s);AI_CFG.enabled=!!p.enabled;AI_CFG.workerUrl=p.workerUrl||'';AI_CFG.model=p.model||'claude-haiku-4-5-20251001';}
-  }catch(e){}
-}
-function saveAICfg(){
-  try{localStorage.setItem('jasusiya_ai',JSON.stringify(AI_CFG))}catch(e){}
+function askWorkerForPick(candidates,clueWord,clueNum){
+  if(!candidates||!candidates.length)return Promise.resolve(null);
+  return fetch(AI_WORKER_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      cards:candidates.map(function(c){return c.w}),
+      clue:clueWord,
+      num:clueNum||1,
+      model:AI_MODEL
+    })
+  })
+  .then(function(r){return r.json()})
+  .then(function(d){
+    if(!d||!d.pick)return null;
+    var w=(d.pick+'').trim().replace(/["'.،,\n\r]/g,'');
+    return candidates.find(function(c){
+      return c.w===w||c.w.includes(w)||w.includes(c.w);
+    })||null;
+  })
+  .catch(function(){return null;});
 }
 
 // ── SESSION PERSISTENCE: save/restore room membership across reloads ──
@@ -1053,20 +988,22 @@ function clearBotWatch(){
 
 function maybeAddBots(){
   if(!ROOM||!roomRef)return;
+  if(ROOM.isPublic===false)return; // private rooms: humans only
   var players=ROOM.players||{};
   var bots=ROOM.bots||{};
+  // Wait until at least one human has picked a role
+  var humanWithRole=Object.values(players).some(function(p){return!!p.role});
+  if(!humanWithRole)return;
   var botCount=Object.keys(bots).length;
-  var playerCount=Object.keys(players).length;
-  var total=playerCount+botCount;
-  var toAdd=Math.max(0,Math.min(3-botCount,4-total,3));
-  // Clone bots locally so each pick sees previously-assigned roles
+  var total=Object.keys(players).length+botCount;
+  var toAdd=Math.max(0,Math.min(3-botCount,4-total));
   var botsLocal=JSON.parse(JSON.stringify(bots));
   for(var i=0;i<toAdd;i++){
     var role=pickBotRole(botsLocal,players);
-    if(!role)break; // all roles already filled — stop
+    if(!role)break;
     var bid='bot_'+genId();
     roomRef.child('bots/'+bid).set({id:bid,name:BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)],iq:botIQ(),role:role});
-    botsLocal[bid]={role:role}; // update local view
+    botsLocal[bid]={role:role};
   }
 }
 
@@ -1508,27 +1445,13 @@ function updateBackToRoomBtn(){
 // 1.4 & 1.4.1 — Bots pick roles AFTER real user, complement them
 // ════════════════════════════════════════════════════════════════
 function onHumanPickedRole(role){
-  if(!ME.isHost||!ROOM||!ROOM.bots)return;
-  var delay=2000+Math.random()*3000;
+  if(!ME.isHost||!ROOM)return;
+  if(ROOM.isPublic===false)return; // no bots in private rooms
+  // Human just picked — wait 2-4s then create bots for remaining slots
+  var delay=2000+Math.random()*2000;
   setTimeout(function(){
-    if(!ROOM||!roomRef)return;
-    var players=ROOM.players||{};
-    var bots=ROOM.bots||{};
-    // Build full picture of all taken roles (humans + bots that already have roles)
-    var takenAll=[];
-    Object.values(players).forEach(function(p){if(p.role)takenAll.push(p.role)});
-    Object.values(bots).forEach(function(b){
-      if(b.role)takenAll.push(b.role);
-    });
-    // Only reassign bots that have NO role yet
-    Object.values(bots).forEach(function(b){
-      if(b.role)return;
-      var botRole=pickComplementaryRole(takenAll,ROOM.mode);
-      if(botRole){
-        roomRef.child('bots/'+b.id+'/role').set(botRole);
-        takenAll.push(botRole); // mark taken so next bot doesn't duplicate
-      }
-    });
+    if(!ROOM||!roomRef||ROOM.status!=='lobby')return;
+    maybeAddBots();
   },delay);
 }
 
@@ -1617,16 +1540,12 @@ function scheduleBotChatReply(botData,humanMsg){
   var delay=5000+Math.random()*25000;
   setTimeout(function(){
     if(!ROOM||!ROOM.game||!roomRef)return;
-    // Build candidate list: all unrevealed cards still on board
     var candidates=[];
     (ROOM.words||[]).forEach(function(w,i){
-      var rv=ROOM.game.revealed;
-      if(!rv||rv[i]==null)candidates.push({w:w,i:i});
+      var rv=ROOM.game.revealed;if(!rv||rv[i]==null)candidates.push({w:w,i:i});
     });
     if(!candidates.length)return;
-    var clue=(ROOM.game.clue||{}).word||'';
-    var num=(ROOM.game.clue||{}).num||1;
-    // Try Worker AI → fallback smart tags
+    var clue=(ROOM.game.clue||{}).word||'',num=(ROOM.game.clue||{}).num||1;
     askWorkerForPick(candidates,clue,num).then(function(aiPick){
       var pick=aiPick||smartBotPick(botData.iq||0.7,candidates,clue);
       if(!pick)return;
@@ -1636,12 +1555,9 @@ function scheduleBotChatReply(botData,humanMsg){
   },delay);
 }
 
-// ── Core semantic scoring (always available as fallback) ──
 function smartBotPick(iq,candidates,clueWord){
   var scored=candidates.map(function(c){
-    var s=wordScore(c.w,clueWord);
-    s+=Math.random()*(2*(1-iq));
-    return{c:c,score:s};
+    var s=wordScore(c.w,clueWord);s+=Math.random()*(2*(1-iq));return{c:c,score:s};
   });
   scored.sort(function(a,b){return b.score-a.score});
   var topN=Math.max(1,Math.ceil(scored.length*(1.1-iq)));
@@ -1649,52 +1565,18 @@ function smartBotPick(iq,candidates,clueWord){
   return pick?pick.c:null;
 }
 
-// ── Call Cloudflare Worker proxy → Claude API ──
-// Flow: bot has unrevealed cards + clue → POST to Worker → Worker calls Anthropic → returns best pick
-function askWorkerForPick(candidates,clueWord,clueNum){
-  if(!AI_CFG.enabled||!AI_CFG.workerUrl)return Promise.resolve(null);
-  // Send ALL unrevealed card words so Claude sees the full remaining board
-  var cardWords=candidates.map(function(c){return c.w});
-  return fetch(AI_CFG.workerUrl,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      cards:cardWords,        // all remaining unrevealed cards (up to 25)
-      clue:clueWord,          // the spymaster's one-word hint
-      num:clueNum,            // how many cards the hint covers
-      model:AI_CFG.model      // model preference (Worker can override with env)
-    })
-  })
-  .then(function(r){return r.json()})
-  .then(function(data){
-    if(!data||!data.pick)return null;
-    var aiWord=data.pick.trim().replace(/["'.،,\n]/g,'');
-    // Match AI response back to a candidate object
-    return candidates.find(function(c){
-      return c.w===aiWord||c.w.includes(aiWord)||aiWord.includes(c.w);
-    })||null;
-  })
-  .catch(function(){return null;}); // network error → silent fallback
-}
-
 function doBotGuessOnline(b){
   var G=ROOM&&ROOM.game;if(!G||!G.clue)return;
-  // Build full unrevealed card list — this is what goes to the Worker
   var candidates=[];
-  (ROOM.words||[]).forEach(function(w,i){
-    if(!G.revealed||G.revealed[i]==null)candidates.push({w:w,i:i});
-  });
+  (ROOM.words||[]).forEach(function(w,i){if(!G.revealed||G.revealed[i]==null)candidates.push({w:w,i:i})});
   if(!candidates.length)return;
-  var clue=(G.clue||{}).word||'';
-  var num=(G.clue||{}).num||1;
+  var clue=(G.clue||{}).word||'',num=(G.clue||{}).num||1;
   var guessDelay=5000+Math.random()*25000;
-  // Ask Worker (AI) first — if disabled or fails, use smart tags
   askWorkerForPick(candidates,clue,num).then(function(aiPick){
     var picked=aiPick||smartBotPick(b.iq||0.7,candidates,clue);
     if(!picked)return;
-    var label=aiPick?'🤖 Claude: ':'';
     if(roomRef)roomRef.child('chat').push({
-      name:b.name,text:label+'أقترح: '+picked.w,
+      name:b.name,text:(aiPick?'🤖 Claude: ':'')+'أقترح: '+picked.w,
       uid:b.id,ts:Date.now(),isBot:true,vote:picked.w
     });
     setTimeout(function(){
@@ -1711,102 +1593,11 @@ function botGuessOfflineAuto(){
   var candidates=[];
   G.words.forEach(function(w,i){if(!G.rev[i])candidates.push({w:w,i:i})});
   if(!candidates.length)return;
-  var clue=G.clue.word||'';
-  var num=G.clue.num||1;
+  var clue=G.clue.word||'',num=G.clue.num||1;
   var delay=5000+Math.random()*25000;
-  // Try Worker for offline too — fallback to smart tags
   askWorkerForPick(candidates,clue,num).then(function(aiPick){
     var pick=aiPick||smartBotPick(offlineBotIQ,candidates,clue);
     if(pick)setTimeout(function(){guessOffline(pick.i)},delay);
-  });
-}
-
-// ════════════════════════════════════════════════════════════════
-// ⚙️ DEV PANEL — hidden UI for AI Worker config
-// Trigger: tap bottom-left corner 5 times within 2 seconds
-// ════════════════════════════════════════════════════════════════
-var _devTaps=0,_devTimer=null;
-function devSecretTap(){
-  _devTaps++;
-  clearTimeout(_devTimer);
-  _devTimer=setTimeout(function(){_devTaps=0},2000);
-  if(_devTaps>=5){_devTaps=0;devOpen();}
-}
-
-function devOpen(){
-  document.getElementById('devWorkerUrl').value=AI_CFG.workerUrl;
-  document.getElementById('devModel').value=AI_CFG.model;
-  document.getElementById('devAiEnabled').checked=AI_CFG.enabled;
-  devSyncStatus();
-  document.getElementById('devPanel').classList.add('show');
-}
-function devClose(){document.getElementById('devPanel').classList.remove('show')}
-
-function devSyncStatus(){
-  var enabled=document.getElementById('devAiEnabled').checked;
-  var url=document.getElementById('devWorkerUrl').value.trim();
-  var el=document.getElementById('devAiStatus');
-  var model=document.getElementById('devModel').value;
-  var costs={
-    'claude-haiku-4-5-20251001':'Haiku 4.5 — أقل من $0.000001/دور',
-    'claude-sonnet-4-6':'Sonnet 4.6 — ~$0.0000006/دور',
-    'claude-opus-4-6':'Opus 4.6 — ~$0.000001/دور'
-  };
-  document.getElementById('devCostEst').textContent='💰 '+( costs[model]||'');
-  if(!enabled){
-    el.className='dev-status ds-off';el.textContent='⚪ AI معطّل — يستخدم Smart Tags';
-  }else if(!url||!url.startsWith('https://')){
-    el.className='dev-status ds-err';el.textContent='❌ أدخل Worker URL صحيح (https://...)';
-  }else{
-    el.className='dev-status ds-on';el.textContent='✅ AI مفعّل — Claude يختار الكروت للبوتات';
-  }
-}
-
-function devSave(){
-  var url=document.getElementById('devWorkerUrl').value.trim();
-  var model=document.getElementById('devModel').value;
-  var enabled=document.getElementById('devAiEnabled').checked;
-  if(enabled&&(!url||!url.startsWith('https://'))){
-    document.getElementById('devAiStatus').className='dev-status ds-err';
-    document.getElementById('devAiStatus').textContent='❌ Worker URL يجب أن يبدأ بـ https://';
-    return;
-  }
-  AI_CFG={enabled:enabled&&!!url,workerUrl:url,model:model};
-  saveAICfg();devSyncStatus();
-  toast(AI_CFG.enabled?'✅ Claude AI مفعّل':'⚪ تم الحفظ — AI معطّل','tok');
-  setTimeout(devClose,700);
-}
-
-function devTestWorker(){
-  var url=document.getElementById('devWorkerUrl').value.trim();
-  if(!url||!url.startsWith('https://')){
-    document.getElementById('devAiStatus').className='dev-status ds-err';
-    document.getElementById('devAiStatus').textContent='❌ أدخل Worker URL أولاً';
-    return;
-  }
-  var el=document.getElementById('devAiStatus');
-  el.className='dev-status ds-busy';el.textContent='⏳ جاري اختبار الاتصال...';
-  // Send a real test request with sample cards + clue
-  var testCards=['كلب','قطة','أسد','سيارة','بحر','قمر','نار','تفاح','جبل','كتاب'];
-  var model=document.getElementById('devModel').value;
-  fetch(url,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({cards:testCards,clue:'حيوان',num:2,model:model})
-  })
-  .then(function(r){return r.json()})
-  .then(function(d){
-    if(d&&d.pick){
-      el.className='dev-status ds-on';
-      el.textContent='✅ الاتصال ناجح! Claude اختار: "'+d.pick+'" من بين '+testCards.length+' كرت';
-    }else if(d&&d.error){
-      el.className='dev-status ds-err';el.textContent='❌ خطأ من Worker: '+d.error.slice(0,60);
-    }else{
-      el.className='dev-status ds-err';el.textContent='❌ رد غير متوقع من Worker';
-    }
-  })
-  .catch(function(e){
-    el.className='dev-status ds-err';el.textContent='❌ تعذّر الاتصال: '+e.message.slice(0,50);
   });
 }
 
@@ -2372,7 +2163,6 @@ var mutedReactions=false;
 // INIT — check localStorage on load
 // ══════════════════════════════════════════════════════
 loadSettings();
-loadAICfg();
 if(APP.ageGroup){
   applyAgeTheme();
   document.getElementById('ageScr').classList.remove('on');
@@ -2661,7 +2451,10 @@ function listenRoom(){
   });
   roomRef.on('value',function(snap){
     if(!snap.exists())return;ROOM=snap.val();
-    if(ROOM.status==='lobby'){renderLobby();renderBotsInLobby();}
+    if(ROOM.status==='lobby'){
+      renderLobby();renderBotsInLobby();
+      if(ME.isHost&&ROOM.isPublic!==false)maybeAddBots();
+    }
     else if(ROOM.status==='playing'){renderOnlineGame();renderChatPanel();botsTakeTurn();}
     else if(ROOM.status==='ended')renderOnlineResult();
   });
