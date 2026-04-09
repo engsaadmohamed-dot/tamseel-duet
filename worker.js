@@ -13,44 +13,55 @@ const CORS = {
 export default {
   async fetch(request, env) {
 
-    // CORS preflight
     if (request.method === 'OPTIONS')
       return new Response(null, { headers: CORS });
 
     const url = new URL(request.url);
 
-    // ── /pick  — bot card selection ──────────────────────
+    // ── GET /health ──────────────────────────────────────
+    if (url.pathname === '/health')
+      return json({ ok: true, worker: 'jasusiya-ai' });
+
+    // ── POST /pick ───────────────────────────────────────
     if (url.pathname === '/pick' && request.method === 'POST') {
+
       let body;
       try { body = await request.json(); }
       catch { return json({ error: 'Bad JSON' }, 400); }
 
       const { cards, clue, num, model } = body;
-      if (!cards?.length || !clue)
+      if (!Array.isArray(cards) || !cards.length || !clue)
         return json({ error: 'Missing cards or clue' }, 400);
+
+      const count = Math.min(Math.max(parseInt(num) || 1, 1), 4);
+      const useModel = model || env.MODEL || 'claude-haiku-4-5-20251001';
 
       const prompt =
         `أنت تلعب لعبة الجاسوسية (Codenames) بالعربي.\n` +
-        `التلميح: "${clue}" (عدد الكروت: ${num || 1})\n` +
+        `التلميح: "${clue}" (عدد الكروت: ${count})\n` +
         `الكروت المتبقية على اللوحة: ${cards.join('، ')}\n\n` +
-        `اختر الكرت الواحد الأنسب الآن.\n` +
-        `أجب بالكلمة فقط، بدون أي شرح أو علامات ترقيم.`;
+        `اختر أفضل ${count} كرت (أو أقل إذا لم تجد ما يكفي) تتناسب مع التلميح.\n` +
+        `رتّبهم من الأفضل إلى الأقل.\n` +
+        `أجب بالكلمات فقط مفصولة بفاصلة عربية، بدون شرح أو ترقيم.\n` +
+        `مثال: كلب، قطة، أسد`;
 
-      const pick = await callClaude(prompt, model || env.MODEL || 'claude-haiku-4-5-20251001', env);
-      if (!pick) return json({ error: 'Claude failed' }, 502);
+      const raw = await callClaude(prompt, useModel, env);
+      if (!raw) return json({ error: 'Claude failed' }, 502);
 
-      return json({ pick });
+      // Parse comma-separated response into array of cleaned words
+      const picks = raw
+        .split(/[،,\n]/)
+        .map(w => w.trim().replace(/["'.]/g, ''))
+        .filter(Boolean)
+        .slice(0, count);
+
+      return json({ picks, clue, num: count });
     }
-
-    // ── /health — quick test ─────────────────────────────
-    if (url.pathname === '/health')
-      return json({ ok: true, worker: 'jasusiya-ai' });
 
     return new Response('Not found', { status: 404 });
   }
 };
 
-// ── Shared Claude caller ──────────────────────────────
 async function callClaude(prompt, model, env) {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -62,21 +73,19 @@ async function callClaude(prompt, model, env) {
       },
       body: JSON.stringify({
         model,
-        max_tokens: 20,
+        max_tokens: 60,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
-
     const data = await res.json();
-    if (data?.error) { console.error('Claude error:', data.error); return null; }
-    return data?.content?.[0]?.text?.trim().replace(/["'.،,\n\r]/g, '') || null;
+    if (data?.error) { console.error('Claude:', data.error); return null; }
+    return data?.content?.[0]?.text?.trim() || null;
   } catch (e) {
-    console.error('fetch error:', e);
+    console.error('fetch:', e);
     return null;
   }
 }
 
-// ── JSON response helper ──────────────────────────────
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,

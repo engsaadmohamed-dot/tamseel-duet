@@ -127,28 +127,37 @@ body.kids-mode .gx{min-height:52px;font-size:.58em;line-height:1.1}
 .gtrn.tr{background:var(--r);color:#fff}.gtrn.tb{background:var(--bl);color:#fff}.gtrn.tg{background:var(--grn);color:#fff}
 .gcl{text-align:center;padding:2px;font-size:.73em;color:var(--dim);min-height:16px;width:100%}.gcl b{color:var(--gld)}
 
+
 /* ═══ GRID ═══ */
 .gg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:3px 0;flex:1;width:100%}
-.gx{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.6em;padding:3px 2px;text-align:center;line-height:1.2;min-height:44px;cursor:pointer;transition:all .15s;background:var(--card);border:2px solid var(--bdr);color:var(--txt)}
+.gx{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.6em;padding:3px 2px;text-align:center;line-height:1.2;min-height:44px;cursor:pointer;transition:all .15s;background:var(--card);border:2px solid var(--bdr);color:var(--txt);position:relative}
 .gx:active:not(.rv){transform:scale(.92)}
 .gx.rv{cursor:default;}
-.gx.rv.xr{background:#c0392b;color:#fde8e8;border-color:#e74c3c;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.gx.rv.xb{background:#1a5276;color:#d6eaf8;border-color:#2980b9;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.gx.rv.xn{background:#3d5166;color:#d5dbdb;border-color:#5d6d7e}
-.gx.rv.xa{background:#1c0a0a;color:#e74c3c;border-color:#922b21}
-.gx.rv.xg{background:#1e6b35;color:#d5f5e3;border-color:#27ae60;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.gx.sr{border-color:#e74c3c;background:#c0392b;color:#fff;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.gx.sb{border-color:#2980b9;background:#1a5276;color:#d6eaf8;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.gx.sa{border-color:#c0392b;background:#160000;color:#ff6b6b;border-width:3px;box-shadow:inset 0 0 10px rgba(231,76,60,.4);text-shadow:0 0 8px #e74c3c}
-.gx.sn{border-color:#7f8c8d;background:#3d5166;color:#d5dbdb;border-width:2px}
-.gx.sg{border-color:#27ae60;background:#1e6b35;color:#a9dfbf;border-width:3px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-/* Kids mode — spy hint gets colored strip at top */
-body.kids-mode .gx.sr::before{content:'🔴';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(192,57,43,.6);border-radius:4px 4px 0 0;text-align:center}
-body.kids-mode .gx.sb::before{content:'🔵';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(26,82,118,.6);border-radius:4px 4px 0 0;text-align:center}
-body.kids-mode .gx.sg::before{content:'✅';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(30,107,53,.6);border-radius:4px 4px 0 0;text-align:center}
-body.kids-mode .gx.sa::before{content:'☠️';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(28,10,10,.7);border-radius:4px 4px 0 0;text-align:center}
-body.kids-mode .gx.sn::before{content:'⬛';position:absolute;top:0;left:0;right:0;font-size:.7em;line-height:1.2;background:rgba(61,81,102,.4);border-radius:4px 4px 0 0;text-align:center}
-body.kids-mode .gx{position:relative}
+
+/* Revealed = full solid so spy sees "already guessed" clearly */
+.gx.rv.xr{background:#c0392b;color:#fde8e8;border-color:#e74c3c;text-shadow:0 1px 2px rgba(0,0,0,.6);opacity:1!important}
+.gx.rv.xb{background:#1a5276;color:#d6eaf8;border-color:#2980b9;text-shadow:0 1px 2px rgba(0,0,0,.6);opacity:1!important}
+.gx.rv.xn{background:#3d5166;color:#d5dbdb;border-color:#5d6d7e;opacity:1!important}
+.gx.rv.xa{background:#1c0a0a;color:#e74c3c;border-color:#922b21;opacity:1!important}
+.gx.rv.xg{background:#1e6b35;color:#d5f5e3;border-color:#27ae60;text-shadow:0 1px 2px rgba(0,0,0,.6);opacity:1!important}
+
+/* Unrevealed spy-hint = light tint so it looks different from revealed */
+.gx.sr{border-color:#e74c3c;border-width:3px;background:rgba(192,57,43,.18);color:var(--txt);opacity:.75}
+.gx.sb{border-color:#2980b9;border-width:3px;background:rgba(26,82,118,.18);color:var(--txt);opacity:.75}
+.gx.sa{border-color:#922b21;border-width:3px;background:rgba(28,10,10,.45);color:#ff6b6b;opacity:.85}
+.gx.sn{border-color:#5d6d7e;border-width:2px;background:rgba(61,81,102,.12);color:var(--dim);opacity:.65}
+.gx.sg{border-color:#27ae60;border-width:3px;background:rgba(30,107,53,.18);color:var(--txt);opacity:.75}
+
+/* Small color pip in corner so spy knows card type */
+.gx.sr::after,.gx.sb::after,.gx.sa::after,.gx.sg::after,.gx.sn::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:7px;height:7px;border-radius:50%;pointer-events:none;
+}
+.gx.sr::after{background:#e74c3c;box-shadow:0 0 3px #e74c3c}
+.gx.sb::after{background:#2980b9;box-shadow:0 0 3px #2980b9}
+.gx.sa::after{background:#922b21;box-shadow:0 0 4px #e74c3c}
+.gx.sg::after{background:#27ae60;box-shadow:0 0 3px #27ae60}
+.gx.sn::after{background:#5d6d7e}
 
 /* ═══ RESULT BOARD ═══ */
 .rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin:6px 0;width:100%;max-width:340px}
@@ -642,13 +651,15 @@ function saveSettings(){
 }
 
 // ════════════════════════════════════════════════════════════════
-// 🤖 AI — Cloudflare Worker proxy (always on, key is server-side)
+// 🤖 AI — Cloudflare Worker (always on, key is server-side only)
 // ════════════════════════════════════════════════════════════════
 var AI_WORKER_URL='https://jasusiya-ai.eng-saad-mohamed.workers.dev/pick';
 var AI_MODEL='claude-haiku-4-5-20251001';
 
-function askWorkerForPick(candidates,clueWord,clueNum){
-  if(!candidates||!candidates.length)return Promise.resolve(null);
+// Returns Promise<candidate[]> — up to `num` picks, ranked best-first
+// Falls back to [] on any failure so callers use smartBotPick instead
+function askWorkerForPicks(candidates,clueWord,clueNum){
+  if(!candidates||!candidates.length)return Promise.resolve([]);
   return fetch(AI_WORKER_URL,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -661,13 +672,20 @@ function askWorkerForPick(candidates,clueWord,clueNum){
   })
   .then(function(r){return r.json()})
   .then(function(d){
-    if(!d||!d.pick)return null;
-    var w=(d.pick+'').trim().replace(/["'.،,\n\r]/g,'');
-    return candidates.find(function(c){
-      return c.w===w||c.w.includes(w)||w.includes(c.w);
-    })||null;
+    // Worker returns { picks: ["كلب","أسد","..."] }
+    var raw=Array.isArray(d.picks)?d.picks:(d.pick?[d.pick]:[]);
+    var results=[];
+    raw.forEach(function(w){
+      var word=(w+'').trim().replace(/["'.،,\n\r]/g,'');
+      if(!word)return;
+      var match=candidates.find(function(c){
+        return c.w===word||c.w.includes(word)||word.includes(c.w);
+      });
+      if(match&&results.indexOf(match)===-1)results.push(match);
+    });
+    return results;
   })
-  .catch(function(){return null;});
+  .catch(function(){return[];});
 }
 
 // ── SESSION PERSISTENCE: save/restore room membership across reloads ──
@@ -950,7 +968,7 @@ function updateChatVisibility(){
   }
 }
 
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════=
 // 🤖 BOT ENGINE
 // ══════════════════════════════════════════════════════
 var BOT_NAMES=[
@@ -960,13 +978,13 @@ var BOT_NAMES=[
   'مريم','شيخة','فاطمة','عائشة','زينب','ليلى','أسماء','رهف','جود','لارا'
 ];
 var botCheckInterval=null;
-var BOT_JOIN_DELAY=2000+Math.floor(Math.random()*5001); // random 2-7s per session
+var BOT_JOIN_DELAY=1000+Math.floor(Math.random()*1001); // random 2-7s per session
 
 function botIQ(){return 0.5+Math.random()*0.45}
 
 function startBotWatch(){
   clearBotWatch();
-  var remaining=2000+Math.floor(Math.random()*5001); // fresh random 2-7s each call
+  var remaining=1000+Math.floor(Math.random()*1001); // fresh random 2-7s each call
   var cdEl=document.getElementById('botCountdown');
   if(cdEl)cdEl.textContent='';
   botCheckInterval=setInterval(function(){
@@ -986,18 +1004,23 @@ function clearBotWatch(){
   var cdEl=document.getElementById('botCountdown');if(cdEl)cdEl.textContent='';
 }
 
+var _addingBots=false;
+
 function maybeAddBots(){
+  if(_addingBots)return;
   if(!ROOM||!roomRef)return;
-  if(ROOM.isPublic===false)return; // private rooms: humans only
+  if(!ROOM.isPublic)return;
   var players=ROOM.players||{};
   var bots=ROOM.bots||{};
-  // Wait until at least one human has picked a role
   var humanWithRole=Object.values(players).some(function(p){return!!p.role});
   if(!humanWithRole)return;
+  var maxBots=ROOM.mode==='classic'?3:1;
   var botCount=Object.keys(bots).length;
-  var total=Object.keys(players).length+botCount;
-  var toAdd=Math.max(0,Math.min(3-botCount,4-total));
+  if(botCount>=maxBots)return;
+
+  _addingBots=true;
   var botsLocal=JSON.parse(JSON.stringify(bots));
+  var toAdd=maxBots-botCount;
   for(var i=0;i<toAdd;i++){
     var role=pickBotRole(botsLocal,players);
     if(!role)break;
@@ -1005,6 +1028,7 @@ function maybeAddBots(){
     roomRef.child('bots/'+bid).set({id:bid,name:BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)],iq:botIQ(),role:role});
     botsLocal[bid]={role:role};
   }
+  setTimeout(function(){_addingBots=false},5000);
 }
 
 function addBot(){
@@ -1021,21 +1045,26 @@ function addBot(){
 }
 
 function pickBotRole(bots,players){
-  if(!ROOM)return'red-op';
-  var allRoles=[];
-  Object.values(players||{}).forEach(function(p){if(p.role)allRoles.push(p.role)});
-  Object.values(bots||{}).forEach(function(b){if(b.role)allRoles.push(b.role)});
+  if(!ROOM)return null;
+
+  var humanRoles=[];
+  Object.values(players||{}).forEach(function(p){if(p.role)humanRoles.push(p.role)});
+  var botRoles=[];
+  Object.values(bots||{}).forEach(function(b){if(b.role)botRoles.push(b.role)});
+
+  if(humanRoles.length===0)return null;
+
+  var taken=humanRoles.concat(botRoles);
+
   if(ROOM.mode==='classic'){
-    // Try op roles first (agents), fall back to spy only if missing
-    var want=['red-op','blue-op','red-spy','blue-spy'];
-    for(var i=0;i<want.length;i++){
-      if(allRoles.indexOf(want[i])===-1)return want[i];
+    var allRoles=['red-spy','red-op','blue-spy','blue-op'];
+    for(var i=0;i<allRoles.length;i++){
+      if(taken.indexOf(allRoles[i])===-1)return allRoles[i];
     }
-    return null; // all roles filled
+    return null;
   }else{
-    // Duet: both roles are unique
-    if(allRoles.indexOf('duet-spy')===-1)return'duet-spy';
-    if(allRoles.indexOf('duet-agent')===-1)return'duet-agent';
+    if(taken.indexOf('duet-agent')===-1)return'duet-agent';
+    if(taken.indexOf('duet-spy')===-1)return'duet-spy';
     return null;
   }
 }
@@ -1085,7 +1114,7 @@ function botsTakeTurn(){
       if(role!=='duet-agent')return;
     }
     _botScheduled[schedKey]=true;
-    var delay=5000+Math.random()*25000;
+    var delay=1000+Math.random()*1000;
     setTimeout(function(){doBotGuessOnline(b)},delay);
   });
 }
@@ -1166,10 +1195,10 @@ function botSpymasterGiveHint(bot){
     if(mode==='classic')switchClassicTurn();
     return;
   }
-  var iq=bot.iq||0.7;
+  var iq=bot.iq||0.9;
   var boardWords=ROOM.words||[];
   // 5-15s delay before giving hint (reduced from 5-30s so all-bot games don't stall)
-  var delay=5000+Math.random()*10000;
+  var delay=1000+Math.random()*1000;
   setTimeout(function(){
     if(!ROOM||!ROOM.game||ROOM.game.clue)return; // someone else gave hint
     var result=findBestClue(teamWords,iq,boardWords);
@@ -1215,7 +1244,7 @@ function botPickWord(iq,role,candidates,clueWord){
 // scheduleBotChatReply replaced by smart version
 
 // ── Offline bot ──
-var offlineBotIQ=0.7;
+var offlineBotIQ=0.98;
 function initOfflineBot(){offlineBotIQ=botIQ()}
 
 function botGuessOfflineAuto(){
@@ -1226,7 +1255,7 @@ function botGuessOfflineAuto(){
   if(!candidates.length)return;
   // Use smart semantic scoring (FIX 6)
   var pick=smartBotPick(offlineBotIQ,candidates,G.clue.word||'');
-  var delay=5000+Math.random()*25000;
+  var delay=1000+Math.random()*1000;
   if(pick)setTimeout(function(){guessOffline(pick.i)},delay);
 }
 
@@ -1446,13 +1475,11 @@ function updateBackToRoomBtn(){
 // ════════════════════════════════════════════════════════════════
 function onHumanPickedRole(role){
   if(!ME.isHost||!ROOM)return;
-  if(ROOM.isPublic===false)return; // no bots in private rooms
-  // Human just picked — wait 2-4s then create bots for remaining slots
-  var delay=2000+Math.random()*2000;
+  if(ROOM.isPublic===false)return;
   setTimeout(function(){
     if(!ROOM||!roomRef||ROOM.status!=='lobby')return;
     maybeAddBots();
-  },delay);
+  },2000+Math.random()*2000);
 }
 
 function pickComplementaryRole(takenRoles,mode){
@@ -1532,58 +1559,65 @@ function addBotWithRole(role){
 function scheduleBotChatReply(botData,humanMsg){
   if(!ROOM||!ROOM.game||!ROOM.game.clue)return;
   var G=ROOM.game;var mode=ROOM.mode;
-  if(mode==='classic'){
-    var bTeam=botData.role.indexOf('red')===0?'red':'blue';
-    if(G.turn!==bTeam)return;
-  }
+  if(mode==='classic'){var bTeam=botData.role.indexOf('red')===0?'red':'blue';if(G.turn!==bTeam)return;}
   if(botData.role.indexOf('-op')===-1&&botData.role!=='duet-agent')return;
-  var delay=5000+Math.random()*25000;
+  var delay=1000+Math.random()*1000;
   setTimeout(function(){
     if(!ROOM||!ROOM.game||!roomRef)return;
     var candidates=[];
-    (ROOM.words||[]).forEach(function(w,i){
-      var rv=ROOM.game.revealed;if(!rv||rv[i]==null)candidates.push({w:w,i:i});
-    });
+    (ROOM.words||[]).forEach(function(w,i){var rv=ROOM.game.revealed;if(!rv||rv[i]==null)candidates.push({w:w,i:i})});
     if(!candidates.length)return;
     var clue=(ROOM.game.clue||{}).word||'',num=(ROOM.game.clue||{}).num||1;
-    askWorkerForPick(candidates,clue,num).then(function(aiPick){
-      var pick=aiPick||smartBotPick(botData.iq||0.7,candidates,clue);
+    askWorkerForPicks(candidates,clue,num).then(function(aiPicks){
+      var pick=(aiPicks&&aiPicks[0])||smartBotPick(botData.iq||0.7,candidates,clue);
       if(!pick)return;
-      var pfx=aiPick?'🤖 ':(['أقترح ','ممكن تكون ','أفكر في ','بالنسبة لي '][Math.floor(Math.random()*4)]);
+      var pfx=aiPicks&&aiPicks.length?'🤖 ':(['أقترح ','ممكن تكون ','أفكر في ','بالنسبة لي '][Math.floor(Math.random()*4)]);
       roomRef.child('chat').push({name:botData.name,text:pfx+pick.w,uid:botData.id,ts:Date.now(),isBot:true,vote:pick.w});
     });
   },delay);
 }
 
 function smartBotPick(iq,candidates,clueWord){
-  var scored=candidates.map(function(c){
-    var s=wordScore(c.w,clueWord);s+=Math.random()*(2*(1-iq));return{c:c,score:s};
-  });
+  var scored=candidates.map(function(c){var s=wordScore(c.w,clueWord);s+=Math.random()*(2*(1-iq));return{c:c,score:s}});
   scored.sort(function(a,b){return b.score-a.score});
   var topN=Math.max(1,Math.ceil(scored.length*(1.1-iq)));
   var pick=scored[Math.floor(Math.random()*topN)];
   return pick?pick.c:null;
 }
 
+// doBotGuessOnline: gets ranked list from Claude, guesses them one by one with delays
 function doBotGuessOnline(b){
   var G=ROOM&&ROOM.game;if(!G||!G.clue)return;
   var candidates=[];
   (ROOM.words||[]).forEach(function(w,i){if(!G.revealed||G.revealed[i]==null)candidates.push({w:w,i:i})});
   if(!candidates.length)return;
   var clue=(G.clue||{}).word||'',num=(G.clue||{}).num||1;
-  var guessDelay=5000+Math.random()*25000;
-  askWorkerForPick(candidates,clue,num).then(function(aiPick){
-    var picked=aiPick||smartBotPick(b.iq||0.7,candidates,clue);
-    if(!picked)return;
+
+  askWorkerForPicks(candidates,clue,num).then(function(aiPicks){
+    // Use AI ranked picks if available, else single smartBotPick
+    var pickQueue=aiPicks&&aiPicks.length?aiPicks:[smartBotPick(b.iq||0.7,candidates,clue)].filter(Boolean);
+    if(!pickQueue.length)return;
+
+    // Announce first pick in chat immediately
+    var first=pickQueue[0];
     if(roomRef)roomRef.child('chat').push({
-      name:b.name,text:(aiPick?'🤖 Claude: ':'')+'أقترح: '+picked.w,
-      uid:b.id,ts:Date.now(),isBot:true,vote:picked.w
+      name:b.name,
+      text:(aiPicks&&aiPicks.length?'🤖 Claude: ':'')+'أقترح: '+first.w,
+      uid:b.id,ts:Date.now(),isBot:true,vote:first.w
     });
-    setTimeout(function(){
-      var G2=ROOM&&ROOM.game;
-      if(!G2||!G2.clue||(G2.revealed&&G2.revealed[picked.i]!=null))return;
-      guessOnline(picked.i);
-    },guessDelay);
+
+    // Queue each pick with increasing delays
+    pickQueue.forEach(function(picked,idx){
+      var guessDelay=Math.random()*1000;
+      setTimeout(function(){
+        var G2=ROOM&&ROOM.game;
+        if(!G2||!G2.clue)return; // turn ended
+        if(G2.revealed&&G2.revealed[picked.i]!=null)return; // already revealed
+        // Check game still needs guesses
+        if(ROOM.mode==='classic'&&G2.guessesLeft<=0)return;
+        guessOnline(picked.i);
+      },guessDelay);
+    });
   });
 }
 
@@ -1594,9 +1628,9 @@ function botGuessOfflineAuto(){
   G.words.forEach(function(w,i){if(!G.rev[i])candidates.push({w:w,i:i})});
   if(!candidates.length)return;
   var clue=G.clue.word||'',num=G.clue.num||1;
-  var delay=5000+Math.random()*25000;
-  askWorkerForPick(candidates,clue,num).then(function(aiPick){
-    var pick=aiPick||smartBotPick(offlineBotIQ,candidates,clue);
+  var delay=Math.random()*1000;
+  askWorkerForPicks(candidates,clue,num).then(function(aiPicks){
+    var pick=(aiPicks&&aiPicks[0])||smartBotPick(offlineBotIQ,candidates,clue);
     if(pick)setTimeout(function(){guessOffline(pick.i)},delay);
   });
 }
@@ -2401,15 +2435,19 @@ function createRoom(){
   var roomData;
   if(gameMode==='classic'){
     var board=generateSmartBoard();
-    roomData={code:code,host:ME.id,mode:'classic',ageGroup:APP.ageGroup,settings:{turnTime:turnTime},
-      words:board.words,types:board.types,duetKey:null,
-      players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
+    roomData={code:code,host:ME.id,mode:'classic',ageGroup:APP.ageGroup,
+  isPublic: roomType==='public',
+  settings:{turnTime:turnTime},
+  words:board.words,types:board.types,duetKey:null,
+  players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
   }else{
     var board2=generateDuetBoard();
     var duetTurns=parseInt(document.getElementById('cDT').value);
-    roomData={code:code,host:ME.id,mode:'duet',ageGroup:APP.ageGroup,settings:{turnTime:turnTime,duetTurns:duetTurns},
-      words:board2.words,types:null,duetKey:board2.duetKey,
-      players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
+    roomData={code:code,host:ME.id,mode:'duet',ageGroup:APP.ageGroup,
+  isPublic: roomType==='public',
+  settings:{turnTime:turnTime,duetTurns:duetTurns},
+  words:board2.words,types:null,duetKey:board2.duetKey,
+  players:{},game:null,result:null,status:'lobby',reactions:{},ts:firebase.database.ServerValue.TIMESTAMP};
   }
   roomData.players[ME.id]={name:name,role:'',online:true};
   roomRef=db.ref('rooms/'+code);
@@ -2451,9 +2489,11 @@ function listenRoom(){
   });
   roomRef.on('value',function(snap){
     if(!snap.exists())return;ROOM=snap.val();
+    
     if(ROOM.status==='lobby'){
       renderLobby();renderBotsInLobby();
-      if(ME.isHost&&ROOM.isPublic!==false)maybeAddBots();
+      var maxB=ROOM.mode==='classic'?3:1;
+      if(ME.isHost&&ROOM.isPublic&&Object.keys(ROOM.bots||{}).length<maxB)maybeAddBots();
     }
     else if(ROOM.status==='playing'){renderOnlineGame();renderChatPanel();botsTakeTurn();}
     else if(ROOM.status==='ended')renderOnlineResult();
@@ -2466,6 +2506,7 @@ function listenRoom(){
 // ══════════════════════════════════════════════════════
 function renderBotsInLobby(){
   if(!ROOM||!ROOM.bots)return;
+  if(ROOM.isPublic===false)return; // never show bots in private rooms
   var list=document.getElementById('pList');if(!list)return;
   Object.values(ROOM.bots).forEach(function(b){
     if(!b||!b.id)return;
