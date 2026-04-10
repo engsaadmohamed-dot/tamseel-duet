@@ -1585,40 +1585,72 @@ function smartBotPick(iq,candidates,clueWord){
   return pick?pick.c:null;
 }
 
-// doBotGuessOnline: gets ranked list from Claude, guesses them one by one with delays
 function doBotGuessOnline(b){
   var G=ROOM&&ROOM.game;if(!G||!G.clue)return;
   var candidates=[];
   (ROOM.words||[]).forEach(function(w,i){if(!G.revealed||G.revealed[i]==null)candidates.push({w:w,i:i})});
-  if(!candidates.length)return;
+  if(!candidates.length){botEndTurn(b);return}
   var clue=(G.clue||{}).word||'',num=(G.clue||{}).num||1;
 
   askWorkerForPicks(candidates,clue,num).then(function(aiPicks){
-    // Use AI ranked picks if available, else single smartBotPick
-    var pickQueue=aiPicks&&aiPicks.length?aiPicks:[smartBotPick(b.iq||0.7,candidates,clue)].filter(Boolean);
-    if(!pickQueue.length)return;
+    var pickQueue;
+    if(aiPicks&&aiPicks.length){
+      pickQueue=aiPicks.slice(0,num);
+    }else{
+      pickQueue=[];
+      var remaining=candidates.slice();
+      for(var p=0;p<num&&remaining.length>0;p++){
+        var pick=smartBotPick(b.iq||0.7,remaining,clue);
+        if(!pick)break;
+        pickQueue.push(pick);
+        remaining=remaining.filter(function(c){return c.i!==pick.i});
+      }
+    }
+    if(!pickQueue.length){botEndTurn(b);return}
 
-    // Announce first pick in chat immediately
-    var first=pickQueue[0];
-    if(roomRef)roomRef.child('chat').push({
-      name:b.name,
-      text:(aiPicks&&aiPicks.length?'🤖 Claude: ':'')+'أقترح: '+first.w,
-      uid:b.id,ts:Date.now(),isBot:true,vote:first.w
-    });
+    // Announce picks in chat
+    if(roomRef){
+      var allNames=pickQueue.map(function(p){return p.w});
+      roomRef.child('chat').push({
+        name:b.name,
+        text:'أقترح: '+allNames.join('، ')+' 🎯',
+        uid:b.id,ts:Date.now(),isBot:true,vote:pickQueue[0].w
+      });
+    }
 
-    // Queue each pick with increasing delays
+    // Guess each pick with increasing delays
     pickQueue.forEach(function(picked,idx){
-      var guessDelay=Math.random()*1000;
+      var delay=1500+idx*2500+Math.random()*1000;
       setTimeout(function(){
         var G2=ROOM&&ROOM.game;
-        if(!G2||!G2.clue)return; // turn ended
-        if(G2.revealed&&G2.revealed[picked.i]!=null)return; // already revealed
-        // Check game still needs guesses
+        if(!G2||!G2.clue)return;
+        if(G2.revealed&&G2.revealed[picked.i]!=null)return;
         if(ROOM.mode==='classic'&&G2.guessesLeft<=0)return;
         guessOnline(picked.i);
-      },guessDelay);
+      },delay);
     });
+
+    // After all guesses → end turn
+    var endDelay=1500+pickQueue.length*2500+2000;
+    setTimeout(function(){botEndTurn(b)},endDelay);
   });
+}
+
+function botEndTurn(b){
+  if(!ME.isHost||!ROOM||!ROOM.game)return;
+  var G=ROOM.game;
+  if(!G.clue)return;
+  if(ROOM.mode==='classic'){
+    var botTeam=b.role.indexOf('red')===0?'red':'blue';
+    if(G.turn!==botTeam)return;
+    roomRef.child('chat').push({
+      name:b.name,text:'⏭️ أنهي دوري',
+      uid:b.id,ts:Date.now(),isBot:true
+    });
+    switchClassicTurn();
+  }else{
+    switchDuetOnline({});
+  }
 }
 
 function botGuessOfflineAuto(){
