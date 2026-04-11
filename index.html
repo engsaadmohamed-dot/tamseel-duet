@@ -354,7 +354,44 @@ body.has-tabbar .tst{bottom:68px}
 #confettiCanvas{position:fixed;top:0;left:0;width:100%;height:100%;
   pointer-events:none;z-index:9999;display:none}
 #confettiCanvas.active{display:block}
+/* ═══ KIDS CARD ANIMATIONS ═══ */
+@keyframes ka-bounce{0%{transform:scale(1)}30%{transform:scale(1.25) translateY(-8px)}50%{transform:scale(.9)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes ka-spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes ka-shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px) rotate(-4deg)}30%{transform:translateX(6px) rotate(4deg)}45%{transform:translateX(-4px) rotate(-2deg)}60%{transform:translateX(4px) rotate(2deg)}75%{transform:translateX(-2px)}90%{transform:translateX(2px)}}
+@keyframes ka-squish{0%{transform:scale(1,1)}25%{transform:scale(1.3,.7)}50%{transform:scale(.8,1.2)}75%{transform:scale(1.1,.9)}100%{transform:scale(1,1)}}
+@keyframes ka-jelly{0%{transform:scale(1,1)}25%{transform:scale(.9,1.1)}50%{transform:scale(1.15,.85)}75%{transform:scale(.95,1.05)}100%{transform:scale(1,1)}}
+@keyframes ka-pop{0%{transform:scale(0);opacity:0}50%{transform:scale(1.3);opacity:1}75%{transform:scale(.85)}100%{transform:scale(1)}}
+@keyframes ka-flip{0%{transform:perspective(400px) rotateY(0)}50%{transform:perspective(400px) rotateY(180deg) scale(1.1)}100%{transform:perspective(400px) rotateY(360deg) scale(1)}}
+@keyframes ka-float{0%{transform:translateY(0)}40%{transform:translateY(-12px) scale(1.1)}100%{transform:translateY(0) scale(1)}}
+@keyframes ka-explode{0%{transform:scale(1)}20%{transform:scale(1.4)}40%{transform:scale(.6)}60%{transform:scale(1.15)}80%{transform:scale(.95)}100%{transform:scale(1)}}
+@keyframes ka-wobble{0%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(3deg)}100%{transform:rotate(0)}}
+@keyframes ka-drop{0%{transform:translateY(-30px) scale(.5);opacity:0}60%{transform:translateY(5px) scale(1.1);opacity:1}100%{transform:translateY(0) scale(1)}}
+@keyframes ka-zoom{0%{transform:scale(.3);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1)}}
+@keyframes ka-swing{0%{transform:rotate(0)}25%{transform:rotate(15deg)}50%{transform:rotate(-10deg)}75%{transform:rotate(5deg)}100%{transform:rotate(0)}}
+@keyframes ka-heartbeat{0%{transform:scale(1)}15%{transform:scale(1.25)}30%{transform:scale(1)}45%{transform:scale(1.15)}60%{transform:scale(1)}}
+@keyframes ka-rainbow{0%{filter:hue-rotate(0deg) brightness(1)}33%{filter:hue-rotate(120deg) brightness(1.2)}66%{filter:hue-rotate(240deg) brightness(1.1)}100%{filter:hue-rotate(360deg) brightness(1)}}
 
+.gx.ka-anim{animation-duration:.6s;animation-fill-mode:both;animation-timing-function:ease-out}
+.gx.ka-bounce{animation-name:ka-bounce}
+.gx.ka-spin{animation-name:ka-spin}
+.gx.ka-shake{animation-name:ka-shake}
+.gx.ka-squish{animation-name:ka-squish}
+.gx.ka-jelly{animation-name:ka-jelly}
+.gx.ka-pop{animation-name:ka-pop}
+.gx.ka-flip{animation-name:ka-flip}
+.gx.ka-float{animation-name:ka-float}
+.gx.ka-explode{animation-name:ka-explode}
+.gx.ka-wobble{animation-name:ka-wobble}
+.gx.ka-drop{animation-name:ka-drop}
+.gx.ka-zoom{animation-name:ka-zoom}
+.gx.ka-swing{animation-name:ka-swing}
+.gx.ka-heartbeat{animation-name:ka-heartbeat;animation-duration:.8s}
+.gx.ka-rainbow{animation-name:ka-rainbow;animation-duration:1s}
+
+/* Floating emoji burst from card */
+.ka-emoji-burst{position:fixed;pointer-events:none;z-index:3000;font-size:2em}
+.ka-emoji-burst span{position:absolute;animation:ka-burst-fly 1s ease-out forwards}
+@keyframes ka-burst-fly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--bx),var(--by)) scale(.4)}}
 @media(max-width:360px){.gx{font-size:.53em;min-height:36px}.rcode{font-size:1.9em}}
 </style>
 </head>
@@ -2071,32 +2108,279 @@ function sReact(){tone(1200,.05,'sine',.08)}
 // 🐮 FUNNY KIDS ANIMAL SOUNDS (Web Audio synthesis)
 // Each word has an emoji + synthesized funny sound
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// 🐮 KIDS SOUNDS — Category-based + specific animals
+// ══════════════════════════════════════════════════════
 var KIDS_SOUNDS={
-  // حيوانات
-  'حمار':   function(){donkeySound()},
-  'بقرة':   function(){cowSound()},
-  'قطة':    function(){catSound()},
-  'كلب':    function(){dogSound()},
-  'دجاج':   function(){chickenSound()},
-  'ديك':    function(){roosterSound()},
-  'خروف':   function(){sheepSound()},
-  'أسد':    function(){lionSound()},
-  'فيل':    function(){elephantSound()},
-  'قرد':    function(){monkeySound()},
-  'ضفدع':   function(){frogSound()},
-  'بطة':    function(){duckSound()},
-  'نحلة':   function(){beeSound()},
-  'حصان':   function(){horseSound()},
-  'غراب':   function(){crowSound()},
-  // default funny pop
-  'default': function(){popSound()}
+  // ── Specific animals ──
+  'حمار':function(){donkeySound()},'بقرة':function(){cowSound()},'قطة':function(){catSound()},
+  'كلب':function(){dogSound()},'دجاج':function(){chickenSound()},'ديك':function(){roosterSound()},
+  'خروف':function(){sheepSound()},'أسد':function(){lionSound()},'فيل':function(){elephantSound()},
+  'قرد':function(){monkeySound()},'ضفدع':function(){frogSound()},'بطة':function(){duckSound()},
+  'نحلة':function(){beeSound()},'حصان':function(){horseSound()},'غراب':function(){crowSound()},
+  'default':function(){popSound()}
+};
+
+// ── Category sound map (word → category) ──
+var KIDS_SOUND_CAT={};
+// Animals (generic growl for unlisted)
+['أرنب','ببغاء','سمكة','سلحفاة','هامستر','قنفذ','نمر','زرافة','دب','ذئب','حوت','دلفين','قرش',
+ 'طاووس','بطريق','نعامة','بومة','عصفور','حمامة','نملة','فراشة','تمساح','ماعز','جمل'].forEach(function(w){KIDS_SOUND_CAT[w]='animal'});
+// Fruits
+['تفاح','موز','عنب','فراولة','مانجو','برتقال','بطيخ','جوافة','كرز','رمان','ليمون'].forEach(function(w){KIDS_SOUND_CAT[w]='fruit'});
+// Vegetables
+['جزر','طماطم','خيار','بطاطس','بصل','ذرة','بازلاء','فلفل','باذنجان','كوسة'].forEach(function(w){KIDS_SOUND_CAT[w]='crunch'});
+// Sweets & food
+['شوكولاتة','آيس كريم','كيك','حلوى','بسكويت','مربى','عسل','بيتزا','برجر','خبز','بيضة','جبنة','أرز'].forEach(function(w){KIDS_SOUND_CAT[w]='yum'});
+// Drinks
+['عصير','حليب','ماء','كاكاو','ليموناضة','سموثي'].forEach(function(w){KIDS_SOUND_CAT[w]='pour'});
+// Transport
+['سيارة','أتوبيس','قطار','دراجة','طائرة','قارب','مرساة'].forEach(function(w){KIDS_SOUND_CAT[w]='vroom'});
+// Nature
+['شمس','قمر','نجمة','سحابة','مطر','شجرة','زهرة','بحر','رمل','ثلج'].forEach(function(w){KIDS_SOUND_CAT[w]='nature'});
+// Sports
+['كرة قدم','سباحة','جري','قفز','رمي','تسلق','جمباز'].forEach(function(w){KIDS_SOUND_CAT[w]='whistle'});
+// Colors
+['أحمر','أزرق','أخضر','أصفر','برتقالي','وردي','بنفسجي','أبيض','أسود'].forEach(function(w){KIDS_SOUND_CAT[w]='sparkle'});
+// Body
+['رأس','أنف','أذن','عين','يد','رجل','أصابع','أسنان','شعر'].forEach(function(w){KIDS_SOUND_CAT[w]='boing'});
+// Clothes
+['قميص','بنطلون','حذاء','قبعة','جاكيت','شورت','جوارب','بيجاما'].forEach(function(w){KIDS_SOUND_CAT[w]='swoosh'});
+// Home
+['باب','نافذة','كرسي','سرير','طاولة','تلفزيون','مطبخ','حمام'].forEach(function(w){KIDS_SOUND_CAT[w]='knock'});
+// School
+['كتاب','قلم','حقيبة','مدرسة','معلم','درس','رسم','مقص','لاصق'].forEach(function(w){KIDS_SOUND_CAT[w]='pencil'});
+// Fantasy
+['أميرة','تنين','جني','ساحر','مملكة','قلعة','قزم','وحش','سحر'].forEach(function(w){KIDS_SOUND_CAT[w]='magic'});
+// Music
+['طبل','بيانو','جيتار','غناء','رقص','أغنية','صوت','موسيقى'].forEach(function(w){KIDS_SOUND_CAT[w]='musical'});
+// Feelings
+['فرح','حزين','خائف','متعجب','غاضب','نعسان','جائع','مريح'].forEach(function(w){KIDS_SOUND_CAT[w]='emotion'});
+// Shapes
+['دائرة','مربع','مثلث','نجمة','قلب','هلال','بيضاوي'].forEach(function(w){KIDS_SOUND_CAT[w]='geometric'});
+// Toys
+['كرة','دمية','لعبة','مكعبات','بازل','يويو','بالون','طائرة ورق'].forEach(function(w){KIDS_SOUND_CAT[w]='toy'});
+
+// ── Category sound synthesizers ──
+function fruitSplatSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(400,n);o.frequency.exponentialRampToValueAtTime(80,n+.15);
+  g.gain.setValueAtTime(.3,n);g.gain.exponentialRampToValueAtTime(.001,n+.2);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.25);
+  // Juicy splatter
+  var o2=actx.createOscillator(),g2=actx.createGain();
+  o2.type='sawtooth';o2.frequency.value=180;
+  g2.gain.setValueAtTime(.08,n+.05);g2.gain.exponentialRampToValueAtTime(.001,n+.2);
+  o2.connect(g2);g2.connect(actx.destination);o2.start(n+.05);o2.stop(n+.25);
+}
+function crunchSound(){ea();if(!actx)return;var n=actx.currentTime;
+  [0,.04,.09].forEach(function(t){
+    var o=actx.createOscillator(),g=actx.createGain();
+    o.type='square';o.frequency.value=300+Math.random()*400;
+    g.gain.setValueAtTime(.15,n+t);g.gain.exponentialRampToValueAtTime(.001,n+t+.04);
+    o.connect(g);g.connect(actx.destination);o.start(n+t);o.stop(n+t+.06);
+  });
+}
+function yumSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(500,n);o.frequency.linearRampToValueAtTime(800,n+.1);o.frequency.linearRampToValueAtTime(600,n+.2);
+  g.gain.setValueAtTime(.2,n);g.gain.exponentialRampToValueAtTime(.001,n+.25);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.3);
+}
+function pourSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain(),lfo=actx.createOscillator(),lg=actx.createGain();
+  o.type='sine';o.frequency.value=600;lfo.frequency.value=20;lg.gain.value=50;
+  lfo.connect(lg);lg.connect(o.frequency);
+  g.gain.setValueAtTime(.1,n);g.gain.setValueAtTime(.12,n+.2);g.gain.exponentialRampToValueAtTime(.001,n+.5);
+  o.connect(g);g.connect(actx.destination);lfo.start(n);o.start(n);lfo.stop(n+.5);o.stop(n+.55);
+}
+function vroomSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sawtooth';o.frequency.setValueAtTime(80,n);o.frequency.exponentialRampToValueAtTime(300,n+.3);o.frequency.exponentialRampToValueAtTime(150,n+.5);
+  g.gain.setValueAtTime(.15,n);g.gain.exponentialRampToValueAtTime(.001,n+.55);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.6);
+}
+function natureSound(){ea();if(!actx)return;var n=actx.currentTime;
+  // Gentle wind whoosh
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(300,n);o.frequency.linearRampToValueAtTime(500,n+.2);o.frequency.linearRampToValueAtTime(250,n+.5);
+  g.gain.setValueAtTime(.08,n);g.gain.setValueAtTime(.12,n+.15);g.gain.exponentialRampToValueAtTime(.001,n+.5);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.55);
+}
+function whistleSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(900,n);o.frequency.linearRampToValueAtTime(1200,n+.1);o.frequency.setValueAtTime(900,n+.15);
+  g.gain.setValueAtTime(.15,n);g.gain.exponentialRampToValueAtTime(.001,n+.25);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.3);
+}
+function sparkleSound(){ea();if(!actx)return;var n=actx.currentTime;
+  [1200,1500,1800,2000].forEach(function(f,i){
+    var o=actx.createOscillator(),g=actx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.08,n+i*.06);g.gain.exponentialRampToValueAtTime(.001,n+i*.06+.1);
+    o.connect(g);g.connect(actx.destination);o.start(n+i*.06);o.stop(n+i*.06+.12);
+  });
+}
+function boingSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(150,n);o.frequency.exponentialRampToValueAtTime(600,n+.08);o.frequency.exponentialRampToValueAtTime(200,n+.25);
+  g.gain.setValueAtTime(.25,n);g.gain.exponentialRampToValueAtTime(.001,n+.3);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.35);
+}
+function swooshSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sawtooth';o.frequency.setValueAtTime(800,n);o.frequency.exponentialRampToValueAtTime(100,n+.2);
+  g.gain.setValueAtTime(.1,n);g.gain.exponentialRampToValueAtTime(.001,n+.22);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.25);
+}
+function knockSound(){ea();if(!actx)return;var n=actx.currentTime;
+  [0,.12,.25].forEach(function(t){
+    var o=actx.createOscillator(),g=actx.createGain();
+    o.type='sine';o.frequency.setValueAtTime(300,n+t);o.frequency.exponentialRampToValueAtTime(100,n+t+.06);
+    g.gain.setValueAtTime(.25,n+t);g.gain.exponentialRampToValueAtTime(.001,n+t+.08);
+    o.connect(g);g.connect(actx.destination);o.start(n+t);o.stop(n+t+.1);
+  });
+}
+function pencilSound(){ea();if(!actx)return;var n=actx.currentTime;
+  [0,.03,.06,.1,.14].forEach(function(t){
+    var o=actx.createOscillator(),g=actx.createGain();
+    o.type='square';o.frequency.value=1500+Math.random()*1000;
+    g.gain.setValueAtTime(.04,n+t);g.gain.exponentialRampToValueAtTime(.001,n+t+.025);
+    o.connect(g);g.connect(actx.destination);o.start(n+t);o.stop(n+t+.03);
+  });
+}
+function magicSound(){ea();if(!actx)return;var n=actx.currentTime;
+  [400,600,800,1000,1200,1000,800].forEach(function(f,i){
+    var o=actx.createOscillator(),g=actx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.1,n+i*.05);g.gain.exponentialRampToValueAtTime(.001,n+i*.05+.08);
+    o.connect(g);g.connect(actx.destination);o.start(n+i*.05);o.stop(n+i*.05+.1);
+  });
+}
+function musicalSound(){ea();if(!actx)return;var n=actx.currentTime;
+  [523,659,784,1047].forEach(function(f,i){
+    var o=actx.createOscillator(),g=actx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.12,n+i*.1);g.gain.exponentialRampToValueAtTime(.001,n+i*.1+.15);
+    o.connect(g);g.connect(actx.destination);o.start(n+i*.1);o.stop(n+i*.1+.18);
+  });
+}
+function emotionSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(400,n);o.frequency.linearRampToValueAtTime(700,n+.15);o.frequency.linearRampToValueAtTime(500,n+.3);
+  g.gain.setValueAtTime(.15,n);g.gain.exponentialRampToValueAtTime(.001,n+.35);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.4);
+}
+function geometricSound(){ea();if(!actx)return;var n=actx.currentTime;
+  [440,550,660].forEach(function(f,i){
+    var o=actx.createOscillator(),g=actx.createGain();
+    o.type='triangle';o.frequency.value=f;
+    g.gain.setValueAtTime(.12,n+i*.08);g.gain.exponentialRampToValueAtTime(.001,n+i*.08+.1);
+    o.connect(g);g.connect(actx.destination);o.start(n+i*.08);o.stop(n+i*.08+.12);
+  });
+}
+function toySound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='square';o.frequency.setValueAtTime(600,n);o.frequency.linearRampToValueAtTime(1200,n+.08);o.frequency.linearRampToValueAtTime(400,n+.2);
+  g.gain.setValueAtTime(.12,n);g.gain.exponentialRampToValueAtTime(.001,n+.25);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.3);
+}
+function animalGenericSound(){ea();if(!actx)return;var n=actx.currentTime;
+  var o=actx.createOscillator(),g=actx.createGain();
+  o.type='sawtooth';o.frequency.setValueAtTime(250,n);o.frequency.linearRampToValueAtTime(400,n+.1);o.frequency.linearRampToValueAtTime(200,n+.25);
+  g.gain.setValueAtTime(.18,n);g.gain.exponentialRampToValueAtTime(.001,n+.3);
+  o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+.35);
+}
+
+var CAT_SOUND_FN={
+  animal:animalGenericSound,fruit:fruitSplatSound,crunch:crunchSound,yum:yumSound,
+  pour:pourSound,vroom:vroomSound,nature:natureSound,whistle:whistleSound,
+  sparkle:sparkleSound,boing:boingSound,swoosh:swooshSound,knock:knockSound,
+  pencil:pencilSound,magic:magicSound,musical:musicalSound,emotion:emotionSound,
+  geometric:geometricSound,toy:toySound
 };
 
 function playKidsSound(word){
   if(!APP.soundsOn)return;
   ea();if(!actx)return;
-  var fn=KIDS_SOUNDS[word]||KIDS_SOUNDS['default'];
-  fn();
+  // Specific sound first
+  var fn=KIDS_SOUNDS[word];
+  if(fn){fn();return}
+  // Category sound
+  var cat=KIDS_SOUND_CAT[word];
+  if(cat&&CAT_SOUND_FN[cat]){CAT_SOUND_FN[cat]();return}
+  // Default pop
+  popSound();
+}
+
+// ══════════════════════════════════════════════════════
+// 🎬 KIDS ANIMATIONS — per-word category
+// ══════════════════════════════════════════════════════
+var KIDS_ANIM_CAT={};
+['حمار','بقرة','قطة','كلب','دجاج','ديك','خروف','حصان','جمل','ماعز',
+ 'أرنب','ببغاء','هامستر','قنفذ'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-shake'});
+['أسد','نمر','فيل','دب','ذئب','تمساح','قرش','حوت'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-explode'});
+['زرافة','قرد','دلفين','بطة','بطريق','نعامة','ضفدع'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-bounce'});
+['صقر','نسر','بومة','عصفور','حمامة','غراب','طاووس','نحلة','فراشة'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-float'});
+['نملة','دودة','خنفساء','سلحفاة','سمكة'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-wobble'});
+['تفاح','موز','عنب','فراولة','مانجو','برتقال','بطيخ','جوافة','كرز','رمان','ليمون'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-squish'});
+['جزر','طماطم','خيار','بطاطس','بصل','ذرة','بازلاء','فلفل','باذنجان','كوسة'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-jelly'});
+['شوكولاتة','آيس كريم','كيك','حلوى','بسكويت','مربى','عسل'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-spin'});
+['عصير','حليب','ماء','كاكاو','ليموناضة','سموثي'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-jelly'});
+['سيارة','أتوبيس','قطار','دراجة','طائرة','قارب','مرساة'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-shake'});
+['شمس','قمر','نجمة'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-rainbow'});
+['سحابة','مطر','شجرة','زهرة','بحر','رمل','ثلج'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-float'});
+['كرة قدم','سباحة','جري','قفز','رمي','تسلق','جمباز'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-bounce'});
+['أحمر','أزرق','أخضر','أصفر','برتقالي','وردي','بنفسجي','أبيض','أسود'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-rainbow'});
+['رأس','أنف','أذن','عين','يد','رجل','أصابع','أسنان','شعر'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-bounce'});
+['قميص','بنطلون','حذاء','قبعة','جاكيت','شورت','جوارب','بيجاما'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-flip'});
+['باب','نافذة','كرسي','سرير','طاولة','تلفزيون','مطبخ','حمام'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-shake'});
+['كتاب','قلم','حقيبة','مدرسة','معلم','درس','رسم','مقص','لاصق'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-wobble'});
+['أميرة','تنين','جني','ساحر','مملكة','قلعة','قزم','وحش','سحر'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-explode'});
+['طبل','بيانو','جيتار','غناء','رقص','أغنية','صوت','موسيقى'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-swing'});
+['فرح','حزين','خائف','متعجب','غاضب','نعسان','جائع','مريح'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-heartbeat'});
+['دائرة','مربع','مثلث','هلال','بيضاوي'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-spin'});
+['قلب','نجمة'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-heartbeat'});
+['كرة','دمية','لعبة','مكعبات','بازل','يويو','بالون','طائرة ورق'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-bounce'});
+['بيتزا','برجر','خبز','بيضة','جبنة','أرز'].forEach(function(w){KIDS_ANIM_CAT[w]='ka-squish'});
+
+// ── Play animation + emoji burst on card ──
+function playKidsEffect(word,cardEl){
+  if(APP.ageGroup!=='kids'||!cardEl)return;
+  // 1. Play sound
+  playKidsSound(word);
+  // 2. Apply animation
+  var anim=KIDS_ANIM_CAT[word]||'ka-pop';
+  cardEl.classList.remove('ka-anim',anim);
+  void cardEl.offsetWidth; // force reflow
+  cardEl.classList.add('ka-anim',anim);
+  setTimeout(function(){cardEl.classList.remove('ka-anim',anim)},800);
+  // 3. Emoji burst from card position
+  var emoji=getKidsEmoji(word);
+  if(emoji)spawnEmojiBurst(cardEl,emoji);
+}
+
+function spawnEmojiBurst(el,emoji){
+  var rect=el.getBoundingClientRect();
+  var cx=rect.left+rect.width/2;
+  var cy=rect.top+rect.height/2;
+  var container=document.createElement('div');
+  container.className='ka-emoji-burst';
+  container.style.left=cx+'px';container.style.top=cy+'px';
+  var count=5+Math.floor(Math.random()*4);
+  for(var i=0;i<count;i++){
+    var s=document.createElement('span');
+    s.textContent=emoji;
+    var angle=Math.random()*Math.PI*2;
+    var dist=40+Math.random()*60;
+    s.style.setProperty('--bx',Math.cos(angle)*dist+'px');
+    s.style.setProperty('--by',Math.sin(angle)*dist-30+'px');
+    s.style.fontSize=(0.6+Math.random()*0.6)+'em';
+    s.style.animationDelay=(Math.random()*0.15)+'s';
+    container.appendChild(s);
+  }
+  document.body.appendChild(container);
+  setTimeout(function(){container.remove()},1200);
 }
 
 // ── Synthesized animal sounds ──
@@ -2662,8 +2946,10 @@ function guessOffline(i){
   var G=offlineG;if(G.over||G.rev[i])return;
   var type=G.dk[i];G.rev[i]=true;G.rType[i]=type;
   // Kids: play animal sound
-  if(APP.ageGroup==='kids')playKidsSound(G.words[i]);
-  if(type==='assassin'){sKill();G.over=true;renderOfflineGame(false);setTimeout(function(){showResOffline('☠️','القاتل!','خسرتوا — جربوا تاني')},600);return}
+  var clickedCard=document.getElementById('gG').children[i];
+  if(APP.ageGroup==='kids')playKidsEffect(G.words[i],clickedCard);
+
+    if(type==='assassin'){sKill();G.over=true;renderOfflineGame(false);setTimeout(function(){showResOffline('☠️','القاتل!','خسرتوا — جربوا تاني')},600);return}
   if(type==='green'){G.found++;G.gl--;
     if(G.found>=G.total){sWin();G.over=true;renderOfflineGame(false);setTimeout(function(){showResOffline('🏆','مبروك!','لقيتوا كل العملاء! 🤝')},600);return}
     if(G.gl<=0){sOk();switchOffline();return}
@@ -2993,8 +3279,10 @@ function submitClue(){
 function guessOnline(i){
   var G=ROOM.game;if(!G||!G.clue||(G.revealed&&G.revealed[i]))return;
   // Play kids sound
-  if(APP.ageGroup==='kids')playKidsSound(ROOM.words[i]);
-  var isClassic=ROOM.mode==='classic';
+var clickedCardOnline=document.getElementById('gG').children[i];
+  if(APP.ageGroup==='kids')playKidsEffect(ROOM.words[i],clickedCardOnline);
+
+    var isClassic=ROOM.mode==='classic';
   var type=isClassic?ROOM.types[i]:ROOM.duetKey[i];
   var up={};up['game/revealed/'+i]=type;
   if(isClassic){
