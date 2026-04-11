@@ -38,9 +38,9 @@ body.kids-mode .gx:not(.rv){font-size:.65em}
 body.kids-mode #gameScr{background:var(--kids-bg)}
 
 /* Kids emoji big bounce on card */
-.gx .k-emoji{display:block;font-size:1.5em;line-height:1.1}
-.gx .k-word{display:block;font-size:.85em;margin-top:1px}
-body.kids-mode .gx{min-height:52px;font-size:.58em;line-height:1.1}
+.gx .k-emoji{display:block;font-size:2.2em;line-height:1.1}
+.gx .k-word{display:block;font-size:.7em;margin-top:2px;opacity:.85}
+body.kids-mode .gx{min-height:56px;font-size:.62em;line-height:1.1}
 
 /* ═══ BASE ═══ */
 .scr{display:none;min-height:100dvh;flex-direction:column;align-items:center;justify-content:center;padding:14px}
@@ -130,7 +130,7 @@ body.kids-mode .gx{min-height:52px;font-size:.58em;line-height:1.1}
 
 /* ═══ GRID ═══ */
 .gg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:3px 0;flex:1;width:100%}
-.gx{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.6em;padding:3px 2px;text-align:center;line-height:1.2;min-height:44px;cursor:pointer;transition:all .15s;background:var(--card);border:2px solid var(--bdr);color:var(--txt);position:relative}
+.gx{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:.75em;padding:3px 2px;text-align:center;line-height:1.2;min-height:44px;cursor:pointer;transition:all .15s;background:var(--card);border:2px solid var(--bdr);color:var(--txt);position:relative}
 .gx:active:not(.rv){transform:scale(.92)}
 .gx.rv{cursor:default;}
 
@@ -2383,6 +2383,19 @@ function spawnEmojiBurst(el,emoji){
   setTimeout(function(){container.remove()},1200);
 }
 
+// ── Adults: animation only (no sound) ──
+var ADULT_ANIMS=['ka-bounce','ka-jelly','ka-pop','ka-flip','ka-float','ka-squish','ka-wobble','ka-shake'];
+
+function playAdultEffect(cardEl){
+  if(!cardEl)return;
+  var anim=ADULT_ANIMS[Math.floor(Math.random()*ADULT_ANIMS.length)];
+  cardEl.classList.remove('ka-anim');
+  ADULT_ANIMS.forEach(function(a){cardEl.classList.remove(a)});
+  void cardEl.offsetWidth;
+  cardEl.classList.add('ka-anim',anim);
+  setTimeout(function(){cardEl.classList.remove('ka-anim',anim)},800);
+}
+
 // ── Synthesized animal sounds ──
 function donkeySound(){
   // هيهاو! — descending then ascending
@@ -2931,7 +2944,14 @@ function renderOfflineGame(spyView){
     else{
       c.className='gx';
       if(spyView){var t=G.dk[i];c.className+=' s'+(t==='green'?'g':t==='assassin'?'a':'n')}
-      if(!spyView&&G.clue)(function(idx){c.addEventListener('click',function(){sClick();guessOffline(idx)})})(i);
+      if(!spyView&&G.clue){
+        (function(idx){c.addEventListener('click',function(){sClick();guessOffline(idx)})})(i);
+      }else if(!G.rev[i]){
+        (function(idx,el){el.addEventListener('click',function(){
+          if(APP.ageGroup==='kids')playKidsEffect(G.words[idx],el);
+          else playAdultEffect(el);
+        })})(i,c);
+      }
       c.innerHTML=makeCardContent(w);
     }
     grid.appendChild(c);
@@ -3204,7 +3224,15 @@ function renderOnlineGame(){
         if(isClassic){var t=ROOM.types[i];c.className+=' s'+(t[0]==='r'?'r':t[0]==='b'?'b':t[0]==='a'?'a':'n')}
         else{var t2=ROOM.duetKey[i];c.className+=' s'+(t2==='green'?'g':t2==='assassin'?'a':'n')}
       }
-      if(canGuess)(function(idx){c.addEventListener('click',function(){sClick();guessOnline(idx)})})(i);
+      if(canGuess){
+        (function(idx){c.addEventListener('click',function(){sClick();guessOnline(idx)})})(i);
+      }else{
+        // Animation+sound on any click even when not your turn
+        (function(idx,el){el.addEventListener('click',function(){
+          if(APP.ageGroup==='kids')playKidsEffect(ROOM.words[idx],el);
+          else playAdultEffect(el);
+        })})(i,c);
+      }
       c.innerHTML=makeCardContent(w);
     }
     grid.appendChild(c);
